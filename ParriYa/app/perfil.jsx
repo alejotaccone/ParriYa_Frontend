@@ -111,7 +111,11 @@ export default function PerfilScreen() {
             <Ionicons name="chevron-forward" size={18} color="#8E8E93" />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.menuRow} activeOpacity={0.7}>
+          <TouchableOpacity 
+            style={styles.menuRow} 
+            activeOpacity={0.7}
+            onPress={() => router.push('/historial')} 
+          >
             <Text style={styles.menuRowText}>Historial de compras</Text>
             <Ionicons name="chevron-forward" size={18} color="#8E8E93" />
           </TouchableOpacity>

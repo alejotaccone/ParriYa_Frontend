@@ -92,7 +92,7 @@ export default function DetalleScreen() {
                 />
               </TouchableOpacity>
 
-              {/* LISTA DESPLEGABLE (Solo aparece si menuAbierto es true) */}
+              {/* LISTA DESPLEGABLE  */}
               {menuAbierto && (
                 <View style={styles.dropdownOptionsContainer}>
                   {puntosDisponibles.map((punto, index) => (
