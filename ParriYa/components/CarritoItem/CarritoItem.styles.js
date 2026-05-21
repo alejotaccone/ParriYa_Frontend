@@ -1,0 +1,95 @@
+import { StyleSheet } from "react-native";
+
+export const styles = StyleSheet.create({
+  rowContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 15,
+    width: "100%",
+  },
+  cardContainer: {
+    flex: 1,
+    flexDirection: "row",
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 12,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  imageContainer: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    backgroundColor: "#FEEFEA", // Fondo clarito para la burbuja de la foto
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 12,
+  },
+  productImage: {
+    width: "80%",
+    height: "80%",
+  },
+  infoContainer: {
+    flex: 1,
+    justifyContent: "center",
+  },
+  price: {
+    fontSize: 13,
+    fontWeight: "bold",
+    color: "#E76F41",
+  },
+  name: {
+    fontSize: 15,
+    fontWeight: "bold",
+    color: "#333333",
+    marginTop: 2,
+  },
+  description: {
+    fontSize: 12,
+    color: "#8E8E93",
+    marginTop: 1,
+  },
+  // Contador interno compacto
+  counterContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#F5F5F5",
+    borderRadius: 15,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    marginLeft: 10,
+  },
+  counterButton: {
+    paddingHorizontal: 5,
+  },
+  counterButtonText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#E76F41",
+  },
+  counterValue: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "#333333",
+    paddingHorizontal: 8,
+  },
+  // Botón del tacho naranja lateral (Tu genial idea)
+  deleteButton: {
+    backgroundColor: "#E76F41",
+    width: 65,
+    height: "100%",
+    borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    marginLeft: 10,
+    shadowColor: "#E76F41",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+});
