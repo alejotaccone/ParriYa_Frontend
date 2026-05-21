@@ -27,14 +27,12 @@ export const styles = StyleSheet.create({
     color: "#4B2610",
     marginTop: 4,
   },
-  // NUEVO: Agrupa el carrito y el logo en la esquina derecha
   logoAndCartContainer: {
     flexDirection: "row",
     alignItems: "center",
   },
-  // NUEVO: Estilo para el botón del carrito en el header
   cartHeaderButton: {
-    marginRight: 15, // Espacio para que no se pegue al logo
+    marginRight: 15, 
     padding: 5,
   },
   grillLogo: {

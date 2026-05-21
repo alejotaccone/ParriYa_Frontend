@@ -24,7 +24,7 @@ export const styles = StyleSheet.create({
     width: 70,
     height: 70,
     borderRadius: 35,
-    backgroundColor: "#FEEFEA", // Fondo clarito para la burbuja de la foto
+    backgroundColor: "#FEEFEA", 
     justifyContent: "center",
     alignItems: "center",
     marginRight: 12,
@@ -53,7 +53,6 @@ export const styles = StyleSheet.create({
     color: "#8E8E93",
     marginTop: 1,
   },
-  // Contador interno compacto
   counterContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -77,7 +76,6 @@ export const styles = StyleSheet.create({
     color: "#333333",
     paddingHorizontal: 8,
   },
-  // Botón del tacho naranja lateral (Tu genial idea)
   deleteButton: {
     backgroundColor: "#E76F41",
     width: 65,

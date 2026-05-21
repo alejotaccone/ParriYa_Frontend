@@ -3,13 +3,13 @@ import { StyleSheet } from "react-native";
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#1C1C1E", // Un fondo bien oscuro para que resalte la tarjeta blanca
+    backgroundColor: "#1C1C1E", 
   },
   scrollContent: {
     flexGrow: 1,
   },
   headerBackground: {
-    backgroundColor: "#B84521", // Un naranja oscuro simulando tu fondo
+    backgroundColor: "#B84521", 
     height: 260,
     paddingTop: 50,
     paddingHorizontal: 25,
@@ -33,7 +33,6 @@ export const styles = StyleSheet.create({
   avatarIcon: {
     marginTop: 10,
   },
-  // La tarjeta blanca que se superpone hacia arriba
   contentCard: {
     flex: 1,
     backgroundColor: "white",
@@ -41,17 +40,16 @@ export const styles = StyleSheet.create({
     borderTopRightRadius: 35,
     borderBottomLeftRadius: 35,
     borderBottomRightRadius: 35,
-    marginTop: -50, // El margen negativo hace el efecto de subir pisando el color
+    marginTop: -50,
     paddingTop: 45,
     paddingHorizontal: 25,
     paddingBottom: 40,
-    marginBottom: 20, // Espacio extra para que no choque con la barra de navegación inferior
+    marginBottom: 20, 
   },
-  // Contenedores para lograr la etiqueta flotante (Floating Label)
   inputWrapper: {
     marginBottom: 20,
     position: "relative",
-    paddingTop: 8, // Da aire para que la etiqueta flote cómoda
+    paddingTop: 8, 
   },
   inputLabel: {
     position: "absolute",

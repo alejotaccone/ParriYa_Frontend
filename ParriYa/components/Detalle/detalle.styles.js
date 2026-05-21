@@ -5,7 +5,6 @@ export const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#FFFFFF",
   },
-  // Contenedor de la imagen principal con fondo gris claro
   imageContainer: {
     backgroundColor: "#F5F5F5",
     height: 320,
@@ -17,7 +16,7 @@ export const styles = StyleSheet.create({
   },
   backButton: {
     position: "absolute",
-    top: 50, // Espacio para el notch/estado del celu
+    top: 50, 
     left: 20,
     zIndex: 10,
     backgroundColor: "white",
@@ -33,7 +32,6 @@ export const styles = StyleSheet.create({
     width: "80%",
     height: "80%",
   },
-  // Información del producto
   infoContainer: {
     padding: 25,
     flex: 1,
@@ -65,7 +63,6 @@ export const styles = StyleSheet.create({
     color: "#555555",
     lineHeight: 22,
   },
-  // Selector de cantidad y precio final
   footer: {
     paddingHorizontal: 25,
     paddingBottom: 40,
@@ -88,7 +85,7 @@ export const styles = StyleSheet.create({
   priceValue: {
     fontSize: 28,
     fontWeight: "bold",
-    color: "#4B2610", // Tu marrón característico
+    color: "#4B2610", 
   },
   // Botón Agregar
   addButton: {
@@ -111,15 +108,15 @@ export const styles = StyleSheet.create({
   selectorContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "flex-start", // Cambiado a flex-start para que el contador no se mueva al desplegar la lista
+    alignItems: "flex-start", 
     marginTop: 25,
-    position: "relative", // Para contener elementos absolutos si hiciera falta
+    position: "relative", 
     zIndex: 50,
   },
   pickerWrapper: {
     flex: 1,
     marginRight: 15,
-    zIndex: 100, // Asegura que la lista se dibuje por encima de lo que haya abajo
+    zIndex: 100, 
   },
   cantidadWrapper: {
     alignItems: "center",
@@ -131,10 +128,9 @@ export const styles = StyleSheet.create({
     color: "#333333",
     marginBottom: 8,
   },
-  // Botón por defecto (Cerrado)
   dropdownSimulado: {
     backgroundColor: "#04332D", // Verde oscuro
-    borderRadius: 25, // Bordes bien redondeados como tu primera foto
+    borderRadius: 25, 
     paddingVertical: 12,
     paddingHorizontal: 20,
     flexDirection: "row",
@@ -146,7 +142,7 @@ export const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 2,
   },
-  // Estilo alternativo cuando está abierto (Bordes menos redondeados abajo o outline sutil si querés)
+
   dropdownAbierto: {
     borderWidth: 1,
     borderColor: "#04332D",
@@ -158,7 +154,7 @@ export const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "500",
   },
-  // CONTENEDOR DE LA LISTA DESPLEGABLE (La caja grande de tu segunda imagen)
+
   dropdownOptionsContainer: {
     backgroundColor: "#04332D",
     borderRadius: 20,
@@ -170,12 +166,10 @@ export const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 5,
   },
-  // Botón para cada opción interna
   optionButton: {
     paddingVertical: 15,
     paddingHorizontal: 20,
   },
-  // Texto de las opciones ("Jugoso", "A punto", "Cocido")
   optionText: {
     color: "white",
     fontSize: 16,

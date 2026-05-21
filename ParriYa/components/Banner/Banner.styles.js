@@ -2,17 +2,17 @@ import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#C84B22', // Un tono naranja más oscuro/rojizo para que resalte del fondo
+    backgroundColor: '#C84B22', 
     marginHorizontal: 20,
     marginTop: 20,
     borderRadius: 25,
     padding: 20,
-    position: 'relative', // Nos permite acomodar las flechas y elementos internos
-    overflow: 'hidden', // Corta las imágenes si se salen del borde redondeado
+    position: 'relative', 
+    overflow: 'hidden', 
   },
   titleSection: {
     fontSize: 14,
-    color: '#FAD3C3', // Naranja clarito para el copete
+    color: '#FAD3C3', 
     fontWeight: '600',
     marginBottom: 5,
   },
@@ -32,7 +32,7 @@ export const styles = StyleSheet.create({
     lineHeight: 28,
   },
   highlightText: {
-    color: '#FFE2B7', // Color amarillento para resaltar el "20% OFF"
+    color: '#FFE2B7', 
   },
   imageContainer: {
     width: 120,
@@ -44,7 +44,6 @@ export const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-  // Estilos para las flechitas de los costados (carrusel)
   arrowLeft: {
     position: 'absolute',
     left: -10,
@@ -77,7 +76,6 @@ export const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 3,
   },
-  // Los puntitos indicadores de abajo (Paginación)
   dotsContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -92,7 +90,7 @@ export const styles = StyleSheet.create({
     marginHorizontal: 3,
   },
   activeDot: {
-    backgroundColor: '#FFE2B7', // El puntito amarillo activo
-    width: 12, // Un poquito más largo como en el diseño
+    backgroundColor: '#FFE2B7', 
+    width: 12, 
   },
 });

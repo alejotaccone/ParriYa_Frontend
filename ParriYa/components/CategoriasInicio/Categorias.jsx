@@ -3,7 +3,6 @@ import { View, Text, FlatList, Image, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { styles } from './Categorias.styles';
 
-// Datos de las categorías basados en el diseño de la imagen
 const CATEGORIAS_DATA = [
   { id: '1', nombre: 'Carnes', image: require('../../assets/images/cat_carnes.png') },
   { id: '2', nombre: 'Sandwiches', image: require('../../assets/images/cat_sandwiches.png') },
@@ -13,18 +12,16 @@ const CATEGORIAS_DATA = [
 ];
 
 const Categorias = () => {
-  // 2. Inicializamos el enrutador
   const router = useRouter(); 
 
   const renderItem = ({ item }) => (
     <TouchableOpacity 
       style={styles.itemContainer} 
       activeOpacity={0.7}
-      // 3. Agregamos la acción de presionar el botón
       onPress={() => {
         router.push({
-          pathname: "/categoria", // Ruta a la pantalla nueva
-          params: { categoriaSeleccionada: item.nombre } // Le pasamos cuál tocó
+          pathname: "/categoria", 
+          params: { categoriaSeleccionada: item.nombre } 
         });
       }}
     >

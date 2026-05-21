@@ -11,14 +11,13 @@ const CarritoItem = ({ item, onRemove }) => {
     if (cantidad > 1) {
       setCantidad(cantidad - 1);
     } else {
-      // Si la cantidad es 1 y vuelven a tocar menos, se activa el tacho lateral
       setMostrarTacho(true);
     }
   };
 
   const handleIncrement = () => {
     setCantidad(cantidad + 1);
-    if (mostrarTacho) setMostrarTacho(false); // Si sube la cantidad, escondemos el tacho
+    if (mostrarTacho) setMostrarTacho(false); 
   };
 
   return (
@@ -41,7 +40,7 @@ const CarritoItem = ({ item, onRemove }) => {
           <Text style={styles.description}>{item.desc}</Text>
         </View>
 
-        {/* Contador Compacto */}
+        {/* Contador */}
         <View style={styles.counterContainer}>
           <TouchableOpacity
             onPress={handleDecrement}
@@ -61,7 +60,7 @@ const CarritoItem = ({ item, onRemove }) => {
         </View>
       </View>
 
-      {/* Botón de Eliminación Condicional Naranja */}
+      {/* Botón de Eliminación */}
       {mostrarTacho && (
         <TouchableOpacity
           style={styles.deleteButton}

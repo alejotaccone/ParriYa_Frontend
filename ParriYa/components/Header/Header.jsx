@@ -6,7 +6,7 @@ import { useRouter } from "expo-router";
 import { styles } from "./Header.styles";
 
 const Header = () => {
-  const router = useRouter(); // 2. Inicializamos el router
+  const router = useRouter(); 
 
   return (
     <View style={styles.container}>
@@ -16,7 +16,6 @@ const Header = () => {
           <Text style={styles.addressText}>Habana 3540</Text>
         </View>
 
-        {/* Contenedor para el Logo y el nuevo Carrito juntos a la derecha */}
         <View style={styles.logoAndCartContainer}>
           <Image
             source={require("../../assets/images/Logo.png")}

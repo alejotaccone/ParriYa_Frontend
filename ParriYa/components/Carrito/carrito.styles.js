@@ -8,7 +8,6 @@ export const styles = StyleSheet.create({
   scrollContent: {
     paddingBottom: 30,
   },
-  // Header Naranja
   header: {
     backgroundColor: "#E76F41",
     paddingTop: 50,
@@ -50,12 +49,10 @@ export const styles = StyleSheet.create({
     color: "#8E8E93",
     marginTop: 2,
   },
-  // Lista de productos
   productsList: {
     paddingHorizontal: 20,
     marginBottom: 20,
   },
-  // Contenedor de sugerencias "¿Querés agregar algo más?"
   suggestionsContainer: {
     marginBottom: 25,
   },
@@ -99,7 +96,6 @@ export const styles = StyleSheet.create({
     color: "#333333",
     textAlign: "center",
   },
-  // Sección Resumen de Pago
   resumenContainer: {
     backgroundColor: "white",
     borderTopLeftRadius: 25,
@@ -153,7 +149,7 @@ export const styles = StyleSheet.create({
     color: "#333333",
   },
   payButton: {
-    backgroundColor: "#E76F41", // El naranja de tus botones principales
+    backgroundColor: "#E76F41", 
     borderRadius: 15,
     paddingVertical: 15,
     alignItems: "center",
