@@ -9,8 +9,8 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import CarritoItem from "../../components/CarritoItem/CarritoItem";
-import { styles } from "./carrito.styles";
+import CarritoItem from "../components/CarritoItem/CarritoItem";
+import { styles } from "../components/Carrito/carrito.styles";
 
 // Mocks iniciales basados en tu captura
 const PRODUCTOS_INICIALES = [
@@ -19,14 +19,14 @@ const PRODUCTOS_INICIALES = [
     nombre: "Chorizo",
     desc: "Chorizo puro cerdo",
     precio: 5000,
-    image: require("../../assets/images/prod_chori.png"),
+    image: require("./../assets/images/prod_chori.png"),
   },
   {
     id: "2",
     nombre: "Lomo vacuno",
     desc: "Punto: Jugoso",
     precio: 20000,
-    image: require("../../assets/images/prod_lomo.png"),
+    image: require("./../assets/images/prod_lomo.png"),
   },
 ];
 
@@ -34,17 +34,17 @@ const SUGERENCIAS_DATA = [
   {
     id: "10",
     nombre: "Coca-Cola 1.5lt",
-    image: require("../../assets/images/prod_coca.png"),
+    image: require("./../assets/images/prod_coca.png"),
   },
   {
     id: "11",
     nombre: "Coca-Cola Zero 1.5lt",
-    image: require("../../assets/images/prod_cocazero.png"),
+    image: require("./../assets/images/prod_cocazero.png"),
   },
   {
     id: "12",
     nombre: "Sprite 1.5lt",
-    image: require("../../assets/images/prod_sprite.png"),
+    image: require("./../assets/images/prod_sprite.png"),
   },
 ];
 
@@ -54,17 +54,14 @@ export default function CarritoScreen() {
 
   const tarifaServicio = 3000;
 
-  // Función para eliminar un producto de la lista (se dispara al tocar el tacho naranja)
   const eliminarProducto = (id) => {
     setProductos(productos.filter((p) => p.id !== id));
   };
 
-  // Calculamos el subtotal de los productos que queden en la lista
   const subtotalProductos = productos.reduce((sum, p) => sum + p.precio, 0);
   const totalFinal =
     subtotalProductos > 0 ? subtotalProductos + tarifaServicio : 0;
 
-  // El renderizador de la sugerencia individual, limpio y sin listas anidadas
   const renderSugerencia = ({ item }) => (
     <TouchableOpacity style={styles.suggestionCard} activeOpacity={0.8}>
       <View style={styles.suggestionImageContainer}>
@@ -86,7 +83,7 @@ export default function CarritoScreen() {
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.backButton}
-          onPress={() => router.back()}
+          onPress={() => router.replace('/')}
         >
           <Ionicons name="arrow-back" size={24} color="white" />
         </TouchableOpacity>
@@ -128,12 +125,12 @@ export default function CarritoScreen() {
           )}
         </View>
 
-        {/* Sección Carrusel: ¿Querés agregar algo más? */}
+        {/* Sección Carrusel:  */}
         <View style={styles.suggestionsContainer}>
           <Text style={styles.suggestionsTitle}>¿Queres agregar algo mas?</Text>
           <FlatList
             data={SUGERENCIAS_DATA}
-            renderItem={renderSugerencia} // Ahora sí apunta a la función limpia
+            renderItem={renderSugerencia} 
             keyExtractor={(item) => item.id}
             horizontal
             showsHorizontalScrollIndicator={false}

@@ -18,15 +18,6 @@ const Header = () => {
 
         {/* Contenedor para el Logo y el nuevo Carrito juntos a la derecha */}
         <View style={styles.logoAndCartContainer}>
-          {/* Botón del Carrito */}
-          <TouchableOpacity
-            style={styles.cartHeaderButton}
-            activeOpacity={0.7}
-            onPress={() => router.push("/carrito")} // 👈 Te lleva al carrito full-screen
-          >
-            <Ionicons name="cart" size={28} color="#4B2610" />
-          </TouchableOpacity>
-
           <Image
             source={require("../../assets/images/Logo.png")}
             style={styles.grillLogo}

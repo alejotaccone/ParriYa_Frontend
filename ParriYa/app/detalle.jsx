@@ -3,7 +3,7 @@ import { View, Text, Image, TouchableOpacity, ScrollView } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import ContadorCantidad from "../components/Contador/ContadorCantidad";
-import { styles } from "./detalle.styles";
+import { styles } from "../components/Detalle/detalle.styles";
 
 const DETALLE_PRODUCTOS = {
   1: {
@@ -108,7 +108,7 @@ export default function DetalleScreen() {
               )}
             </View>
 
-            {/* Contador de Cantidad (Lo envolvemos para que no se desplace con el menú abierto) */}
+            {/* Contador de Cantidad */}
             <View style={styles.cantidadWrapper}>
               <Text style={styles.selectorLabel}>Cantidad</Text>
               <ContadorCantidad

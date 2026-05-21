@@ -16,7 +16,7 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1, // Esto hace que la pantalla ocupe todo el espacio disponible
-    backgroundColor: '#F5F5F5', // Un color de fondo gris clarito para contrastar
+    flex: 1, 
+    backgroundColor: '#F5F5F5', 
   },
 });

@@ -6,27 +6,23 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        // Ocultamos el header feo que viene por defecto, porque ya hiciste el tuyo naranja
         headerShown: false, 
-        
-        // Estilo de la barra inferior
+      
         tabBarStyle: {
-          backgroundColor: '#4B2610', // Marrón oscuro como en tu diseño
+          backgroundColor: '#4B2610', 
           borderTopWidth: 0,
           height: 65, 
           paddingBottom: 10,
           paddingTop: 10,
         },
         
-        // Naranja cuando estás en esa pestaña, blanco cuando no
         tabBarActiveTintColor: '#E76F41', 
         tabBarInactiveTintColor: 'white',
         
-        // Ocultamos las letritas de abajo para que quede limpio (solo iconos)
         tabBarShowLabel: false, 
       }}
     >
-      {/* Pestaña 1: Inicio (lee automáticamente el archivo index.jsx que ya tenés) */}
+      {/* Pestaña 1: Inicio */}
       <Tabs.Screen
         name="index"
         options={{
@@ -36,30 +32,32 @@ export default function TabLayout() {
         }}
       />
       
-      {/* Pestaña 2: Carrito (va a buscar el archivo carrito.jsx) */}
+      {/* Pestaña 2: Carrito */}
       <Tabs.Screen
-        name="carrito"
+        name="carrito_oculto"
         options={{
+          href: '/carrito', 
           tabBarIcon: ({ color }) => (
             <Ionicons name="cart-outline" size={30} color={color} />
           ),
         }}
       />
       
-      {/* Pestaña 3: Perfil (va a buscar el archivo perfil.jsx) */}
+      {/* Pestaña 3: Perfil */}
       <Tabs.Screen
-        name="perfil"
+        name="perfil_oculto" 
         options={{
+          href: '/perfil', 
           tabBarIcon: ({ color }) => (
             <Ionicons name="person-outline" size={28} color={color} />
           ),
         }}
       />
-      {/* Pestaña oculta: Categorías (No aparece en la barra, pero se puede navegar hacia ella) */}
+      {/* Pestaña oculta: Categorías  */}
       <Tabs.Screen
         name="categoria"
         options={{
-          href: null, // ¡ESTA ES LA MAGIA! Evita que se cree un botón en la barra
+          href: null, 
         }}
       />
     </Tabs>

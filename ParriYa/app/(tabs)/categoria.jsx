@@ -4,7 +4,7 @@ import { useLocalSearchParams } from 'expo-router';
 import Header from '../../components/Header/Header';
 import FiltrosCategoria from '../../components/FiltrosCategoria/FiltrosCategoria'; // Importamos el nuevo componente
 import ProductoCard from '../../components/ProductoCard/ProductoCard'; // Importamos el nuevo componente
-import { styles } from './categoria.styles';
+import { styles } from '../../components/Categoria/categoria.styles'; // Importamos los estilos para esta pantalla
 
 const FILTROS = ['Todo', 'Carnes', 'Sandwiches', 'Pastas', 'Guarniciones'];
 

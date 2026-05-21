@@ -8,12 +8,11 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { styles } from "../../components/Perfil/perfil.styles"; // Asegurate de ajustar esta ruta si guardaste los estilos en otro lado
+import { styles } from "../components/Perfil/perfil.styles";
 
 export default function PerfilScreen() {
   const router = useRouter();
 
-  // Datos mockeados calcados de tu diseño
   const usuario = {
     nombre: "Enzo Mussi",
     email: "Enzo@gmail.com",
@@ -30,8 +29,9 @@ export default function PerfilScreen() {
         {/* CABECERA: Fondo superior con iconos */}
         <View style={styles.headerBackground}>
           <View style={styles.headerIconsRow}>
-            {/* Flecha de volver */}
-            <TouchableOpacity onPress={() => router.back()}>
+            
+            {/* Flecha de volver CORREGIDA */}
+            <TouchableOpacity onPress={() => router.replace('/')}>
               <Ionicons name="arrow-back" size={24} color="white" />
             </TouchableOpacity>
 
@@ -41,7 +41,7 @@ export default function PerfilScreen() {
             </TouchableOpacity>
           </View>
 
-          {/* Avatar del usuario simulado */}
+          {/* Avatar del usuario */}
           <View style={styles.avatarContainer}>
             <Ionicons
               name="person"
@@ -52,7 +52,7 @@ export default function PerfilScreen() {
           </View>
         </View>
 
-        {/* CONTENIDO: Tarjeta Blanca superpuesta */}
+        {/*Tarjeta Blanca superpuesta */}
         <View style={styles.contentCard}>
           {/* Campo: Nombre */}
           <View style={styles.inputWrapper}>
