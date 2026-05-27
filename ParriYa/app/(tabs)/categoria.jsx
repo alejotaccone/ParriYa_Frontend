@@ -23,7 +23,6 @@ export default function CategoriaScreen() {
     <View style={styles.container}>
       <Header />
 
-      {/* Le pasamos las responsabilidades (props) al componente de Filtros */}
       <FiltrosCategoria 
         filtros={FILTROS} 
         filtroActivo={filtroActivo} 
@@ -32,7 +31,6 @@ export default function CategoriaScreen() {
 
       <FlatList
         data={PRODUCTOS_DATA}
-        // Usamos el componente de Tarjeta para cada elemento
         renderItem={({ item }) => <ProductoCard item={item} />}
         keyExtractor={(item) => item.id}
         numColumns={2} 

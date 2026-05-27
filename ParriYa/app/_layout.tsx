@@ -20,6 +20,8 @@ export default function RootLayout() {
         <Stack.Screen name="carrito" options={{ headerShown: false }} />
         <Stack.Screen name="historial" options={{ headerShown: false }} />
         <Stack.Screen name="detalle_pedido" options={{ headerShown: false }} />
+        <Stack.Screen name="detalle" options={{ headerShown: false }} />
+
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>
