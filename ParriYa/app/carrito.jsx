@@ -168,7 +168,12 @@ export default function CarritoScreen() {
             </Text>
           </View>
 
-          <TouchableOpacity style={styles.payButton} activeOpacity={0.8}>
+          {/* Botón Ir a pagar actualizado */}
+          <TouchableOpacity 
+            style={styles.payButton} 
+            activeOpacity={0.8}
+            onPress={() => router.push('/pago')} // <--- MAGIA ACÁ
+          >
             <Text style={styles.payButtonText}>Ir a pagar</Text>
           </TouchableOpacity>
         </View>
