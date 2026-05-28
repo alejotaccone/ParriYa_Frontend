@@ -25,6 +25,9 @@ export default function RootLayout() {
         <Stack.Screen name="cambiar_contrasena" options={{ headerShown: false }} />
         <Stack.Screen name="verificacion" options={{ headerShown: false }} />
         <Stack.Screen name="nueva_contrasena" options={{ headerShown: false }} />
+        <Stack.Screen name="login" options={{ headerShown: false }} />
+        <Stack.Screen name="registro" options={{ headerShown: false }} />
+        <Stack.Screen name="ingresar_mail" options={{ headerShown: false }} />
 
 
       </Stack>
