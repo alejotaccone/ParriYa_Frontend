@@ -22,7 +22,9 @@ export default function RootLayout() {
         <Stack.Screen name="detalle_pedido" options={{ headerShown: false }} />
         <Stack.Screen name="detalle" options={{ headerShown: false }} />
         <Stack.Screen name="pago" options={{ headerShown: false }} />
-
+        <Stack.Screen name="cambiar_contrasena" options={{ headerShown: false }} />
+        <Stack.Screen name="verificacion" options={{ headerShown: false }} />
+        <Stack.Screen name="nueva_contrasena" options={{ headerShown: false }} />
 
 
       </Stack>

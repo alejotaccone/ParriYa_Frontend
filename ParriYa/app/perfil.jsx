@@ -105,8 +105,13 @@ export default function PerfilScreen() {
 
           <View style={styles.divider} />
 
+
           {/* Enlaces Secundarios */}
-          <TouchableOpacity style={styles.menuRow} activeOpacity={0.7}>
+          <TouchableOpacity 
+            style={styles.menuRow} 
+            activeOpacity={0.7}
+            onPress={() => router.push('/cambiar_contrasena')} // <--- AGREGAR ESTA LÍNEA
+          >
             <Text style={styles.menuRowText}>Cambiar contraseña</Text>
             <Ionicons name="chevron-forward" size={18} color="#8E8E93" />
           </TouchableOpacity>
