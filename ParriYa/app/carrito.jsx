@@ -70,29 +70,28 @@ export default function CarritoScreen() {
         </View>
 
         {/* Lista de Productos Agregados */}
-        <View style={styles.productsList}>
-          {cartItems.length > 0 ? (
-            cartItems.map((item) => (
-              <CarritoItem
-                key={item.id}
-                item={item}
-                onRemove={removeFromCart}
-                onIncrement={() => updateQuantity(item.id, item.cantidad + 1)}
-                onDecrement={() => updateQuantity(item.id, item.cantidad - 1)}
-              />
-            ))
-          ) : (
-            <Text
-              style={{
-                textAlign: "center",
-                color: "#8E8E93",
-                marginVertical: 30,
+      <View style={styles.productsList}>
+        {cartItems.length > 0 ? (
+          cartItems.map((item) => (
+            <CarritoItem
+              key={item.id}
+              item={item}
+              onRemove={removeFromCart}
+              onIncrement={() => updateQuantity(item.id, item.cantidad + 1)}
+              // CAMBIO CLAVE ACÁ: Solo resta si es mayor a 1
+              onDecrement={() => {
+                if (item.cantidad > 1) {
+                  updateQuantity(item.id, item.cantidad - 1);
+                }
               }}
-            >
-              Tu carrito está vacío. ¡Agregá algo rico!
-            </Text>
-          )}
-        </View>
+            />
+          ))
+        ) : (
+          <Text style={{ textAlign: "center", color: "#8E8E93", marginVertical: 30 }}>
+            Tu carrito está vacío. ¡Agregá algo rico!
+          </Text>
+        )}
+      </View>
 
         {/* Sección Carrusel:  */}
         <View style={styles.suggestionsContainer}>

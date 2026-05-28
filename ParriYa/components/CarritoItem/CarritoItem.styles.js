@@ -10,10 +10,10 @@ export const styles = StyleSheet.create({
     marginBottom: 15,
     width: "100%",
   },
-  cardContainer: {
+    cardContainer: {
     flex: 1,
     flexDirection: "row",
-    backgroundColor: COLORS.backgroundLight, // Antes: "white"
+    backgroundColor: COLORS.backgroundLight,
     borderRadius: 20,
     padding: 12,
     alignItems: "center",
@@ -92,5 +92,10 @@ export const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 3,
+  },
+
+  // --- AGREGÁ ESTO ACÁ ABAJO ---
+  cardContainerWithDelete: {
+    marginRight: 0, // Ajuste armónico para que se pegue al botón como en tu Figma
   },
 });
