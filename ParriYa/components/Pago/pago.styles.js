@@ -1,22 +1,23 @@
 import { StyleSheet } from 'react-native';
+import { COLORS, FONTS } from '../../constants/theme';
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF', // Ahora el fondo completo es blanco
+    backgroundColor: COLORS.backgroundLight, // Antes: '#FFFFFF'
   },
   scrollContent: {
-    paddingTop: 60, // Da espacio para el status bar del celular
+    paddingTop: 60,
     paddingHorizontal: 25,
     paddingBottom: 20,
   },
   backButton: {
-    marginBottom: 30, // Separación entre la flecha y la palabra "Resumen"
+    marginBottom: 30, 
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: FONTS.h4, // Antes: 18
     fontWeight: 'bold',
-    color: '#4B2610', // Mismo marrón de tus títulos
+    color: COLORS.secondary, // Antes: '#4B2610'
     marginBottom: 15,
   },
   // Resumen
@@ -26,8 +27,8 @@ export const styles = StyleSheet.create({
     marginBottom: 12,
   },
   resumenText: {
-    fontSize: 15,
-    color: '#8E8E93',
+    fontSize: FONTS.body, // Antes: 15
+    color: COLORS.textMuted, // Antes: '#8E8E93'
   },
   resumenRight: {
     flexDirection: 'row',
@@ -36,17 +37,17 @@ export const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   resumenQty: {
-    fontSize: 14,
-    color: '#8E8E93',
+    fontSize: FONTS.small, // Antes: 14
+    color: COLORS.textMuted, // Antes: '#8E8E93'
     marginRight: 10,
   },
   resumenPrice: {
-    fontSize: 15,
-    color: '#8E8E93',
+    fontSize: FONTS.body, // Antes: 15
+    color: COLORS.textMuted, // Antes: '#8E8E93'
   },
   // Métodos de Pago
   paymentMethodEfectivo: {
-    backgroundColor: '#3D8C1A', 
+    backgroundColor: COLORS.efectivo, // Antes: '#3D8C1A'
     borderRadius: 15,
     paddingVertical: 18,
     paddingHorizontal: 20,
@@ -56,7 +57,7 @@ export const styles = StyleSheet.create({
     marginBottom: 15,
   },
   paymentMethodTarjeta: {
-    backgroundColor: '#009EE3', 
+    backgroundColor: COLORS.mercadoPago, // Antes: '#009EE3'
     borderRadius: 15,
     paddingVertical: 18,
     paddingHorizontal: 20,
@@ -70,25 +71,25 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
   paymentText: {
-    color: 'white',
-    fontSize: 16,
+    color: COLORS.backgroundLight, // Antes: 'white'
+    fontSize: FONTS.bodyLarge, // Antes: 16
     fontWeight: '500',
     marginLeft: 15,
   },
   paymentTextBold: {
-    color: 'white',
-    fontSize: 15,
+    color: COLORS.backgroundLight, // Antes: 'white'
+    fontSize: FONTS.body, // Antes: 15
     fontWeight: 'bold',
     marginLeft: 15,
   },
   paymentSubtext: {
-    color: 'white',
-    fontSize: 13,
+    color: COLORS.backgroundLight, // Antes: 'white'
+    fontSize: FONTS.small, // Antes: 13 (unificado a 14)
     marginLeft: 15,
     marginTop: 2,
   },
   cardIconWrapper: {
-    backgroundColor: 'white',
+    backgroundColor: COLORS.backgroundLight, // Antes: 'white'
     borderRadius: 5,
     padding: 2,
   },
@@ -99,8 +100,8 @@ export const styles = StyleSheet.create({
     marginBottom: 25,
   },
   checkboxText: {
-    fontSize: 14,
-    color: '#8E8E93',
+    fontSize: FONTS.small, // Antes: 14
+    color: COLORS.textMuted, // Antes: '#8E8E93'
     marginLeft: 10,
   },
   // Sugerencias Extras
@@ -110,13 +111,13 @@ export const styles = StyleSheet.create({
   },
   suggestionCard: {
     width: 120,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: COLORS.backgroundLight, // Antes: '#FFFFFF'
     borderRadius: 15,
     padding: 10,
     marginRight: 15,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#F0F0F0',
+    borderColor: COLORS.borderLight, // Antes: '#F0F0F0'
   },
   suggestionImage: {
     width: 80,
@@ -124,13 +125,13 @@ export const styles = StyleSheet.create({
     marginBottom: 10,
   },
   suggestionName: {
-    fontSize: 12,
-    color: '#8E8E93',
+    fontSize: FONTS.xSmall, // Antes: 12
+    color: COLORS.textMuted, // Antes: '#8E8E93'
     textAlign: 'center',
   },
   // Footer reestructurado
   footer: {
-    backgroundColor: 'white',
+    backgroundColor: COLORS.backgroundLight, // Antes: 'white'
     paddingHorizontal: 25,
     paddingTop: 15,
     paddingBottom: 30,
@@ -138,30 +139,30 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     borderTopWidth: 1,
-    borderTopColor: '#F0F0F0',
+    borderTopColor: COLORS.borderLight, // Antes: '#F0F0F0'
   },
   footerLabel: {
-    fontSize: 14,
-    color: '#8E8E93',
+    fontSize: FONTS.small, // Antes: 14
+    color: COLORS.textMuted, // Antes: '#8E8E93'
   },
   footerTotal: {
-    fontSize: 26,
+    fontSize: FONTS.h2, // Antes: 26
     fontWeight: 'bold',
-    color: '#111111',
+    color: COLORS.textMain, // Antes: '#111111'
   },
   currencySymbol: {
-    color: '#E76F41',
-    fontSize: 22,
+    color: COLORS.primary, // Antes: '#E76F41'
+    fontSize: FONTS.h3, // Antes: 22
   },
   payButton: {
-    backgroundColor: '#E76F41',
+    backgroundColor: COLORS.primary, // Antes: '#E76F41'
     borderRadius: 15,
     paddingVertical: 15,
     paddingHorizontal: 40,
   },
   payButtonText: {
-    color: 'white',
-    fontSize: 18,
+    color: COLORS.backgroundLight, // Antes: 'white'
+    fontSize: FONTS.h4, // Antes: 18
     fontWeight: 'bold',
   },
 });

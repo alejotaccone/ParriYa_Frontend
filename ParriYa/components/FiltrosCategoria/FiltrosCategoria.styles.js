@@ -1,4 +1,6 @@
 import { StyleSheet } from 'react-native';
+// Asegurate de que la ruta de importación coincida con tu estructura de carpetas
+import { COLORS, FONTS } from '../../constants/theme'; 
 
 export const styles = StyleSheet.create({
   filtersContainer: {
@@ -10,7 +12,7 @@ export const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 20,
     borderRadius: 20,
-    backgroundColor: 'white',
+    backgroundColor: COLORS.backgroundLight, // Antes: 'white'
     marginRight: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -19,14 +21,14 @@ export const styles = StyleSheet.create({
     elevation: 2,
   },
   chipActive: {
-    backgroundColor: '#4B2610', 
+    backgroundColor: COLORS.secondary, // Antes: '#4B2610'
   },
   chipText: {
-    fontSize: 14,
+    fontSize: FONTS.small, // Antes: 14
     fontWeight: '600',
-    color: '#333333',
+    color: COLORS.textMain, // Antes: '#333333'
   },
   chipTextActive: {
-    color: 'white',
+    color: COLORS.backgroundLight, // Antes: 'white'
   },
 });

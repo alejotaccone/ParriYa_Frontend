@@ -1,53 +1,50 @@
-/**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
- */
+export const COLORS = {
+  // Colores principales de ParriYa!
+  primary: '#E76F41',       
+  secondary: '#4B2610',     
+  
+  // Fondos
+  backgroundLight: '#FFFFFF', 
+  backgroundDark: '#1E1E1E',  
+  backgroundGray: '#F5F5F5',  
+  
+  // Textos
+  textMain: '#333333',      
+  textMuted: '#8E8E93',   
 
-import { Platform } from 'react-native';
+  dropdownDark: '#04332D',    // Verde oscuro (Fondo del selector de variantes)
+  textSecondary: '#777777',   // Gris intermedio (Subtítulos y etiquetas de precio)
+  textDescription: '#555555', // Gris más oscuro (Para párrafos largos de descripción)
+  
+  // Líneas y bordes
+  borderLight: '#F0F0F0',   
+  borderMedium: '#E5E5EA',  
+  
+  // Específicos de los métodos de pago
+  efectivo: '#3D8C1A',      
+  mercadoPago: '#009EE3',   
+  iconoTarjeta: '#FF5A2D',  
 
-const tintColorLight = '#0a7ea4';
-const tintColorDark = '#fff';
-
-export const Colors = {
-  light: {
-    text: '#11181C',
-    background: '#fff',
-    tint: tintColorLight,
-    icon: '#687076',
-    tabIconDefault: '#687076',
-    tabIconSelected: tintColorLight,
-  },
-  dark: {
-    text: '#ECEDEE',
-    background: '#151718',
-    tint: tintColorDark,
-    icon: '#9BA1A6',
-    tabIconDefault: '#9BA1A6',
-    tabIconSelected: tintColorDark,
-  },
+  // Sumalos adentro de export const COLORS = { ... }
+  primaryDark: '#C84B22',   // Naranja más rojizo (Fondo del Banner)
+  primaryLight: '#FAD3C3',  // Naranja re clarito (Texto secundario del Banner)
+  highlight: '#FFE2B7',     // Amarillito (Texto destacado y puntito activo del Banner)
 };
 
-export const Fonts = Platform.select({
-  ios: {
-    /** iOS `UIFontDescriptorSystemDesignDefault` */
-    sans: 'system-ui',
-    /** iOS `UIFontDescriptorSystemDesignSerif` */
-    serif: 'ui-serif',
-    /** iOS `UIFontDescriptorSystemDesignRounded` */
-    rounded: 'ui-rounded',
-    /** iOS `UIFontDescriptorSystemDesignMonospaced` */
-    mono: 'ui-monospace',
-  },
-  default: {
-    sans: 'normal',
-    serif: 'serif',
-    rounded: 'normal',
-    mono: 'monospace',
-  },
-  web: {
-    sans: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
-    serif: "Georgia, 'Times New Roman', serif",
-    rounded: "'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif",
-    mono: "SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
-  },
-});
+// Medidas y configuraciones visuales globales (opcional, pero re útil)
+export const SIZES = {
+  paddingGlobal: 25,        
+  radiusCard: 15,           
+  radiusPantalla: 35,       
+};
+export const FONTS = {
+  h1: 32,         // Título gigante (Ej: "Parri-Ya!" en el Header)
+  h2: 26,         // Títulos muy grandes (Ej: El Total a pagar abajo de todo)
+  h3: 22,         // Títulos de Header de pantalla (Ej: "Tu carrito", "Pago", "Historial")
+  h4: 18,         // Títulos de secciones adentro de las pantallas y textos de botones naranjas
+  bodyLarge: 16,  // Textos destacados (Ej: Dirección "Habana 3540", Inputs grandes)
+  body: 15,       // Texto normal (Ej: Nombre de los productos, textos de inputs del perfil)
+  small: 14,      // Textos un poco más chicos (Ej: Cantidades "x1", subtítulos grises)
+  xSmall: 12,     // Textos muy chiquitos (Ej: Las etiquetas flotantes de los inputs, sugerencias)
+  price: 28, // Un tamaño especial ultra grande para el precio del Detalle
+};

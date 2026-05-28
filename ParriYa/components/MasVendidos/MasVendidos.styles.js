@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import { COLORS, FONTS } from "../../constants/theme";
 
 export const styles = StyleSheet.create({
   container: {
@@ -7,9 +8,9 @@ export const styles = StyleSheet.create({
     marginBottom: 30,
   },
   sectionTitle: {
-    fontSize: 16,
+    fontSize: FONTS.bodyLarge, // Antes: 16
     fontWeight: "bold",
-    color: "#8E8E93",
+    color: COLORS.textMuted, // Antes: "#8E8E93"
     letterSpacing: 0.5,
     marginBottom: 15,
   },

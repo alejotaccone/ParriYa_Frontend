@@ -1,12 +1,13 @@
 import { StyleSheet } from 'react-native';
+import { COLORS, FONTS } from '../../constants/theme';
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: COLORS.backgroundLight, // Antes: '#FFFFFF'
   },
   header: {
-    backgroundColor: '#E76F41',
+    backgroundColor: COLORS.primary, // Antes: '#E76F41'
     paddingTop: 50,
     paddingBottom: 20,
     paddingHorizontal: 20,
@@ -26,9 +27,9 @@ export const styles = StyleSheet.create({
   },
   headerTitle: {
     flex: 1,
-    fontSize: 22,
+    fontSize: FONTS.h3, // Antes: 22
     fontWeight: 'bold',
-    color: 'white',
+    color: COLORS.backgroundLight, // Antes: 'white'
     textAlign: 'center',
     marginRight: 35, 
   },
@@ -37,20 +38,20 @@ export const styles = StyleSheet.create({
     paddingBottom: 40,
   },
   card: {
-    backgroundColor: '#F5F5F5',
+    backgroundColor: COLORS.backgroundGray, // Antes: '#F5F5F5'
     borderRadius: 20,
     padding: 20,
     marginBottom: 20,
   },
   cardTitle: {
-    fontSize: 16,
+    fontSize: FONTS.bodyLarge, // Antes: 16
     fontWeight: 'bold',
-    color: '#333333',
+    color: COLORS.textMain, // Antes: '#333333'
     marginBottom: 5,
   },
   cardSubtitle: {
-    fontSize: 14,
-    color: '#8E8E93',
+    fontSize: FONTS.small, // Antes: 14
+    color: COLORS.textMuted, // Antes: '#8E8E93'
   },
   // Elementos de la lista de productos
   itemRow: {
@@ -59,8 +60,8 @@ export const styles = StyleSheet.create({
     marginBottom: 15,
   },
   itemName: {
-    fontSize: 15,
-    color: '#8E8E93',
+    fontSize: FONTS.body, // Antes: 15
+    color: COLORS.textMuted, // Antes: '#8E8E93'
     flex: 1,
   },
   itemPriceContainer: {
@@ -69,12 +70,12 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   itemQty: {
-    fontSize: 15,
-    color: '#8E8E93',
+    fontSize: FONTS.body, // Antes: 15
+    color: COLORS.textMuted, // Antes: '#8E8E93'
   },
   itemPrice: {
-    fontSize: 15,
-    color: '#8E8E93',
+    fontSize: FONTS.body, // Antes: 15
+    color: COLORS.textMuted, // Antes: '#8E8E93'
     fontWeight: '500',
   },
   // Separador Naranja con puntitos
@@ -87,12 +88,12 @@ export const styles = StyleSheet.create({
     width: 4,
     height: 4,
     borderRadius: 2,
-    backgroundColor: '#E76F41',
+    backgroundColor: COLORS.primary, // Antes: '#E76F41'
   },
   line: {
     flex: 1,
     height: 1,
-    backgroundColor: '#E76F41',
+    backgroundColor: COLORS.primary, // Antes: '#E76F41'
   },
   // Fila Total
   totalRow: {
@@ -101,14 +102,14 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
   totalLabel: {
-    fontSize: 16,
+    fontSize: FONTS.bodyLarge, // Antes: 16
     fontWeight: 'bold',
-    color: '#333333',
+    color: COLORS.textMain, // Antes: '#333333'
   },
   totalValue: {
-    fontSize: 18,
+    fontSize: FONTS.h4, // Antes: 18
     fontWeight: 'bold',
-    color: '#333333',
+    color: COLORS.textMain, // Antes: '#333333'
   },
   // Filas de Información General
   infoRow: {
@@ -117,12 +118,12 @@ export const styles = StyleSheet.create({
     marginBottom: 15,
   },
   infoLabel: {
-    fontSize: 15,
+    fontSize: FONTS.body, // Antes: 15
     fontWeight: 'bold',
-    color: '#333333',
+    color: COLORS.textMain, // Antes: '#333333'
   },
   infoValue: {
-    fontSize: 15,
-    color: '#8E8E93',
+    fontSize: FONTS.body, // Antes: 15
+    color: COLORS.textMuted, // Antes: '#8E8E93'
   },
 });

@@ -1,8 +1,10 @@
 import { StyleSheet } from "react-native";
+// Importamos COLORS y ahora también FONTS
+import { COLORS, FONTS } from "../../constants/theme"; 
 
 export const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#E76F41",
+    backgroundColor: COLORS.primary,
     paddingHorizontal: 20,
     paddingTop: 50,
     paddingBottom: 25,
@@ -18,13 +20,13 @@ export const styles = StyleSheet.create({
     flexDirection: "column",
   },
   titleText: {
-    fontSize: 32,
+    fontSize: FONTS.h1, // <-- ANTES: 32
     fontWeight: "bold",
-    color: "#4B2610",
+    color: COLORS.secondary,
   },
   addressText: {
-    fontSize: 16,
-    color: "#4B2610",
+    fontSize: FONTS.bodyLarge, // <-- ANTES: 16
+    color: COLORS.secondary,
     marginTop: 4,
   },
   logoAndCartContainer: {
@@ -45,7 +47,7 @@ export const styles = StyleSheet.create({
     alignItems: "center",
   },
   searchBar: {
-    backgroundColor: "white",
+    backgroundColor: COLORS.backgroundLight,
     flexDirection: "row",
     alignItems: "center",
     flex: 1,
@@ -59,11 +61,11 @@ export const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    fontSize: 16,
-    color: "black",
+    fontSize: FONTS.bodyLarge, // <-- ANTES: 16
+    color: COLORS.textMain,
   },
   favoritesButton: {
-    backgroundColor: "white",
+    backgroundColor: COLORS.backgroundLight,
     width: 50,
     height: 50,
     borderRadius: 15,

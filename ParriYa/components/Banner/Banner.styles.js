@@ -1,8 +1,9 @@
 import { StyleSheet } from 'react-native';
+import { COLORS, FONTS } from '../../constants/theme';
 
 export const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#C84B22', 
+    backgroundColor: COLORS.primaryDark, // Antes: '#C84B22'
     marginHorizontal: 20,
     marginTop: 20,
     borderRadius: 25,
@@ -11,8 +12,8 @@ export const styles = StyleSheet.create({
     overflow: 'hidden', 
   },
   titleSection: {
-    fontSize: 14,
-    color: '#FAD3C3', 
+    fontSize: FONTS.small, // Antes: 14
+    color: COLORS.primaryLight, // Antes: '#FAD3C3'
     fontWeight: '600',
     marginBottom: 5,
   },
@@ -26,13 +27,13 @@ export const styles = StyleSheet.create({
     paddingRight: 10,
   },
   promoText: {
-    fontSize: 22,
+    fontSize: FONTS.h3, // Antes: 22
     fontWeight: 'bold',
-    color: 'white',
+    color: COLORS.backgroundLight, // Antes: 'white'
     lineHeight: 28,
   },
   highlightText: {
-    color: '#FFE2B7', 
+    color: COLORS.highlight, // Antes: '#FFE2B7'
   },
   imageContainer: {
     width: 120,
@@ -48,7 +49,7 @@ export const styles = StyleSheet.create({
     position: 'absolute',
     left: -10,
     top: '55%',
-    backgroundColor: 'white',
+    backgroundColor: COLORS.backgroundLight, // Antes: 'white'
     borderRadius: 15,
     width: 30,
     height: 30,
@@ -64,7 +65,7 @@ export const styles = StyleSheet.create({
     position: 'absolute',
     right: -10,
     top: '55%',
-    backgroundColor: 'white',
+    backgroundColor: COLORS.backgroundLight, // Antes: 'white'
     borderRadius: 15,
     width: 30,
     height: 30,
@@ -86,11 +87,11 @@ export const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: 'rgba(255, 255, 255, 0.4)',
+    backgroundColor: 'rgba(255, 255, 255, 0.4)', // Fijo por la transparencia
     marginHorizontal: 3,
   },
   activeDot: {
-    backgroundColor: '#FFE2B7', 
+    backgroundColor: COLORS.highlight, // Antes: '#FFE2B7'
     width: 12, 
   },
 });

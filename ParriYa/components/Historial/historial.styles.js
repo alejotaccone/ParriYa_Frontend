@@ -1,13 +1,14 @@
 import { StyleSheet } from 'react-native';
+import { COLORS, FONTS } from '../../constants/theme';
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: COLORS.backgroundLight, // Antes: '#FFFFFF'
   },
   // Cabecera calcada de tus otras pantallas
   header: {
-    backgroundColor: '#E76F41',
+    backgroundColor: COLORS.primary, // Antes: '#E76F41'
     paddingTop: 50,
     paddingBottom: 20,
     paddingHorizontal: 20,
@@ -27,15 +28,15 @@ export const styles = StyleSheet.create({
   },
   headerTitle: {
     flex: 1,
-    fontSize: 22,
+    fontSize: FONTS.h3, // Antes: 22
     fontWeight: 'bold',
-    color: 'white',
+    color: COLORS.backgroundLight, // Antes: 'white'
     textAlign: 'center',
     marginRight: 35, // Centrado perfecto compensando la flecha
   },
   // Píldora gris superior
   recientesPill: {
-    backgroundColor: '#F5F5F5',
+    backgroundColor: COLORS.backgroundGray, // Antes: '#F5F5F5'
     marginHorizontal: 20,
     marginTop: 20,
     marginBottom: 10,
@@ -44,12 +45,12 @@ export const styles = StyleSheet.create({
     borderRadius: 20,
   },
   recientesText: {
-    fontSize: 15,
-    color: '#8E8E93',
+    fontSize: FONTS.body, // Antes: 15
+    color: COLORS.textMuted, // Antes: '#8E8E93'
   },
   recientesBold: {
     fontWeight: 'bold',
-    color: '#333333',
+    color: COLORS.textMain, // Antes: '#333333'
   },
   // Contenedor de la lista
   listContent: {
@@ -68,18 +69,18 @@ export const styles = StyleSheet.create({
     marginTop: 10,
   },
   dateText: {
-    fontSize: 13,
-    color: '#8E8E93',
+    fontSize: FONTS.small, // Antes: 13
+    color: COLORS.textMuted, // Antes: '#8E8E93'
     fontWeight: '500',
   },
   montoLabel: {
-    fontSize: 13,
-    color: '#8E8E93',
+    fontSize: FONTS.small, // Antes: 13
+    color: COLORS.textMuted, // Antes: '#8E8E93'
     fontWeight: '500',
   },
   // Tarjeta del pedido individual
   pedidoCard: {
-    backgroundColor: '#F5F5F5',
+    backgroundColor: COLORS.backgroundGray, // Antes: '#F5F5F5'
     borderRadius: 15,
     padding: 20,
     flexDirection: 'row',
@@ -90,18 +91,18 @@ export const styles = StyleSheet.create({
     flex: 1,
   },
   pedidoTitle: {
-    fontSize: 16,
+    fontSize: FONTS.bodyLarge, // Antes: 16
     fontWeight: 'bold',
-    color: '#333333',
+    color: COLORS.textMain, // Antes: '#333333'
     marginBottom: 4,
   },
   productosText: {
-    fontSize: 13,
-    color: '#8E8E93',
+    fontSize: FONTS.small, // Antes: 13
+    color: COLORS.textMuted, // Antes: '#8E8E93'
   },
   totalText: {
-    fontSize: 18,
+    fontSize: FONTS.h4, // Antes: 18
     fontWeight: 'bold',
-    color: '#333333',
+    color: COLORS.textMain, // Antes: '#333333'
   },
 });

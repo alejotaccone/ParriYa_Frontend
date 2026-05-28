@@ -1,15 +1,16 @@
 import { StyleSheet } from "react-native";
+import { COLORS, FONTS } from "../../constants/theme"; 
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#1C1C1E", 
+    backgroundColor: COLORS.backgroundDark,
   },
   scrollContent: {
     flexGrow: 1,
   },
   headerBackground: {
-    backgroundColor: "#B84521", 
+    backgroundColor: "#B84521", // Color específico de esta cabecera
     height: 260,
     paddingTop: 50,
     paddingHorizontal: 25,
@@ -35,7 +36,7 @@ export const styles = StyleSheet.create({
   },
   contentCard: {
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: COLORS.backgroundLight,
     borderTopLeftRadius: 35,
     borderTopRightRadius: 35,
     borderBottomLeftRadius: 35,
@@ -55,29 +56,29 @@ export const styles = StyleSheet.create({
     position: "absolute",
     top: 0,
     left: 15,
-    backgroundColor: "white",
+    backgroundColor: COLORS.backgroundLight,
     paddingHorizontal: 5,
-    fontSize: 12,
-    color: "#8E8E93",
+    fontSize: FONTS.xSmall, // ANTES: 12
+    color: COLORS.textMuted,
     zIndex: 10,
     fontWeight: "500",
   },
   inputContainer: {
     borderWidth: 1,
-    borderColor: "#E5E5EA",
+    borderColor: COLORS.borderMedium,
     borderRadius: 15,
     paddingHorizontal: 15,
     paddingVertical: 12,
-    backgroundColor: "white",
+    backgroundColor: COLORS.backgroundLight,
   },
   textInput: {
-    fontSize: 15,
+    fontSize: FONTS.body, // ANTES: 15
     fontWeight: "600",
-    color: "#333333",
+    color: COLORS.textMain,
   },
   divider: {
     height: 1,
-    backgroundColor: "#F0F0F0",
+    backgroundColor: COLORS.borderLight,
     marginVertical: 15,
   },
   menuRow: {
@@ -87,14 +88,14 @@ export const styles = StyleSheet.create({
     paddingVertical: 15,
   },
   menuRowText: {
-    fontSize: 15,
-    color: "#8E8E93",
+    fontSize: FONTS.body, // ANTES: 15
+    color: COLORS.textMuted,
     fontWeight: "600",
   },
   logoutButton: {
     flexDirection: "row",
     borderWidth: 1.5,
-    borderColor: "#E76F41",
+    borderColor: COLORS.primary,
     borderRadius: 15,
     paddingVertical: 12,
     alignItems: "center",
@@ -104,8 +105,8 @@ export const styles = StyleSheet.create({
     alignSelf: "center",
   },
   logoutButtonText: {
-    color: "#E76F41",
-    fontSize: 16,
+    color: COLORS.primary,
+    fontSize: FONTS.bodyLarge, // ANTES: 16
     fontWeight: "bold",
   },
 });

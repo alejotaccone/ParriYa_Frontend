@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import { COLORS, FONTS } from '../../constants/theme';
 
 export const styles = StyleSheet.create({
   container: {
@@ -6,9 +7,9 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   sectionTitle: {
-    fontSize: 16,
+    fontSize: FONTS.bodyLarge, // Antes: 16
     fontWeight: 'bold',
-    color: '#8E8E93', 
+    color: COLORS.textMuted, // Antes: '#8E8E93'
     letterSpacing: 0.5,
     marginBottom: 15,
   },
@@ -23,7 +24,7 @@ export const styles = StyleSheet.create({
     width: 75,
     height: 75,
     borderRadius: 37.5, 
-    backgroundColor: 'white',
+    backgroundColor: COLORS.backgroundLight, // Antes: 'white'
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
@@ -39,8 +40,8 @@ export const styles = StyleSheet.create({
     height: '70%',
   },
   itemText: {
-    fontSize: 14,
+    fontSize: FONTS.small, // Antes: 14
     fontWeight: '500',
-    color: '#333333',
+    color: COLORS.textMain, // Antes: '#333333'
   },
 });

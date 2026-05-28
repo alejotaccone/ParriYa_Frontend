@@ -1,12 +1,13 @@
 import { StyleSheet } from "react-native";
+import { COLORS, FONTS } from "../../constants/theme";
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: COLORS.backgroundLight, // Antes: "#FFFFFF"
   },
   imageContainer: {
-    backgroundColor: "#F5F5F5",
+    backgroundColor: COLORS.backgroundGray, // Antes: "#F5F5F5"
     height: 320,
     justifyContent: "center",
     alignItems: "center",
@@ -19,7 +20,7 @@ export const styles = StyleSheet.create({
     top: 50, 
     left: 20,
     zIndex: 10,
-    backgroundColor: "white",
+    backgroundColor: COLORS.backgroundLight, // Antes: "white"
     padding: 10,
     borderRadius: 50,
     shadowColor: "#000",
@@ -43,24 +44,24 @@ export const styles = StyleSheet.create({
     marginBottom: 8,
   },
   title: {
-    fontSize: 26,
+    fontSize: FONTS.h2, // Antes: 26
     fontWeight: "bold",
-    color: "#333333",
+    color: COLORS.textMain, // Antes: "#333333"
   },
   subtitle: {
-    fontSize: 14,
-    color: "#777777",
+    fontSize: FONTS.small, // Antes: 14
+    color: COLORS.textSecondary, // Antes: "#777777"
     marginBottom: 20,
   },
   descriptionTitle: {
-    fontSize: 16,
+    fontSize: FONTS.bodyLarge, // Antes: 16
     fontWeight: "bold",
-    color: "#333333",
+    color: COLORS.textMain, // Antes: "#333333"
     marginBottom: 8,
   },
   descriptionText: {
-    fontSize: 15,
-    color: "#555555",
+    fontSize: FONTS.body, // Antes: 15
+    color: COLORS.textDescription, // Antes: "#555555"
     lineHeight: 22,
   },
   footer: {
@@ -68,8 +69,8 @@ export const styles = StyleSheet.create({
     paddingBottom: 40,
     paddingTop: 20,
     borderTopWidth: 1,
-    borderTopColor: "#EEEEEE",
-    backgroundColor: "white",
+    borderTopColor: COLORS.borderLight, // Antes: "#EEEEEE"
+    backgroundColor: COLORS.backgroundLight, // Antes: "white"
   },
   priceRow: {
     flexDirection: "row",
@@ -78,31 +79,31 @@ export const styles = StyleSheet.create({
     marginBottom: 20,
   },
   priceLabel: {
-    fontSize: 14,
-    color: "#777777",
+    fontSize: FONTS.small, // Antes: 14
+    color: COLORS.textSecondary, // Antes: "#777777"
     fontWeight: "600",
   },
   priceValue: {
-    fontSize: 28,
+    fontSize: FONTS.price, // Antes: 28
     fontWeight: "bold",
-    color: "#4B2610", 
+    color: COLORS.secondary, // Antes: "#4B2610"
   },
   // Botón Agregar
   addButton: {
-    backgroundColor: "#4B2610",
+    backgroundColor: COLORS.secondary, // Antes: "#4B2610"
     borderRadius: 15,
     paddingVertical: 15,
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#4B2610",
+    shadowColor: COLORS.secondary, // Antes: "#4B2610"
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 5,
     elevation: 5,
   },
   addButtonText: {
-    color: "white",
-    fontSize: 18,
+    color: COLORS.backgroundLight, // Antes: "white"
+    fontSize: FONTS.h4, // Antes: 18
     fontWeight: "bold",
   },
   selectorContainer: {
@@ -123,13 +124,13 @@ export const styles = StyleSheet.create({
     zIndex: 10,
   },
   selectorLabel: {
-    fontSize: 14,
+    fontSize: FONTS.small, // Antes: 14
     fontWeight: "600",
-    color: "#333333",
+    color: COLORS.textMain, // Antes: "#333333"
     marginBottom: 8,
   },
   dropdownSimulado: {
-    backgroundColor: "#04332D", // Verde oscuro
+    backgroundColor: COLORS.dropdownDark, // Antes: "#04332D"
     borderRadius: 25, 
     paddingVertical: 12,
     paddingHorizontal: 20,
@@ -145,18 +146,18 @@ export const styles = StyleSheet.create({
 
   dropdownAbierto: {
     borderWidth: 1,
-    borderColor: "#04332D",
-    backgroundColor: "#04332D",
+    borderColor: COLORS.dropdownDark, // Antes: "#04332D"
+    backgroundColor: COLORS.dropdownDark, // Antes: "#04332D"
     borderRadius: 20,
   },
   dropdownText: {
-    color: "white",
-    fontSize: 15,
+    color: COLORS.backgroundLight, // Antes: "white"
+    fontSize: FONTS.body, // Antes: 15
     fontWeight: "500",
   },
 
   dropdownOptionsContainer: {
-    backgroundColor: "#04332D",
+    backgroundColor: COLORS.dropdownDark, // Antes: "#04332D"
     borderRadius: 20,
     marginTop: 8,
     paddingVertical: 10,
@@ -171,8 +172,8 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   optionText: {
-    color: "white",
-    fontSize: 16,
+    color: COLORS.backgroundLight, // Antes: "white"
+    fontSize: FONTS.bodyLarge, // Antes: 16
     fontWeight: "400",
   },
 });

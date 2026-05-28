@@ -22,7 +22,6 @@ export default function RootLayout() {
         <Stack.Screen name="detalle_pedido" options={{ headerShown: false }} />
         <Stack.Screen name="detalle" options={{ headerShown: false }} />
         <Stack.Screen name="pago" options={{ headerShown: false }} />
-        <Stack.Screen name="index.jsx" options={{ headerShown: false }} />
 
 
 

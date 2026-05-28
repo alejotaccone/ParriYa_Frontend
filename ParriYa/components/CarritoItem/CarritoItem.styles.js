@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import { COLORS, FONTS } from "../../constants/theme";
 
 export const styles = StyleSheet.create({
   rowContainer: {
@@ -10,7 +11,7 @@ export const styles = StyleSheet.create({
   cardContainer: {
     flex: 1,
     flexDirection: "row",
-    backgroundColor: "white",
+    backgroundColor: COLORS.backgroundLight, // Antes: "white"
     borderRadius: 20,
     padding: 12,
     alignItems: "center",
@@ -24,7 +25,7 @@ export const styles = StyleSheet.create({
     width: 70,
     height: 70,
     borderRadius: 35,
-    backgroundColor: "#FEEFEA", 
+    backgroundColor: "#FEEFEA", // Lo dejamos fijo por ser un fondo muy específico
     justifyContent: "center",
     alignItems: "center",
     marginRight: 12,
@@ -38,25 +39,25 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
   },
   price: {
-    fontSize: 13,
+    fontSize: FONTS.small, // Antes: 13 (lo unificamos a la escala general)
     fontWeight: "bold",
-    color: "#E76F41",
+    color: COLORS.primary, // Antes: "#E76F41"
   },
   name: {
-    fontSize: 15,
+    fontSize: FONTS.body, // Antes: 15
     fontWeight: "bold",
-    color: "#333333",
+    color: COLORS.textMain, // Antes: "#333333"
     marginTop: 2,
   },
   description: {
-    fontSize: 12,
-    color: "#8E8E93",
+    fontSize: FONTS.xSmall, // Antes: 12
+    color: COLORS.textMuted, // Antes: "#8E8E93"
     marginTop: 1,
   },
   counterContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#F5F5F5",
+    backgroundColor: COLORS.backgroundGray, // Antes: "#F5F5F5"
     borderRadius: 15,
     paddingHorizontal: 8,
     paddingVertical: 4,
@@ -66,25 +67,25 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 5,
   },
   counterButtonText: {
-    fontSize: 16,
+    fontSize: FONTS.bodyLarge, // Antes: 16
     fontWeight: "bold",
-    color: "#E76F41",
+    color: COLORS.primary, // Antes: "#E76F41"
   },
   counterValue: {
-    fontSize: 14,
+    fontSize: FONTS.small, // Antes: 14
     fontWeight: "bold",
-    color: "#333333",
+    color: COLORS.textMain, // Antes: "#333333"
     paddingHorizontal: 8,
   },
   deleteButton: {
-    backgroundColor: "#E76F41",
+    backgroundColor: COLORS.primary, // Antes: "#E76F41"
     width: 65,
     height: "100%",
     borderRadius: 20,
     justifyContent: "center",
     alignItems: "center",
     marginLeft: 10,
-    shadowColor: "#E76F41",
+    shadowColor: COLORS.primary, // Antes: "#E76F41"
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,

@@ -1,48 +1,49 @@
 import { StyleSheet } from "react-native";
+import { COLORS, FONTS } from "../../constants/theme"; // Ajustá la ruta según en qué carpeta esté
 
 export const styles = StyleSheet.create({
   card: {
-    backgroundColor: "white",
-    borderRadius: 15,
-    padding: 15,
-    margin: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    backgroundColor: COLORS.backgroundLight, // Antes: "white"[cite: 21]
+    borderRadius: 15, //[cite: 21]
+    padding: 15, //[cite: 21]
+    margin: 5, //[cite: 21]
+    shadowColor: "#000", //[cite: 21]
+    shadowOffset: { width: 0, height: 2 }, //[cite: 21]
+    shadowOpacity: 0.1, //[cite: 21]
+    shadowRadius: 4, //[cite: 21]
+    elevation: 3, //[cite: 21]
   },
   // Estilo por defecto para la grilla (ocupa el espacio disponible)
   cardGrid: {
-    flex: 1,
+    flex: 1, //[cite: 21]
   },
   // Estilo para la Home (ancho fijo para el carrusel horizontal)
   cardHome: {
-    width: 160,
-    marginRight: 15, // Espacio entre tarjetas en el carrusel
+    width: 160, //[cite: 21]
+    marginRight: 15, // Espacio entre tarjetas en el carrusel[cite: 21]
   },
   imageContainer: {
-    height: 100,
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 10,
+    height: 100, //[cite: 21]
+    alignItems: "center", //[cite: 21]
+    justifyContent: "center", //[cite: 21]
+    marginBottom: 10, //[cite: 21]
   },
   image: {
-    width: "100%",
-    height: "100%",
+    width: "100%", //[cite: 21]
+    height: "100%", //[cite: 21]
   },
   title: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#333",
+    fontSize: FONTS.bodyLarge, // Antes: 16[cite: 21]
+    fontWeight: "bold", //[cite: 21]
+    color: COLORS.textMain, // Antes: "#333"[cite: 21]
   },
   subtitle: {
-    fontSize: 12,
-    color: "#666",
-    marginTop: 2,
-    marginBottom: 10,
+    fontSize: FONTS.xSmall, // Antes: 12[cite: 21]
+    color: COLORS.textSecondary, // Antes: "#666" (Unificado al gris de las descripciones)[cite: 21]
+    marginTop: 2, //[cite: 21]
+    marginBottom: 10, //[cite: 21]
   },
   heartIcon: {
-    alignSelf: "flex-end",
+    alignSelf: "flex-end", //[cite: 21]
   },
 });
