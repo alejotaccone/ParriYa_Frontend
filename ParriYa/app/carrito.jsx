@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   View,
   Text,
@@ -10,57 +10,24 @@ import {
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import CarritoItem from "../components/CarritoItem/CarritoItem";
+import { PRODUCTOS } from "../constants/mocks";
+import { useCart } from "../components/CartContext";
 import { styles } from "../components/Carrito/carrito.styles";
 
-// Mocks iniciales basados en tu captura
-const PRODUCTOS_INICIALES = [
-  {
-    id: "1",
-    nombre: "Chorizo",
-    desc: "Chorizo puro cerdo",
-    precio: 5000,
-    image: require("./../assets/images/prod_chori.png"),
-  },
-  {
-    id: "2",
-    nombre: "Lomo vacuno",
-    desc: "Punto: Jugoso",
-    precio: 20000,
-    image: require("./../assets/images/prod_lomo.png"),
-  },
-];
-
-const SUGERENCIAS_DATA = [
-  {
-    id: "10",
-    nombre: "Coca-Cola 1.5lt",
-    image: require("./../assets/images/prod_coca.png"),
-  },
-  {
-    id: "11",
-    nombre: "Coca-Cola Zero 1.5lt",
-    image: require("./../assets/images/prod_cocazero.png"),
-  },
-  {
-    id: "12",
-    nombre: "Sprite 1.5lt",
-    image: require("./../assets/images/prod_sprite.png"),
-  },
-];
+const SUGERENCIAS_DATA = PRODUCTOS.filter((p) => ['10', '11', '12'].includes(p.id)).map((p) => ({
+  id: p.id,
+  nombre: p.nombre,
+  image: p.img_url,
+}));
 
 export default function CarritoScreen() {
   const router = useRouter();
-  const [productos, setProductos] = useState(PRODUCTOS_INICIALES);
+  const { cartItems, removeFromCart, updateQuantity } = useCart();
 
   const tarifaServicio = 3000;
 
-  const eliminarProducto = (id) => {
-    setProductos(productos.filter((p) => p.id !== id));
-  };
-
-  const subtotalProductos = productos.reduce((sum, p) => sum + p.precio, 0);
-  const totalFinal =
-    subtotalProductos > 0 ? subtotalProductos + tarifaServicio : 0;
+  const subtotalProductos = cartItems.reduce((sum, item) => sum + item.precio * item.cantidad, 0);
+  const totalFinal = subtotalProductos > 0 ? subtotalProductos + tarifaServicio : 0;
 
   const renderSugerencia = ({ item }) => (
     <TouchableOpacity style={styles.suggestionCard} activeOpacity={0.8}>
@@ -104,12 +71,14 @@ export default function CarritoScreen() {
 
         {/* Lista de Productos Agregados */}
         <View style={styles.productsList}>
-          {productos.length > 0 ? (
-            productos.map((item) => (
+          {cartItems.length > 0 ? (
+            cartItems.map((item) => (
               <CarritoItem
                 key={item.id}
                 item={item}
-                onRemove={eliminarProducto}
+                onRemove={removeFromCart}
+                onIncrement={() => updateQuantity(item.id, item.cantidad + 1)}
+                onDecrement={() => updateQuantity(item.id, item.cantidad - 1)}
               />
             ))
           ) : (

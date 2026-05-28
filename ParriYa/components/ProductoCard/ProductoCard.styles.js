@@ -1,5 +1,7 @@
 import { StyleSheet } from "react-native";
-import { COLORS, FONTS } from "../../constants/theme"; // Ajustá la ruta según en qué carpeta esté
+import { COLORS } from "../../constants/colors";
+import { FONTS } from "../../constants/fonts";
+import { SIZES } from "../../constants/sizes";
 
 export const styles = StyleSheet.create({
   card: {

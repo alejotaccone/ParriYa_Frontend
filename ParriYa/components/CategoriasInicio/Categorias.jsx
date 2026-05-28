@@ -1,15 +1,14 @@
 import React from 'react';
 import { View, Text, FlatList, Image, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
+import { CATEGORIAS } from '../../constants/mocks';
 import { styles } from './Categorias.styles';
 
-const CATEGORIAS_DATA = [
-  { id: '1', nombre: 'Carnes', image: require('../../assets/images/cat_carnes.png') },
-  { id: '2', nombre: 'Sandwiches', image: require('../../assets/images/cat_sandwiches.png') },
-  { id: '3', nombre: 'Pastas', image: require('../../assets/images/cat_pastas.png') },
-  { id: '4', nombre: 'Guarniciones', image: require('../../assets/images/cat_guarniciones.png') },
-  { id: '5', nombre: 'Bebidas', image: require('../../assets/images/cat_carnes.png') }, // Puedes repetir la imagen temporalmente para probar
-];
+const CATEGORIAS_DATA = CATEGORIAS.map(c => ({
+  id: c.id,
+  nombre: c.nombre,
+  image: c.img_url,
+}));
 
 const Categorias = () => {
   const router = useRouter(); 

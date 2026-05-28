@@ -1,5 +1,9 @@
 import { StyleSheet } from "react-native";
-import { COLORS, FONTS } from "../../constants/theme";
+import { COLORS } from "../../constants/colors";
+import { FONTS } from "../../constants/fonts";
+import { SIZES } from "../../constants/sizes";
+
+
 
 export const styles = StyleSheet.create({
   // --- COMPARTIDO: PANTALLAS DE CONTRASEÑA ---

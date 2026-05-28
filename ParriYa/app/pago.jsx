@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { PRODUCTOS } from '../constants/mocks';
 import { styles } from '../components/Pago/pago.styles';
 
-const SUGERENCIAS_MOCK = [
-  { id: '1', nombre: 'Lomo a la parrilla', image: require('../assets/images/prod_lomo.png') },
-  { id: '2', nombre: 'Tira de asado', image: require('../assets/images/prod_lomo.png') }, 
-  { id: '3', nombre: 'Papas fritas', image: require('../assets/images/prod_papasfritas.png') },
-];
+const SUGERENCIAS_MOCK = PRODUCTOS.slice(0, 3).map(p => ({
+  id: p.id,
+  nombre: p.nombre,
+  image: p.img_url,
+}));
 
 export default function PagoScreen() {
   const router = useRouter();

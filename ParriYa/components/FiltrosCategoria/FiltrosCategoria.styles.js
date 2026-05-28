@@ -1,6 +1,7 @@
 import { StyleSheet } from 'react-native';
-// Asegurate de que la ruta de importación coincida con tu estructura de carpetas
-import { COLORS, FONTS } from '../../constants/theme'; 
+import { COLORS } from "../../constants/colors";
+import { FONTS } from "../../constants/fonts";
+import { SIZES } from "../../constants/sizes";
 
 export const styles = StyleSheet.create({
   filtersContainer: {

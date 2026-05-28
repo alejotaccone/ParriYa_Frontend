@@ -3,18 +3,22 @@ import { View, Text, Image, TouchableOpacity, ScrollView } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import ContadorCantidad from "../components/Contador/ContadorCantidad";
+import { PRODUCTOS } from "../constants/mocks";
+import { useCart } from "../components/CartContext";
 import { styles } from "../components/Detalle/detalle.styles";
 
-const DETALLE_PRODUCTOS = {
-  1: {
-    id: "1",
-    nombre: "Lomo vacuno a la parrilla",
-    precio: 20000,
-    image: require("../assets/images/prod_lomo.png"),
-    descripcionLarga:
-      "Corte premium de lomo, tierno y jugoso, cocinado a la parrilla en su punto justo para resaltar todo su sabor natural. Sellado a fuego intenso para lograr una textura dorada por fuera y suave por dentro, acompañado con un delicado toque de sal y especias.",
-  },
-};
+const DETALLE_PRODUCTOS = Object.fromEntries(
+  PRODUCTOS.map(p => [
+    p.id,
+    {
+      id: p.id,
+      nombre: p.nombre,
+      precio: p.precio,
+      image: p.img_url,
+      descripcionLarga: p.descripcion,
+    }
+  ])
+);
 
 export default function DetalleScreen() {
   const router = useRouter();
@@ -22,16 +26,22 @@ export default function DetalleScreen() {
   const producto = DETALLE_PRODUCTOS[idProducto] || DETALLE_PRODUCTOS["1"];
 
   const [cantidad, setCantidad] = useState(1);
-  const [puntoSeleccionado, setPuntoSeleccionado] = useState("Jugoso");
-  const [menuAbierto, setMenuAbierto] = useState(false); // Estado para abrir/cerrar la lista
-
-  const puntosDisponibles = ["Jugoso", "A punto", "Cocido"];
+  const { addToCart } = useCart();
 
   const precioTotal = producto.precio * cantidad;
 
-  const seleccionarPunto = (punto) => {
-    setPuntoSeleccionado(punto);
-    setMenuAbierto(false); // Cierra la lista después de elegir
+  const agregarAlCarrito = () => {
+    addToCart(
+      {
+        id: producto.id,
+        nombre: producto.nombre,
+        descripcion: producto.descripcionLarga,
+        precio: producto.precio,
+        img_url: producto.image,
+      },
+      cantidad
+    );
+    router.replace('/(tabs)/categoria');
   };
 
   return (
@@ -65,65 +75,21 @@ export default function DetalleScreen() {
             {producto.descripcionLarga}
           </Text>
 
-          {/* SELECTORES INFERIORES */}
-          <View style={styles.selectorContainer}>
-            {/* Dropdown Desplegable Real */}
-            <View style={styles.pickerWrapper}>
-              <Text style={styles.selectorLabel}>
-                Elija el punto de la carne
-              </Text>
-
-              {/* Botón Principal (Cambia de estilo según si está abierto o cerrado) */}
-              <TouchableOpacity
-                style={[
-                  styles.dropdownSimulado,
-                  menuAbierto && styles.dropdownAbierto,
-                ]}
-                activeOpacity={0.9}
-                onPress={() => setMenuAbierto(!menuAbierto)}
-              >
-                <Text style={styles.dropdownText}>
-                  {menuAbierto ? "Seleccione una opcion" : puntoSeleccionado}
-                </Text>
-                <Ionicons
-                  name={menuAbierto ? "chevron-up" : "chevron-down"}
-                  size={18}
-                  color="white"
-                />
-              </TouchableOpacity>
-
-              {/* LISTA DESPLEGABLE  */}
-              {menuAbierto && (
-                <View style={styles.dropdownOptionsContainer}>
-                  {puntosDisponibles.map((punto, index) => (
-                    <TouchableOpacity
-                      key={index}
-                      style={styles.optionButton}
-                      onPress={() => seleccionarPunto(punto)}
-                    >
-                      <Text style={styles.optionText}>{punto}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              )}
-            </View>
-
-            {/* Contador de Cantidad */}
-            <View style={styles.cantidadWrapper}>
-              <Text style={styles.selectorLabel}>Cantidad</Text>
-              <ContadorCantidad
-                cantidad={cantidad}
-                onIncrement={() => setCantidad(cantidad + 1)}
-                onDecrement={() => cantidad > 1 && setCantidad(cantidad - 1)}
-              />
-            </View>
+          {/* Contador de Cantidad */}
+          <View style={styles.cantidadWrapper}>
+            <Text style={styles.selectorLabel}>Cantidad</Text>
+            <ContadorCantidad
+              cantidad={cantidad}
+              onIncrement={() => setCantidad(cantidad + 1)}
+              onDecrement={() => cantidad > 1 && setCantidad(cantidad - 1)}
+            />
           </View>
         </View>
       </ScrollView>
 
       {/* Botón Añadir al Carrito Fijo Abajo */}
       <View style={styles.footer}>
-        <TouchableOpacity style={styles.addButton} activeOpacity={0.8}>
+        <TouchableOpacity style={styles.addButton} activeOpacity={0.8} onPress={agregarAlCarrito}>
           <Text style={styles.addButtonText}>AÑADIR AL CARRITO</Text>
         </TouchableOpacity>
       </View>

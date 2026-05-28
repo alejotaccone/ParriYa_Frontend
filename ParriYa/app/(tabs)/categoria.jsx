@@ -2,18 +2,21 @@ import React, { useState } from 'react';
 import { View, FlatList } from 'react-native';
 import { useLocalSearchParams } from 'expo-router'; 
 import Header from '../../components/Header/Header';
-import FiltrosCategoria from '../../components/FiltrosCategoria/FiltrosCategoria'; // Importamos el nuevo componente
-import ProductoCard from '../../components/ProductoCard/ProductoCard'; // Importamos el nuevo componente
-import { styles } from '../../components/Categoria/categoria.styles'; // Importamos los estilos para esta pantalla
+import FiltrosCategoria from '../../components/FiltrosCategoria/FiltrosCategoria';
+import ProductoCard from '../../components/ProductoCard/ProductoCard';
+import { CATEGORIAS, PRODUCTOS } from '../../constants/mocks';
+import { styles } from '../../components/Categoria/categoria.styles';
 
-const FILTROS = ['Todo', 'Carnes', 'Sandwiches', 'Pastas', 'Guarniciones'];
+const FILTROS = ['Todo', ...CATEGORIAS.map(c => c.nombre)];
 
-const PRODUCTOS_DATA = [
-  { id: '1', nombre: 'Lomo', desc: 'A la parrilla', fav: true, image: require('../../assets/images/prod_lomo.png') },
-  { id: '2', nombre: 'Chorizo', desc: 'Puro cerdo', fav: false, image: require('../../assets/images/prod_lomo.png') },
-  { id: '3', nombre: 'Ribs de cerdo', desc: 'A la barbacoa', fav: false, image: require('../../assets/images/prod_asado.png') },
-  { id: '4', nombre: 'Pollo entero', desc: 'Con papas fritas', fav: true, image: require('../../assets/images/prod_asado.png') },
-];
+const PRODUCTOS_DATA = PRODUCTOS.map(p => ({
+  id: p.id,
+  nombre: p.nombre,
+  desc: p.descripcion,
+  fav: false,
+  image: p.img_url,
+  categoria_id: p.categoria_id,
+}));
 
 export default function CategoriaScreen() {
   const { categoriaSeleccionada } = useLocalSearchParams();

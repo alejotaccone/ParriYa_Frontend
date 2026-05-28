@@ -1,10 +1,15 @@
-import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, Image } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, Image, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from '../components/Auth/login.styles'; // Ajustá la ruta
 
 export default function RegistroScreen() {
   const router = useRouter();
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('');
+  const [telefono, setTelefono] = useState('');
 
   return (
     <View style={styles.mainContainer}>
@@ -17,7 +22,7 @@ export default function RegistroScreen() {
         <View style={styles.inputWrapper}>
           <Text style={styles.inputLabel}>Usuario</Text>
           <View style={styles.inputContainer}>
-            <TextInput style={styles.textInput} placeholder="usuario.123" placeholderTextColor="#8E8E93" />
+            <TextInput style={styles.textInput} placeholder="usuario.123" placeholderTextColor="#8E8E93" value={username} onChangeText={setUsername} />
           </View>
         </View>
 
@@ -25,7 +30,7 @@ export default function RegistroScreen() {
         <View style={styles.inputWrapper}>
           <Text style={styles.inputLabel}>Contraseña</Text>
           <View style={styles.inputContainer}>
-            <TextInput style={styles.textInput} secureTextEntry value="**************" />
+            <TextInput style={styles.textInput} secureTextEntry value={password} onChangeText={setPassword} />
           </View>
         </View>
 
@@ -33,7 +38,7 @@ export default function RegistroScreen() {
         <View style={styles.inputWrapper}>
           <Text style={styles.inputLabel}>Email</Text>
           <View style={styles.inputContainer}>
-            <TextInput style={styles.textInput} placeholder="enzoB@gmail.com" placeholderTextColor="#8E8E93" keyboardType="email-address" />
+            <TextInput style={styles.textInput} placeholder="enzoB@gmail.com" placeholderTextColor="#8E8E93" keyboardType="email-address" value={email} onChangeText={setEmail} />
           </View>
         </View>
 
@@ -41,13 +46,27 @@ export default function RegistroScreen() {
         <View style={styles.inputWrapper}>
           <Text style={styles.inputLabel}>Telefono</Text>
           <View style={styles.inputContainer}>
-            <TextInput style={styles.textInput} placeholder="+54 9 11 1122-3344" placeholderTextColor="#8E8E93" keyboardType="phone-pad" />
+            <TextInput style={styles.textInput} placeholder="+54 9 11 1122-3344" placeholderTextColor="#8E8E93" keyboardType="phone-pad" value={telefono} onChangeText={setTelefono} />
           </View>
         </View>
 
         <TouchableOpacity 
           style={styles.mainButton}
-          onPress={() => router.replace('/(tabs)')}
+          onPress={async () => {
+            if (!username || !password || !email || !telefono) {
+              Alert.alert('Completa los campos', 'Debes completar todos los datos para registrarte.');
+              return;
+            }
+
+            const user = { username, password, email, telefono };
+            try {
+              await AsyncStorage.setItem('registeredUser', JSON.stringify(user));
+              await AsyncStorage.setItem('activeUser', JSON.stringify(user));
+              router.replace('/(tabs)');
+            } catch (e) {
+              Alert.alert('Error', 'No se pudo guardar la cuenta. Intenta nuevamente.');
+            }
+          }}
         >
           <Text style={styles.mainButtonText}>Registrarse</Text>
         </TouchableOpacity>

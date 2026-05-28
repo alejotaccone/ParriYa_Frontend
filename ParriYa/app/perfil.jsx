@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -7,18 +7,41 @@ import {
   ScrollView,
 } from "react-native";
 import { useRouter } from "expo-router";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from "@expo/vector-icons";
 import { styles } from "../components/Perfil/perfil.styles";
 
 export default function PerfilScreen() {
   const router = useRouter();
+  const [usuario, setUsuario] = useState({
+    username: '',
+    email: '',
+    telefono: '',
+    direccion: 'No especificada',
+  });
 
-  const usuario = {
-    nombre: "Enzo Mussi",
-    email: "Enzo@gmail.com",
-    direccion: "Lima 757, C1073 Cdad. Autónoma de Buenos Aires",
-    telefono: "+54 9 11 1234-5678",
-  };
+  useEffect(() => {
+    async function loadUser() {
+      try {
+        const stored = await AsyncStorage.getItem('activeUser');
+        if (!stored) {
+          router.replace('/login');
+          return;
+        }
+        const savedUser = JSON.parse(stored);
+        setUsuario({
+          username: savedUser.username || '',
+          email: savedUser.email || '',
+          telefono: savedUser.telefono || '',
+          direccion: savedUser.direccion || 'No especificada',
+        });
+      } catch (e) {
+        router.replace('/login');
+      }
+    }
+
+    loadUser();
+  }, [router]);
 
   return (
     <View style={styles.container}>
@@ -60,7 +83,7 @@ export default function PerfilScreen() {
             <View style={styles.inputContainer}>
               <TextInput
                 style={styles.textInput}
-                value={usuario.nombre}
+                value={usuario.username}
                 editable={false}
               />
             </View>
@@ -126,10 +149,21 @@ export default function PerfilScreen() {
           </TouchableOpacity>
 
           {/* Botón Cerrar Sesión (Naranja) */}
-          <TouchableOpacity style={styles.logoutButton} activeOpacity={0.8}>
+          <TouchableOpacity
+            style={styles.logoutButton}
+            activeOpacity={0.8}
+            onPress={async () => {
+              try {
+                await AsyncStorage.removeItem('activeUser');
+              } catch (e) {
+                // ignore
+              }
+              router.replace('/login');
+            }}
+          >
             <Text style={styles.logoutButtonText}>Cerrar Sesion</Text>
             <Ionicons
-              name="log-out-outline"
+              name="log-out"
               size={22}
               color="#E76F41"
               style={{ marginLeft: 10 }}
