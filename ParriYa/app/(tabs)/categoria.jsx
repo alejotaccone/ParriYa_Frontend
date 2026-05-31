@@ -16,6 +16,7 @@ const PRODUCTOS_DATA = PRODUCTOS.map(p => ({
   fav: false,
   image: p.img_url,
   categoria_id: p.categoria_id,
+  precio: p.precio,
 }));
 
 export default function CategoriaScreen() {

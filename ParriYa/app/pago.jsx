@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Image } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, Image, Alert, Modal } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { PRODUCTOS } from '../constants/mocks';
+import { useCart } from '../components/CartContext';
 import { styles } from '../components/Pago/pago.styles';
 
 const SUGERENCIAS_MOCK = PRODUCTOS.slice(0, 3).map(p => ({
@@ -13,9 +14,39 @@ const SUGERENCIAS_MOCK = PRODUCTOS.slice(0, 3).map(p => ({
 
 export default function PagoScreen() {
   const router = useRouter();
-  
-  const [metodoPago, setMetodoPago] = useState('mercado_pago'); 
+  const { cartItems, clearCart } = useCart();
+  const [metodoPago, setMetodoPago] = useState('mercado_pago');
   const [guardarDatos, setGuardarDatos] = useState(true);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+
+  const tarifaServicio = 3000;
+  const subtotal = cartItems.reduce((sum, item) => sum + item.precio * item.cantidad, 0);
+  const total = subtotal > 0 ? subtotal + tarifaServicio : 0;
+
+  const handlePay = () => {
+    if (cartItems.length === 0) {
+      Alert.alert('Carrito vacío', 'No hay productos para pagar.');
+      return;
+    }
+
+    const orderPayload = {
+      metodoPago,
+      guardarDatos,
+      subtotal,
+      tarifaServicio,
+      total,
+      items: cartItems.map(item => ({
+        id: item.id,
+        nombre: item.nombre,
+        cantidad: item.cantidad,
+        precio: item.precio,
+      })),
+    };
+
+    console.log('Order payload:', orderPayload);
+    clearCart();
+    setShowConfirmation(true);
+  };
 
   return (
     <View style={styles.container}>
@@ -33,25 +64,22 @@ export default function PagoScreen() {
 
         {/* Sección Resumen */}
         <Text style={styles.sectionTitle}>Resumen</Text>
-        <View style={styles.resumenRow}>
-          <Text style={styles.resumenText}>Lomo vacuno</Text>
-          <View style={styles.resumenRight}>
-            <Text style={styles.resumenQty}>x1</Text>
-            <Text style={styles.resumenPrice}>$20000</Text>
-          </View>
-        </View>
-        <View style={styles.resumenRow}>
-          <Text style={styles.resumenText}>Chorizo</Text>
-          <View style={styles.resumenRight}>
-            <Text style={styles.resumenQty}>x1</Text>
-            <Text style={styles.resumenPrice}>$5000</Text>
-          </View>
-        </View>
-        <View style={styles.resumenRow}>
+        {cartItems.length === 0 ? (
+          <Text style={styles.resumenText}>Tu carrito está vacío.</Text>
+        ) : (
+          cartItems.map(item => (
+            <View key={item.id} style={styles.resumenRow}>
+              <Text style={styles.resumenText}>{item.nombre}</Text>
+              <View style={styles.resumenRight}>
+                <Text style={styles.resumenQty}>x{item.cantidad}</Text>
+                <Text style={styles.resumenPrice}>${(item.precio * item.cantidad).toLocaleString('es-AR')}</Text>
+              </View>
+            </View>
+          ))
+        )}
+        <View style={[styles.resumenRow, { marginTop: 20 }]}> 
           <Text style={styles.resumenText}>Tarifa de servicio</Text>
-          <View style={styles.resumenRight}>
-            <Text style={styles.resumenPrice}>$3000</Text>
-          </View>
+          <Text style={styles.resumenPrice}>${tarifaServicio.toLocaleString('es-AR')}</Text>
         </View>
 
         {/* Sección Métodos de Pago */}
@@ -114,10 +142,15 @@ export default function PagoScreen() {
         <Text style={styles.sectionTitle}>¿Te olvidaste algo?</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.suggestionsContainer}>
           {SUGERENCIAS_MOCK.map((item) => (
-            <View key={item.id} style={styles.suggestionCard}>
+            <TouchableOpacity
+              key={item.id}
+              style={styles.suggestionCard}
+              activeOpacity={0.8}
+              onPress={() => router.push({ pathname: '/detalle', params: { idProducto: item.id } })}
+            >
               <Image source={item.image} style={styles.suggestionImage} resizeMode="contain" />
               <Text style={styles.suggestionName} numberOfLines={1}>{item.nombre}</Text>
-            </View>
+            </TouchableOpacity>
           ))}
         </ScrollView>
 
@@ -128,14 +161,43 @@ export default function PagoScreen() {
         <View>
           <Text style={styles.footerLabel}>Total</Text>
           <Text style={styles.footerTotal}>
-            <Text style={styles.currencySymbol}>$ </Text>28.000
+            <Text style={styles.currencySymbol}>$ </Text>{total.toLocaleString('es-AR')}
           </Text>
         </View>
-        <TouchableOpacity style={styles.payButton} activeOpacity={0.8}>
+        <TouchableOpacity style={styles.payButton} activeOpacity={0.8} onPress={handlePay}>
           <Text style={styles.payButtonText}>Pagar</Text>
         </TouchableOpacity>
       </View>
 
+      <Modal
+        visible={showConfirmation}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowConfirmation(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalCard}>
+            <View style={styles.modalIconWrapper}>
+              <Ionicons name="checkmark" size={36} color="white" />
+            </View>
+            <Text style={styles.modalTitle}>Pedido confirmado!</Text>
+            <Text style={styles.modalSubtitle}>
+              Tu pago fue aprobado. El recibo de compra será enviado a tu email.
+            </Text>
+            <TouchableOpacity
+              style={styles.modalButton}
+              activeOpacity={0.8}
+              onPress={() => {
+                setShowConfirmation(false);
+                clearCart();
+                router.replace('/(tabs)');
+              }}
+            >
+              <Text style={styles.modalButtonText}>Volver</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }

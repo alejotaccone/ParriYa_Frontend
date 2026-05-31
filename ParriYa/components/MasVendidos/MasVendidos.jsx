@@ -9,6 +9,7 @@ const PRODUCTOS_DATA = PRODUCTOS.slice(0, 5).map(p => ({
   nombre: p.nombre,
   desc: p.descripcion,
   image: p.img_url,
+  precio: p.precio,
 }));
 
 const MasVendidos = () => {

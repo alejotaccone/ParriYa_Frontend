@@ -14,6 +14,7 @@ export const styles = StyleSheet.create({
     shadowOpacity: 0.1, //[cite: 21]
     shadowRadius: 4, //[cite: 21]
     elevation: 3, //[cite: 21]
+    position: 'relative',
   },
   // Estilo por defecto para la grilla (ocupa el espacio disponible)
   cardGrid: {
@@ -47,5 +48,33 @@ export const styles = StyleSheet.create({
   },
   heartIcon: {
     alignSelf: "flex-end", //[cite: 21]
+  },
+  heartOverlay: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    zIndex: 5,
+    backgroundColor: 'transparent',
+    padding: 4,
+    borderRadius: 12,
+  },
+  bottomRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  price: {
+    fontSize: FONTS.bodyLarge,
+    fontWeight: 'bold',
+    color: COLORS.textMain,
+  },
+  addButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: COLORS.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

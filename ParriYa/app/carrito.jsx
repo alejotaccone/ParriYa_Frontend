@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   FlatList,
   Image,
+  Alert,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -14,7 +15,7 @@ import { PRODUCTOS } from "../constants/mocks";
 import { useCart } from "../components/CartContext";
 import { styles } from "../components/Carrito/carrito.styles";
 
-const SUGERENCIAS_DATA = PRODUCTOS.filter((p) => ['10', '11', '12'].includes(p.id)).map((p) => ({
+const SUGERENCIAS_DATA = PRODUCTOS.filter((p) => ["10", "11", "12"].includes(p.id)).map((p) => ({
   id: p.id,
   nombre: p.nombre,
   image: p.img_url,
@@ -22,7 +23,7 @@ const SUGERENCIAS_DATA = PRODUCTOS.filter((p) => ['10', '11', '12'].includes(p.i
 
 export default function CarritoScreen() {
   const router = useRouter();
-  const { cartItems, removeFromCart, updateQuantity } = useCart();
+  const { cartItems, removeFromCart, updateQuantity, addToCart } = useCart();
 
   const tarifaServicio = 3000;
 
@@ -30,7 +31,11 @@ export default function CarritoScreen() {
   const totalFinal = subtotalProductos > 0 ? subtotalProductos + tarifaServicio : 0;
 
   const renderSugerencia = ({ item }) => (
-    <TouchableOpacity style={styles.suggestionCard} activeOpacity={0.8}>
+    <TouchableOpacity
+      style={styles.suggestionCard}
+      activeOpacity={0.8}
+      onPress={() => router.push({ pathname: '/detalle', params: { idProducto: item.id } })}
+    >
       <View style={styles.suggestionImageContainer}>
         <Image
           source={item.image}
@@ -50,7 +55,7 @@ export default function CarritoScreen() {
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.backButton}
-          onPress={() => router.replace('/')}
+          onPress={() => router.replace('/(tabs)/categoria')}
         >
           <Ionicons name="arrow-back" size={24} color="white" />
         </TouchableOpacity>
@@ -70,35 +75,34 @@ export default function CarritoScreen() {
         </View>
 
         {/* Lista de Productos Agregados */}
-      <View style={styles.productsList}>
-        {cartItems.length > 0 ? (
-          cartItems.map((item) => (
-            <CarritoItem
-              key={item.id}
-              item={item}
-              onRemove={removeFromCart}
-              onIncrement={() => updateQuantity(item.id, item.cantidad + 1)}
-              // CAMBIO CLAVE ACÁ: Solo resta si es mayor a 1
-              onDecrement={() => {
-                if (item.cantidad > 1) {
-                  updateQuantity(item.id, item.cantidad - 1);
-                }
-              }}
-            />
-          ))
-        ) : (
-          <Text style={{ textAlign: "center", color: "#8E8E93", marginVertical: 30 }}>
-            Tu carrito está vacío. ¡Agregá algo rico!
-          </Text>
-        )}
-      </View>
+        <View style={styles.productsList}>
+          {cartItems.length > 0 ? (
+            cartItems.map((item) => (
+              <CarritoItem
+                key={item.id}
+                item={item}
+                onRemove={removeFromCart}
+                onIncrement={() => updateQuantity(item.id, item.cantidad + 1)}
+                onDecrement={() => {
+                  if (item.cantidad > 1) {
+                    updateQuantity(item.id, item.cantidad - 1);
+                  }
+                }}
+              />
+            ))
+          ) : (
+            <Text style={{ textAlign: "center", color: "#8E8E93", marginVertical: 30 }}>
+              Tu carrito está vacío. ¡Agregá algo rico!
+            </Text>
+          )}
+        </View>
 
         {/* Sección Carrusel:  */}
         <View style={styles.suggestionsContainer}>
           <Text style={styles.suggestionsTitle}>¿Queres agregar algo mas?</Text>
           <FlatList
             data={SUGERENCIAS_DATA}
-            renderItem={renderSugerencia} 
+            renderItem={renderSugerencia}
             keyExtractor={(item) => item.id}
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -137,10 +141,10 @@ export default function CarritoScreen() {
           </View>
 
           {/* Botón Ir a pagar actualizado */}
-          <TouchableOpacity 
-            style={styles.payButton} 
+          <TouchableOpacity
+            style={styles.payButton}
             activeOpacity={0.8}
-            onPress={() => router.push('/pago')} // <--- MAGIA ACÁ
+            onPress={() => router.push('/pago')}
           >
             <Text style={styles.payButtonText}>Ir a pagar</Text>
           </TouchableOpacity>

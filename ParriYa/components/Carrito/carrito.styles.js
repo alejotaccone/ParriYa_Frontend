@@ -99,6 +99,7 @@ export const styles = StyleSheet.create({
     color: COLORS.textMain, // Antes: "#333333"
     textAlign: "center",
   },
+  
   resumenContainer: {
     backgroundColor: COLORS.backgroundLight, // Antes: "white"
     borderTopLeftRadius: 25,
