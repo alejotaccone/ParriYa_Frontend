@@ -19,6 +19,11 @@ export const CATEGORIAS = [
     nombre: 'Guarniciones',
     img_url: require('../assets/images/prod_papasfritas.png'),
   },
+  {
+    id: '5',
+    nombre: 'Bebidas',
+    img_url: require('../assets/images/prod_coca.png'),
+  },
 ];
 
 export const PRODUCTOS = [
@@ -110,7 +115,7 @@ export const PRODUCTOS = [
     img_url: require('../assets/images/prod_coca.png'),
     precio: 2500,
     stock: 50,
-    categoria_id: '4',
+    categoria_id: '5',
   },
   {
     id: '11',
@@ -120,7 +125,7 @@ export const PRODUCTOS = [
     img_url: require('../assets/images/prod_cocazero.png'),
     precio: 2500,
     stock: 40,
-    categoria_id: '4',
+    categoria_id: '5',
   },
   {
     id: '12',
@@ -130,6 +135,6 @@ export const PRODUCTOS = [
     img_url: require('../assets/images/prod_sprite.png'),
     precio: 2500,
     stock: 35,
-    categoria_id: '4',
+    categoria_id: '5',
   },
 ];

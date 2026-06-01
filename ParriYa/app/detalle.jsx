@@ -28,6 +28,8 @@ export default function DetalleScreen() {
   const [cantidad, setCantidad] = useState(1);
   const [showFavoriteModal, setShowFavoriteModal] = useState(false);
   const [favoriteMessage, setFavoriteMessage] = useState("");
+  const [showCartModal, setShowCartModal] = useState(false);
+  const [cartMessage, setCartMessage] = useState("");
   const { addToCart, toggleFavorite, isFavorite } = useCart();
 
   const precioTotal = producto.precio * cantidad;
@@ -38,6 +40,15 @@ export default function DetalleScreen() {
     const timer = setTimeout(() => setShowFavoriteModal(false), 1200);
     return () => clearTimeout(timer);
   }, [showFavoriteModal]);
+
+  useEffect(() => {
+    if (!showCartModal) return;
+    const timer = setTimeout(() => {
+      setShowCartModal(false);
+      router.replace('/(tabs)/categoria');
+    }, 1200);
+    return () => clearTimeout(timer);
+  }, [showCartModal, router]);
 
   const agregarAlCarrito = () => {
     addToCart(
@@ -50,7 +61,8 @@ export default function DetalleScreen() {
       },
       cantidad
     );
-    router.replace('/(tabs)/categoria');
+    setCartMessage(`Se ha agregado "${producto.nombre}" x${cantidad}`);
+    setShowCartModal(true);
   };
 
   return (
@@ -103,6 +115,19 @@ export default function DetalleScreen() {
             <View style={styles.favoriteModalCard}>
               <Ionicons name="heart" size={28} color="#E76F41" />
               <Text style={styles.favoriteModalText}>{favoriteMessage}</Text>
+            </View>
+          </TouchableOpacity>
+        </Modal>
+
+        <Modal visible={showCartModal} transparent animationType="fade">
+          <TouchableOpacity
+            style={styles.favoriteModalOverlay}
+            activeOpacity={1}
+            onPress={() => setShowCartModal(false)}
+          >
+            <View style={styles.favoriteModalCard}>
+              <Ionicons name="cart" size={28} color="#4B2610" />
+              <Text style={styles.favoriteModalText}>{cartMessage}</Text>
             </View>
           </TouchableOpacity>
         </Modal>

@@ -17,6 +17,8 @@ const ProductoCard = ({
   const { addToCart } = useCart();
   const [showFavoriteModal, setShowFavoriteModal] = useState(false);
   const [favoriteMessage, setFavoriteMessage] = useState("");
+  const [showCartModal, setShowCartModal] = useState(false);
+  const [cartMessage, setCartMessage] = useState("");
 
   const isFavorito = item.fav;
 
@@ -28,7 +30,10 @@ const ProductoCard = ({
     setShowFavoriteModal(true);
   };
 
-  const handleModalClose = () => setShowFavoriteModal(false);
+  const handleModalClose = () => {
+    setShowFavoriteModal(false);
+    setShowCartModal(false);
+  };
 
   useEffect(() => {
     if (!showFavoriteModal) return;
@@ -38,6 +43,15 @@ const ProductoCard = ({
 
     return () => clearTimeout(timer);
   }, [showFavoriteModal]);
+
+  useEffect(() => {
+    if (!showCartModal) return;
+    const timer = setTimeout(() => {
+      setShowCartModal(false);
+    }, 1200);
+
+    return () => clearTimeout(timer);
+  }, [showCartModal]);
 
   return (
     <TouchableOpacity
@@ -66,6 +80,15 @@ const ProductoCard = ({
         </TouchableOpacity>
       </Modal>
 
+      <Modal visible={showCartModal} transparent animationType="fade" onRequestClose={handleModalClose}>
+        <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={handleModalClose}>
+          <View style={styles.modalCard}>
+            <Ionicons name="cart" size={30} color="#4B2610" />
+            <Text style={styles.modalTitle}>{cartMessage}</Text>
+          </View>
+        </TouchableOpacity>
+      </Modal>
+
       {/* Texto */}
       <Text style={styles.title} numberOfLines={1}>
         {item.nombre}
@@ -82,17 +105,22 @@ const ProductoCard = ({
             style={styles.addButton}
             onPress={(e) => {
               e.stopPropagation();
-              if (onAdd) return onAdd(item);
-              addToCart(
-                {
-                  id: item.id,
-                  nombre: item.nombre,
-                  descripcion: item.descripcion || item.desc,
-                  precio: item.precio || 0,
-                  img_url: item.img_url || item.image,
-                },
-                1
-              );
+              if (onAdd) {
+                onAdd(item);
+              } else {
+                addToCart(
+                  {
+                    id: item.id,
+                    nombre: item.nombre,
+                    descripcion: item.descripcion || item.desc,
+                    precio: item.precio || 0,
+                    img_url: item.img_url || item.image,
+                  },
+                  1
+                );
+              }
+              setCartMessage(`Se ha agregado "${item.nombre}" x1`);
+              setShowCartModal(true);
             }}
           >
             <Ionicons name="add" size={20} color="#fff" />
