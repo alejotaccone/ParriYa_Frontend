@@ -128,4 +128,15 @@ export const styles = StyleSheet.create({
     fontSize: FONTS.body, // Antes: 15
     color: COLORS.textMuted, // Antes: '#8E8E93'
   },
+  loadingIndicator: {
+    marginTop: 120,
+  },
+  emptyOrderContainer: {
+    paddingVertical: 30,
+    alignItems: 'center',
+  },
+  emptyOrderText: {
+    fontSize: FONTS.body,
+    color: COLORS.textMuted,
+  },
 });

@@ -1,11 +1,29 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, Image, TextInput, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { useSearch } from "../SearchContext";
 import { styles } from "./Header.styles";
 
 const Header = () => {
   const router = useRouter();
+  const { busquedaGlobal, setBusquedaGlobal } = useSearch();
+
+  const handleBuscador = () => {
+    if (busquedaGlobal.trim()) {
+      router.push({
+        pathname: '/(tabs)/categoria',
+        params: { categoriaSeleccionada: 'Todo' },
+      });
+    }
+  };
+
+  const handleFocusBuscador = () => {
+    router.push({
+      pathname: '/(tabs)/categoria',
+      params: { categoriaSeleccionada: 'Todo' },
+    });
+  };
 
   return (
     <View style={styles.container}>
@@ -33,9 +51,14 @@ const Header = () => {
             style={styles.searchIcon}
           />
           <TextInput
-            placeholder="Buscar"
+            placeholder="Buscar productos"
             style={styles.searchInput}
             placeholderTextColor="gray"
+            value={busquedaGlobal}
+            onChangeText={setBusquedaGlobal}
+            onFocus={handleFocusBuscador}
+            onSubmitEditing={handleBuscador}
+            returnKeyType="search"
           />
         </View>
         <TouchableOpacity

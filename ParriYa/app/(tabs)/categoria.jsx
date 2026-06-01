@@ -6,6 +6,7 @@ import FiltrosCategoria from '../../components/FiltrosCategoria/FiltrosCategoria
 import ProductoCard from '../../components/ProductoCard/ProductoCard';
 import { CATEGORIAS, PRODUCTOS } from '../../constants/mocks';
 import { useCart } from '../../components/CartContext';
+import { useSearch } from '../../components/SearchContext';
 import { styles } from '../../components/Categoria/categoria.styles';
 
 const FILTROS = ['Todo', ...CATEGORIAS.map((c) => c.nombre)];
@@ -13,6 +14,7 @@ const FILTROS = ['Todo', ...CATEGORIAS.map((c) => c.nombre)];
 export default function CategoriaScreen() {
   const { categoriaSeleccionada } = useLocalSearchParams();
   const [filtroActivo, setFiltroActivo] = useState(categoriaSeleccionada || 'Todo');
+  const { busquedaGlobal } = useSearch();
   const { favoriteItems, toggleFavorite, isFavorite } = useCart();
 
   const PRODUCTOS_DATA = useMemo(
@@ -33,11 +35,12 @@ export default function CategoriaScreen() {
     () =>
       PRODUCTOS_DATA.filter(
         (item) =>
-          filtroActivo === 'Todo' ||
-          item.categoria_id ===
-            CATEGORIAS.find((cat) => cat.nombre === filtroActivo)?.id
+          (filtroActivo === 'Todo' ||
+            item.categoria_id ===
+              CATEGORIAS.find((cat) => cat.nombre === filtroActivo)?.id) &&
+          item.nombre.toLowerCase().includes(busquedaGlobal.toLowerCase())
       ),
-    [PRODUCTOS_DATA, filtroActivo]
+    [PRODUCTOS_DATA, filtroActivo, busquedaGlobal]
   );
 
   return (

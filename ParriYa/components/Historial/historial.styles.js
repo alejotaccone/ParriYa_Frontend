@@ -59,6 +59,30 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 30,
   },
+  loadingContainer: {
+    flex: 1,
+    minHeight: 300,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyContainer: {
+    flex: 1,
+    minHeight: 300,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  emptyText: {
+    fontSize: FONTS.body,
+    color: COLORS.textMain,
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  emptySubtext: {
+    fontSize: FONTS.small,
+    color: COLORS.textMuted,
+    textAlign: 'center',
+  },
   itemContainer: {
     marginBottom: 15,
   },

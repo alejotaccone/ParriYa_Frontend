@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Image, Alert, Modal } from 'react-native';
 import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { PRODUCTOS } from '../constants/mocks';
 import { useCart } from '../components/CartContext';
@@ -23,29 +24,54 @@ export default function PagoScreen() {
   const subtotal = cartItems.reduce((sum, item) => sum + item.precio * item.cantidad, 0);
   const total = subtotal > 0 ? subtotal + tarifaServicio : 0;
 
-  const handlePay = () => {
+  const handlePay = async () => {
     if (cartItems.length === 0) {
       Alert.alert('Carrito vacío', 'No hay productos para pagar.');
       return;
     }
 
-    const orderPayload = {
-      metodoPago,
-      guardarDatos,
-      subtotal,
-      tarifaServicio,
-      total,
-      items: cartItems.map(item => ({
-        id: item.id,
-        nombre: item.nombre,
-        cantidad: item.cantidad,
-        precio: item.precio,
-      })),
-    };
+    try {
+      const storedUser = await AsyncStorage.getItem('activeUser');
+      if (!storedUser) {
+        Alert.alert('Debes iniciar sesión', 'Inicia sesión para guardar tu pedido.');
+        return;
+      }
 
-    console.log('Order payload:', orderPayload);
-    clearCart();
-    setShowConfirmation(true);
+      const activeUser = JSON.parse(storedUser);
+      const existingOrdersJson = await AsyncStorage.getItem('orders');
+      const existingOrders = existingOrdersJson ? JSON.parse(existingOrdersJson) : [];
+      const nextOrderId = existingOrders.reduce((maxId, order) => Math.max(maxId, order.id), 0) + 1;
+      const fecha_pedido = new Date();
+      const formattedDate = `${fecha_pedido.getDate().toString().padStart(2, '0')}/${(fecha_pedido.getMonth() + 1)
+        .toString()
+        .padStart(2, '0')}/${fecha_pedido.getFullYear()}`;
+
+      const newOrder = {
+        id: nextOrderId,
+        usuario: activeUser.username || activeUser.email || 'anonimo',
+        fecha_pedido: formattedDate,
+        estado: 'Finalizado',
+        metodo_pago: metodoPago === 'efectivo' ? 'Efectivo' : 'Mercado Pago',
+        total,
+        tarifa_servicio: tarifaServicio,
+        subtotal,
+        cantidad_productos: cartItems.reduce((sum, item) => sum + item.cantidad, 0),
+        items: cartItems.map((item) => ({
+          id: item.id,
+          producto_nombre: item.nombre,
+          cantidad: item.cantidad,
+          precio_unitario: item.precio,
+          subtotal: item.precio * item.cantidad,
+        })),
+      };
+
+      await AsyncStorage.setItem('orders', JSON.stringify([newOrder, ...existingOrders]));
+      clearCart();
+      setShowConfirmation(true);
+    } catch (error) {
+      console.error('Error guardando pedido:', error);
+      Alert.alert('Error', 'No se pudo guardar el pedido. Intenta de nuevo.');
+    }
   };
 
   return (

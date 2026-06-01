@@ -1,26 +1,64 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { styles } from './Banner.styles';
 
+const OFERTAS = [
+  {
+    id: 1,
+    titulo: 'Ofertas del día',
+    texto: 'Hasta 20% OFF en Bebidas',
+    descuento: '20%',
+    categoria: 'Bebidas',
+    imagen: require('../../assets/images/PromoGuarnicion.png'),
+  },
+  {
+    id: 2,
+    titulo: 'Promoción especial',
+    texto: 'Hasta 15% OFF en Carnes Premium',
+    descuento: '15%',
+    categoria: 'Carnes',
+    imagen: require('../../assets/images/PromoGuarnicion.png'),
+  },
+  {
+    id: 3,
+    titulo: 'Happy Hour',
+    texto: 'Hasta 10% OFF en Sandwiches',
+    descuento: '10%',
+    categoria: 'Sandwiches',
+    imagen: require('../../assets/images/PromoGuarnicion.png'),
+  },
+];
+
 const Banner = () => {
+  const [ofertaActual, setOfertaActual] = useState(0);
+  const oferta = OFERTAS[ofertaActual];
+
+  const handleAnterior = () => {
+    setOfertaActual((prev) => (prev === 0 ? OFERTAS.length - 1 : prev - 1));
+  };
+
+  const handleSiguiente = () => {
+    setOfertaActual((prev) => (prev === OFERTAS.length - 1 ? 0 : prev + 1));
+  };
+
   return (
     <View style={styles.container}>
       {/* Etiqueta pequeña superior */}
-      <Text style={styles.titleSection}>Ofertas del día</Text>
+      <Text style={styles.titleSection}>{oferta.titulo}</Text>
 
       {/* Fila principal con texto e imagen */}
       <View style={styles.contentRow}>
         <View style={styles.textContainer}>
           <Text style={styles.promoText}>
-            Hasta <Text style={styles.highlightText}>20% OFF</Text> en Guarniciones
+            Hasta <Text style={styles.highlightText}>{oferta.descuento} OFF</Text> en{' '}
+            {oferta.categoria}
           </Text>
         </View>
 
         <View style={styles.imageContainer}>
           <Image
-            // Asegúrate de tener una imagen descriptiva o temporal para las papas/ensalada
-            source={require('../../assets/images/PromoGuarnicion.png')} 
+            source={oferta.imagen}
             style={styles.foodImage}
             resizeMode="contain"
           />
@@ -28,19 +66,26 @@ const Banner = () => {
       </View>
 
       {/* Flechas de navegación del carrusel */}
-      <TouchableOpacity style={styles.arrowLeft}>
+      <TouchableOpacity style={styles.arrowLeft} onPress={handleAnterior}>
         <Ionicons name="chevron-back" size={18} color="#C84B22" />
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.arrowRight}>
+      <TouchableOpacity style={styles.arrowRight} onPress={handleSiguiente}>
         <Ionicons name="chevron-forward" size={18} color="#C84B22" />
       </TouchableOpacity>
 
-      {/* Puntitos de paginación inferiores */}
+      {/* Puntitos de paginación inferiores dinámicos */}
       <View style={styles.dotsContainer}>
-        <View style={[styles.dot, styles.activeDot]} />
-        <View style={styles.dot} />
-        <View style={styles.dot} />
+        {OFERTAS.map((_, index) => (
+          <TouchableOpacity
+            key={index}
+            onPress={() => setOfertaActual(index)}
+            style={[
+              styles.dot,
+              index === ofertaActual && styles.activeDot,
+            ]}
+          />
+        ))}
       </View>
     </View>
   );

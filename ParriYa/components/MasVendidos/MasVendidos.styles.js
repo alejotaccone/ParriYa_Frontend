@@ -14,7 +14,21 @@ export const styles = StyleSheet.create({
     fontWeight: "bold",
     color: COLORS.textMuted, // Antes: "#8E8E93"
     letterSpacing: 0.5,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: 15,
+  },
+  seeAllButton: {
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+  },
+  seeAllText: {
+    fontSize: FONTS.small,
+    color: COLORS.primary,
+    fontWeight: '600',
   },
   listContainer: {
     paddingRight: 20,

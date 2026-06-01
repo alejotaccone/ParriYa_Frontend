@@ -23,9 +23,10 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    paddingHorizontal: 30,
   },
   textContainer: {
-    flex: 1,
+    flex: 2,
     paddingRight: 10,
   },
   promoText: {
@@ -42,6 +43,7 @@ export const styles = StyleSheet.create({
     height: 90,
     justifyContent: 'center',
     alignItems: 'center',
+    flex: 1,
   },
   foodImage: {
     width: '100%',
@@ -49,8 +51,9 @@ export const styles = StyleSheet.create({
   },
   arrowLeft: {
     position: 'absolute',
-    left: -10,
-    top: '55%',
+    left: 10,
+    top: '50%',
+    transform: [{ translateY: -15 }],
     backgroundColor: COLORS.backgroundLight, // Antes: 'white'
     borderRadius: 15,
     width: 30,
@@ -65,8 +68,9 @@ export const styles = StyleSheet.create({
   },
   arrowRight: {
     position: 'absolute',
-    right: -10,
-    top: '55%',
+    right: 10,
+    top: '50%',
+    transform: [{ translateY: -15 }],
     backgroundColor: COLORS.backgroundLight, // Antes: 'white'
     borderRadius: 15,
     width: 30,

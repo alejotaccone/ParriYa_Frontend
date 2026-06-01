@@ -1,21 +1,53 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, FlatList } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { styles } from '../components/Historial/historial.styles';
 
 // Mock de datos usando los nombres de tu entidad 'pedido'
 const PEDIDOS_MOCK = [
-  { id: 6, fecha_pedido: '16/04/2026', total: 32000, cantidad_productos: 2 },
-  { id: 5, fecha_pedido: '12/04/2026', total: 32000, cantidad_productos: 3 },
-  { id: 4, fecha_pedido: '07/03/2026', total: 41000, cantidad_productos: 3 },
-  { id: 3, fecha_pedido: '29/02/2026', total: 21000, cantidad_productos: 1 },
-  { id: 2, fecha_pedido: '27/01/2026', total: 58000, cantidad_productos: 4 },
-  { id: 1, fecha_pedido: '08/01/2026', total: 17000, cantidad_productos: 1 },
+  { id: 6, fecha_pedido: '16/04/2026', total: 32000, cantidad_productos: 2, usuario: 'usuario.123' },
+  { id: 5, fecha_pedido: '12/04/2026', total: 32000, cantidad_productos: 3, usuario: 'usuario.123' },
+  { id: 4, fecha_pedido: '07/03/2026', total: 41000, cantidad_productos: 3, usuario: 'otro.usuario' },
+  { id: 3, fecha_pedido: '29/02/2026', total: 21000, cantidad_productos: 1, usuario: 'usuario.123' },
+  { id: 2, fecha_pedido: '27/01/2026', total: 58000, cantidad_productos: 4, usuario: 'otro.usuario' },
+  { id: 1, fecha_pedido: '08/01/2026', total: 17000, cantidad_productos: 1, usuario: 'usuario.123' },
 ];
 
 export default function HistorialScreen() {
   const router = useRouter();
+  const [pedidos, setPedidos] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadHistorial() {
+      try {
+        const storedUser = await AsyncStorage.getItem('activeUser');
+        if (!storedUser) {
+          router.replace('/login');
+          return;
+        }
+
+        const activeUser = JSON.parse(storedUser);
+        const storedOrdersJson = await AsyncStorage.getItem('orders');
+        const storedOrders = storedOrdersJson ? JSON.parse(storedOrdersJson) : [];
+
+        // Pedidos guardados localmente + pedidos de ejemplo
+        const pedidosUsuario = [...storedOrders, ...PEDIDOS_MOCK].filter(
+          (pedido) => pedido.usuario === activeUser.username || pedido.usuario === activeUser.id
+        );
+
+        setPedidos(pedidosUsuario.sort((a, b) => b.id - a.id));
+      } catch (error) {
+        console.error('Error cargando historial de pedidos:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadHistorial();
+  }, [router]);
 
   const renderPedido = ({ item }) => (
     <TouchableOpacity 
@@ -67,9 +99,20 @@ export default function HistorialScreen() {
 
       {/* Lista de Pedidos */}
       <FlatList
-        data={PEDIDOS_MOCK}
+        data={loading ? [] : pedidos}
         keyExtractor={(item) => item.id.toString()}
         renderItem={renderPedido}
+        ListEmptyComponent={
+          loading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color="#E76F41" />
+            </View>
+          ) : (
+            <View style={styles.emptyContainer}>
+              <Text style={styles.emptyText}>No se encontraron pedidos para este usuario.</Text>
+            </View>
+          )
+        }
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
       />

@@ -7,6 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { CartProvider } from '../components/CartContext';
+import { SearchProvider } from '../components/SearchContext';
 
 export const unstable_settings = {
   anchor: 'login',
@@ -33,22 +34,24 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <CartProvider>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="perfil" options={{ headerShown: false }} />
-          <Stack.Screen name="carrito" options={{ headerShown: false }} />
-          <Stack.Screen name="historial" options={{ headerShown: false }} />
-          <Stack.Screen name="detalle_pedido" options={{ headerShown: false }} />
-          <Stack.Screen name="detalle" options={{ headerShown: false }} />
-          <Stack.Screen name="pago" options={{ headerShown: false }} />
-          <Stack.Screen name="favoritos" options={{ headerShown: false }} />
-          <Stack.Screen name="cambiar_contrasena" options={{ headerShown: false }} />
-          <Stack.Screen name="verificacion" options={{ headerShown: false }} />
-          <Stack.Screen name="nueva_contrasena" options={{ headerShown: false }} />
-          <Stack.Screen name="login" options={{ headerShown: false }} />
-          <Stack.Screen name="registro" options={{ headerShown: false }} />
-          <Stack.Screen name="ingresar_mail" options={{ headerShown: false }} />
-        </Stack>
+        <SearchProvider>
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="perfil" options={{ headerShown: false }} />
+            <Stack.Screen name="carrito" options={{ headerShown: false }} />
+            <Stack.Screen name="historial" options={{ headerShown: false }} />
+            <Stack.Screen name="detalle_pedido" options={{ headerShown: false }} />
+            <Stack.Screen name="detalle" options={{ headerShown: false }} />
+            <Stack.Screen name="pago" options={{ headerShown: false }} />
+            <Stack.Screen name="favoritos" options={{ headerShown: false }} />
+            <Stack.Screen name="cambiar_contrasena" options={{ headerShown: false }} />
+            <Stack.Screen name="verificacion" options={{ headerShown: false }} />
+            <Stack.Screen name="nueva_contrasena" options={{ headerShown: false }} />
+            <Stack.Screen name="login" options={{ headerShown: false }} />
+            <Stack.Screen name="registro" options={{ headerShown: false }} />
+            <Stack.Screen name="ingresar_mail" options={{ headerShown: false }} />
+          </Stack>
+        </SearchProvider>
       </CartProvider>
       <StatusBar style="auto" />
     </ThemeProvider>

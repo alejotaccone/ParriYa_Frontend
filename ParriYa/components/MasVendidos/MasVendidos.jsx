@@ -1,5 +1,6 @@
 import React from "react";
-import { View, Text, FlatList } from "react-native";
+import { View, Text, FlatList, TouchableOpacity } from "react-native";
+import { useRouter } from "expo-router";
 import ProductoCard from "../ProductoCard/ProductoCard";
 import { PRODUCTOS } from "../../constants/mocks";
 import { styles } from "./MasVendidos.styles";
@@ -13,9 +14,23 @@ const PRODUCTOS_DATA = PRODUCTOS.slice(0, 5).map(p => ({
 }));
 
 const MasVendidos = () => {
+  const router = useRouter();
+
+  const handleVerTodos = () => {
+    router.push({
+      pathname: '/(tabs)/categoria',
+      params: { categoriaSeleccionada: 'Todo' },
+    });
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.sectionTitle}>MAS VENDIDOS</Text>
+      <View style={styles.headerRow}>
+        <Text style={styles.sectionTitle}>PRODUCTOS DESTACADOS</Text>
+        <TouchableOpacity style={styles.seeAllButton} onPress={handleVerTodos}>
+          <Text style={styles.seeAllText}>Ver todos</Text>
+        </TouchableOpacity>
+      </View>
 
       <FlatList
         data={PRODUCTOS_DATA}
