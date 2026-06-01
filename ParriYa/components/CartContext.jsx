@@ -3,16 +3,22 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const CartContext = createContext(null);
 const STORAGE_KEY = 'shoppingCart';
+const FAVORITES_KEY = 'favoriteProducts';
 
 export function CartProvider({ children }) {
   const [cartItems, setCartItems] = useState([]);
+  const [favoriteItems, setFavoriteItems] = useState([]);
 
   useEffect(() => {
     async function loadCart() {
       try {
         const stored = await AsyncStorage.getItem(STORAGE_KEY);
+        const storedFavorites = await AsyncStorage.getItem(FAVORITES_KEY);
         if (stored) {
           setCartItems(JSON.parse(stored));
+        }
+        if (storedFavorites) {
+          setFavoriteItems(JSON.parse(storedFavorites));
         }
       } catch (e) {
         // ignore
@@ -31,6 +37,17 @@ export function CartProvider({ children }) {
     }
     saveCart();
   }, [cartItems]);
+
+  useEffect(() => {
+    async function saveFavorites() {
+      try {
+        await AsyncStorage.setItem(FAVORITES_KEY, JSON.stringify(favoriteItems));
+      } catch (e) {
+        // ignore
+      }
+    }
+    saveFavorites();
+  }, [favoriteItems]);
 
   const addToCart = (product, cantidad = 1) => {
     setCartItems((prev) => {
@@ -64,6 +81,27 @@ export function CartProvider({ children }) {
 
   const clearCart = () => setCartItems([]);
 
+  const toggleFavorite = (product) => {
+    setFavoriteItems((prev) => {
+      const alreadyFavorite = prev.some((item) => item.id === product.id);
+      if (alreadyFavorite) {
+        return prev.filter((item) => item.id !== product.id);
+      }
+      return [
+        ...prev,
+        {
+          id: product.id,
+          nombre: product.nombre,
+          descripcion: product.descripcion || product.desc,
+          precio: product.precio || 0,
+          img_url: product.img_url || product.image,
+        },
+      ];
+    });
+  };
+
+  const isFavorite = (id) => favoriteItems.some((item) => item.id === id);
+
   const itemCount = useMemo(
     () => cartItems.reduce((sum, item) => sum + item.cantidad, 0),
     [cartItems]
@@ -78,12 +116,15 @@ export function CartProvider({ children }) {
     <CartContext.Provider
       value={{
         cartItems,
+        favoriteItems,
         itemCount,
         cartTotal,
         addToCart,
         removeFromCart,
         updateQuantity,
         clearCart,
+        toggleFavorite,
+        isFavorite,
       }}
     >
       {children}

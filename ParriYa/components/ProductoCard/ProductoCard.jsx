@@ -1,5 +1,5 @@
-import React from "react";
-import { View, Text, Image, TouchableOpacity } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, Image, TouchableOpacity, Modal } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { styles } from "./ProductoCard.styles";
@@ -11,9 +11,33 @@ const ProductoCard = ({
   mostrarFavorito = true,
   esFormatoHome = false,
   onAdd,
+  onToggleFavorite,
 }) => {
   const router = useRouter();
   const { addToCart } = useCart();
+  const [showFavoriteModal, setShowFavoriteModal] = useState(false);
+  const [favoriteMessage, setFavoriteMessage] = useState("");
+
+  const isFavorito = item.fav;
+
+  const handleToggleFavorite = (e) => {
+    e.stopPropagation();
+    if (!onToggleFavorite) return;
+    onToggleFavorite(item);
+    setFavoriteMessage(isFavorito ? "Eliminado de favoritos" : "Agregado a favoritos");
+    setShowFavoriteModal(true);
+  };
+
+  const handleModalClose = () => setShowFavoriteModal(false);
+
+  useEffect(() => {
+    if (!showFavoriteModal) return;
+    const timer = setTimeout(() => {
+      setShowFavoriteModal(false);
+    }, 1200);
+
+    return () => clearTimeout(timer);
+  }, [showFavoriteModal]);
 
   return (
     <TouchableOpacity
@@ -28,13 +52,19 @@ const ProductoCard = ({
 
       {/* Corazón superior derecho (solo en tarjetas de categoría) */}
       {!esFormatoHome && mostrarFavorito && (
-        <TouchableOpacity
-          style={styles.heartOverlay}
-          onPress={(e) => e.stopPropagation()}
-        >
-          <Ionicons name={item.fav ? "heart" : "heart-outline"} size={20} color={item.fav ? "red" : "black"} />
+        <TouchableOpacity style={styles.heartOverlay} onPress={handleToggleFavorite}>
+          <Ionicons name={isFavorito ? "heart" : "heart-outline"} size={20} color={isFavorito ? "red" : "black"} />
         </TouchableOpacity>
       )}
+
+      <Modal visible={showFavoriteModal} transparent animationType="fade" onRequestClose={handleModalClose}>
+        <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={handleModalClose}>
+          <View style={styles.modalCard}>
+            <Ionicons name="heart" size={30} color="#FF5A2D" />
+            <Text style={styles.modalTitle}>{favoriteMessage}</Text>
+          </View>
+        </TouchableOpacity>
+      </Modal>
 
       {/* Texto */}
       <Text style={styles.title} numberOfLines={1}>

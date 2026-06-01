@@ -19,10 +19,24 @@ export const styles = StyleSheet.create({
   },
   backButton: {
     position: "absolute",
-    top: 50, 
+    top: 50,
     left: 20,
     zIndex: 10,
-    backgroundColor: COLORS.backgroundLight, // Antes: "white"
+    backgroundColor: COLORS.backgroundLight,
+    padding: 10,
+    borderRadius: 50,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 5,
+    elevation: 4,
+  },
+  favoriteButton: {
+    position: "absolute",
+    top: 50,
+    right: 20,
+    zIndex: 10,
+    backgroundColor: COLORS.backgroundLight,
     padding: 10,
     borderRadius: 50,
     shadowColor: "#000",
@@ -107,6 +121,31 @@ export const styles = StyleSheet.create({
     color: COLORS.backgroundLight, // Antes: "white"
     fontSize: FONTS.h4, // Antes: 18
     fontWeight: "bold",
+  },
+  favoriteModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.25)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  favoriteModalCard: {
+    width: 220,
+    padding: 18,
+    borderRadius: 20,
+    backgroundColor: COLORS.backgroundLight,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.14,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  favoriteModalText: {
+    marginTop: 10,
+    fontSize: FONTS.bodyLarge,
+    fontWeight: '600',
+    color: COLORS.textMain,
+    textAlign: 'center',
   },
   selectorContainer: {
     flexDirection: "row",

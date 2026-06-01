@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { View, Text, Image, TouchableOpacity, ScrollView } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, Image, TouchableOpacity, ScrollView, Modal } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import ContadorCantidad from "../components/Contador/ContadorCantidad";
@@ -26,9 +26,18 @@ export default function DetalleScreen() {
   const producto = DETALLE_PRODUCTOS[idProducto] || DETALLE_PRODUCTOS["1"];
 
   const [cantidad, setCantidad] = useState(1);
-  const { addToCart } = useCart();
+  const [showFavoriteModal, setShowFavoriteModal] = useState(false);
+  const [favoriteMessage, setFavoriteMessage] = useState("");
+  const { addToCart, toggleFavorite, isFavorite } = useCart();
 
   const precioTotal = producto.precio * cantidad;
+  const favorito = isFavorite(producto.id);
+
+  useEffect(() => {
+    if (!showFavoriteModal) return;
+    const timer = setTimeout(() => setShowFavoriteModal(false), 1200);
+    return () => clearTimeout(timer);
+  }, [showFavoriteModal]);
 
   const agregarAlCarrito = () => {
     addToCart(
@@ -58,12 +67,45 @@ export default function DetalleScreen() {
           >
             <Ionicons name="arrow-back" size={24} color="black" />
           </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.favoriteButton}
+            onPress={() => {
+              toggleFavorite({
+                id: producto.id,
+                nombre: producto.nombre,
+                descripcion: producto.descripcionLarga,
+                precio: producto.precio,
+                img_url: producto.image,
+              });
+              setFavoriteMessage(favorito ? "Eliminado de favoritos" : "Agregado a favoritos");
+              setShowFavoriteModal(true);
+            }}
+          >
+            <Ionicons
+              name={favorito ? "heart" : "heart-outline"}
+              size={24}
+              color={favorito ? "#E76F41" : "black"}
+            />
+          </TouchableOpacity>
           <Image
             source={producto.image}
             style={styles.mainImage}
             resizeMode="contain"
           />
         </View>
+
+        <Modal visible={showFavoriteModal} transparent animationType="fade">
+          <TouchableOpacity
+            style={styles.favoriteModalOverlay}
+            activeOpacity={1}
+            onPress={() => setShowFavoriteModal(false)}
+          >
+            <View style={styles.favoriteModalCard}>
+              <Ionicons name="heart" size={28} color="#E76F41" />
+              <Text style={styles.favoriteModalText}>{favoriteMessage}</Text>
+            </View>
+          </TouchableOpacity>
+        </Modal>
 
         {/* Detalles del Producto */}
         <View style={styles.infoContainer}>

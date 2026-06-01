@@ -1,12 +1,11 @@
 import React from "react";
 import { View, Text, Image, TextInput, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-// 1. Importamos useRouter para navegar al carrito que está en la raíz
 import { useRouter } from "expo-router";
 import { styles } from "./Header.styles";
 
 const Header = () => {
-  const router = useRouter(); 
+  const router = useRouter();
 
   return (
     <View style={styles.container}>
@@ -39,7 +38,10 @@ const Header = () => {
             placeholderTextColor="gray"
           />
         </View>
-        <TouchableOpacity style={styles.favoritesButton}>
+        <TouchableOpacity
+          style={styles.favoritesButton}
+          onPress={() => router.push('/favoritos')}
+        >
           <Ionicons name="heart-outline" size={24} color="red" />
         </TouchableOpacity>
       </View>

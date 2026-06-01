@@ -61,7 +61,13 @@ export default function TabLayout() {
       <Tabs.Screen
         name="categoria"
         options={{
-          href: null, 
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="favoritos"
+        options={{
+          href: null,
         }}
       />
     </Tabs>
