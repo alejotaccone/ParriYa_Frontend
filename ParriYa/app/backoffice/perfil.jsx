@@ -1,50 +1,64 @@
-import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  ScrollView,
-} from "react-native";
-import { useRouter } from "expo-router";
+import React, { useEffect, useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, StatusBar, Alert } from 'react-native';
+import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Ionicons } from "@expo/vector-icons";
-import { styles } from "../components/Perfil/perfil.styles";
+import { Ionicons } from '@expo/vector-icons';
+import { styles } from '../../components/Perfil/perfil.styles';
 
-export default function PerfilScreen() {
+export default function AdminPerfilScreen() {
   const router = useRouter();
   const [usuario, setUsuario] = useState({
-    username: '',
-    email: '',
-    telefono: '',
-    direccion: 'No especificada',
+    username: 'Admin123',
+    email: 'admin123@gmail.com',
+    telefono: '+54 9 11 1234-5678',
+    direccion: 'Lima 757, C1073 Cdad. Autónoma de Buenos Aires',
   });
 
   useEffect(() => {
     async function loadUser() {
       try {
         const stored = await AsyncStorage.getItem('activeUser');
-        if (!stored) {
-          router.replace('/login');
-          return;
+        if (stored) {
+          const savedUser = JSON.parse(stored);
+          setUsuario({
+            username: savedUser.username === 'admin' ? 'Admin123' : savedUser.username || 'Admin123',
+            email: savedUser.email === 'admin@parriya.com' ? 'admin123@gmail.com' : savedUser.email || 'admin123@gmail.com',
+            telefono: savedUser.telefono || '+54 9 11 1234-5678',
+            direccion: savedUser.direccion || 'Lima 757, C1073 Cdad. Autónoma de Buenos Aires',
+          });
         }
-        const savedUser = JSON.parse(stored);
-        setUsuario({
-          username: savedUser.username || '',
-          email: savedUser.email || '',
-          telefono: savedUser.telefono || '',
-          direccion: savedUser.direccion || 'No especificada',
-        });
       } catch (e) {
-        router.replace('/login');
+        // ignore
       }
     }
-
     loadUser();
-  }, [router]);
+  }, []);
+
+  const handleLogout = () => {
+    Alert.alert(
+      'Cerrar Sesión',
+      '¿Estás seguro de que deseas salir del panel de administración?',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Salir',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await AsyncStorage.removeItem('activeUser');
+              router.replace('/login');
+            } catch (e) {
+              console.error(e);
+            }
+          },
+        },
+      ]
+    );
+  };
 
   return (
     <View style={styles.container}>
+      <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
@@ -52,15 +66,8 @@ export default function PerfilScreen() {
         {/* CABECERA: Fondo superior con iconos */}
         <View style={styles.headerBackground}>
           <View style={styles.headerIconsRow}>
-            
-            {/* Flecha de volver CORREGIDA */}
-            <TouchableOpacity onPress={() => {
-              if (router.canGoBack()) {
-                router.back();
-              } else {
-                router.replace('/(tabs)');
-              }
-            }}>
+            {/* Flecha de volver al Backoffice */}
+            <TouchableOpacity onPress={() => router.replace('/backoffice')}>
               <Ionicons name="arrow-back" size={24} color="white" />
             </TouchableOpacity>
 
@@ -70,7 +77,7 @@ export default function PerfilScreen() {
             </TouchableOpacity>
           </View>
 
-          {/* Avatar del usuario */}
+          {/* Avatar del administrador */}
           <View style={styles.avatarContainer}>
             <Ionicons
               name="person"
@@ -81,7 +88,7 @@ export default function PerfilScreen() {
           </View>
         </View>
 
-        {/*Tarjeta Blanca superpuesta */}
+        {/* Tarjeta Blanca superpuesta */}
         <View style={styles.contentCard}>
           {/* Campo: Nombre */}
           <View style={styles.inputWrapper}>
@@ -109,13 +116,13 @@ export default function PerfilScreen() {
 
           {/* Campo: Dirección */}
           <View style={styles.inputWrapper}>
-            <Text style={styles.inputLabel}>Direccion</Text>
+            <Text style={styles.inputLabel}>Dirreccion</Text>
             <View style={styles.inputContainer}>
               <TextInput
                 style={styles.textInput}
                 value={usuario.direccion}
                 editable={false}
-                multiline={true} // Permite que el texto baje si es muy largo
+                multiline={true}
               />
             </View>
           </View>
@@ -134,38 +141,21 @@ export default function PerfilScreen() {
 
           <View style={styles.divider} />
 
-
           {/* Enlaces Secundarios */}
           <TouchableOpacity 
             style={styles.menuRow} 
             activeOpacity={0.7}
-            onPress={() => router.push('/cambiar_contrasena')} // <--- AGREGAR ESTA LÍNEA
+            onPress={() => router.push('/cambiar_contrasena')}
           >
             <Text style={styles.menuRowText}>Cambiar contraseña</Text>
             <Ionicons name="chevron-forward" size={18} color="#8E8E93" />
           </TouchableOpacity>
 
-          <TouchableOpacity 
-            style={styles.menuRow} 
-            activeOpacity={0.7}
-            onPress={() => router.push('/historial')} 
-          >
-            <Text style={styles.menuRowText}>Historial de compras</Text>
-            <Ionicons name="chevron-forward" size={18} color="#8E8E93" />
-          </TouchableOpacity>
-
-          {/* Botón Cerrar Sesión (Naranja) */}
+          {/* Botón Cerrar Sesión "Log out" */}
           <TouchableOpacity
             style={styles.logoutButton}
             activeOpacity={0.8}
-            onPress={async () => {
-              try {
-                await AsyncStorage.removeItem('activeUser');
-              } catch (e) {
-                // ignore
-              }
-              router.replace('/login');
-            }}
+            onPress={handleLogout}
           >
             <Text style={styles.logoutButtonText}>Cerrar Sesion</Text>
             <Ionicons

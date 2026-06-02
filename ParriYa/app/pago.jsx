@@ -50,7 +50,7 @@ export default function PagoScreen() {
         id: nextOrderId,
         usuario: activeUser.username || activeUser.email || 'anonimo',
         fecha_pedido: formattedDate,
-        estado: 'Finalizado',
+        estado: 'Pendiente',
         metodo_pago: metodoPago === 'efectivo' ? 'Efectivo' : 'Mercado Pago',
         total,
         tarifa_servicio: tarifaServicio,

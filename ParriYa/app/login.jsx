@@ -48,6 +48,18 @@ export default function LoginScreen() {
             }
 
             try {
+              // 1. Acceso de prueba rápido para el Administrador
+              if (username.toLowerCase() === 'admin') {
+                const adminUser = {
+                  username: 'admin',
+                  email: 'admin@parriya.com',
+                  rol: 'admin'
+                };
+                await AsyncStorage.setItem('activeUser', JSON.stringify(adminUser));
+                router.replace('/backoffice');
+                return;
+              }
+
               const stored = await AsyncStorage.getItem('registeredUser');
               if (!stored) {
                 showAlert('Usuario no registrado', 'Primero crea una cuenta para poder ingresar.');
@@ -78,8 +90,14 @@ export default function LoginScreen() {
               }
 
               await AsyncStorage.setItem('activeUser', JSON.stringify(savedUser));
-              router.replace('/(tabs)');
-            } catch (e) {
+              
+              // 2. Redirección basada en Rol de la base de datos (rol === 'admin')
+              if (savedUser.rol === 'admin') {
+                router.replace('/backoffice');
+              } else {
+                router.replace('/(tabs)');
+              }
+            } catch (error) {
               showAlert('Error', 'Ocurrió un problema al verificar tu cuenta.');
             }
           }}
