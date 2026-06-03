@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Alert, StatusBar, Modal } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useNavigation } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { styles } from '../../components/Backoffice/backoffice.styles';
@@ -119,9 +119,14 @@ export default function BackofficePedidos() {
     }
   };
 
+  const navigation = useNavigation();
+
   useEffect(() => {
-    loadOrders();
-  }, []);
+    const unsubscribe = navigation.addListener('focus', () => {
+      loadOrders();
+    });
+    return unsubscribe;
+  }, [navigation]);
 
   // Función para abrir el modal personalizado
   const handleOpenStatusModal = (order) => {
@@ -221,18 +226,20 @@ export default function BackofficePedidos() {
               const currentReservas = currentReservasJson ? JSON.parse(currentReservasJson) : [];
               
               const simulatedReserva = {
-                id: Date.now(),
-                cantidad_de_personas: 4,
-                estado: 'Confirmado',
-                fecha_reserva: '02/06/2026',
-                horario_de_reserva: '21:30',
-                nombre_cliente: 'Luis Diaz',
-                telefono_cliente: '1123456789',
-                ubicacion: 'Salón Principal',
+                id: Date.now().toString(),
+                cantidad: 4,
+                estado: 'Confirmada',
+                fecha: '27/04/2026',
+                horario: '21:30',
+                cliente: 'Luis Diaz',
+                turno: 'Noche',
+                nombreDia: 'Lunes 27 de abril',
+                diaSemana: 'Lunes',
+                nroDia: '27',
               };
 
               await AsyncStorage.setItem('reservas', JSON.stringify([simulatedReserva, ...currentReservas]));
-              Alert.alert('Simulación exitosa', `Se añadió la reserva de "${simulatedReserva.nombre_cliente}" en la base de datos.`);
+              Alert.alert('Simulación exitosa', `Se añadió la reserva de "${simulatedReserva.cliente}" en la base de datos.`);
             } catch (e) {
               console.error(e);
             }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, Image, TouchableOpacity, Alert, StatusBar } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useNavigation } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { styles } from '../../components/Backoffice/backoffice.styles';
@@ -56,10 +56,10 @@ export default function BackofficeDashboard() {
       const realReservas = storedReservasJson ? JSON.parse(storedReservasJson) : [];
       
       const formattedRealReservas = realReservas.map((r, index) => ({
-        id: `real_${index}`,
-        horario: r.horario_de_reserva || '21:00',
-        cliente: r.nombre_cliente || 'Cliente',
-        cantidad: r.cantidad_de_personas || 2,
+        id: r.id ? r.id.toString() : `real_${index}`,
+        horario: r.horario || r.horario_de_reserva || '21:00',
+        cliente: r.cliente || r.nombre_cliente || 'Cliente',
+        cantidad: r.cantidad || r.cantidad_de_personas || 2,
       }));
 
       setReservas([...formattedRealReservas, ...RESERVAS_MOCK_DISENO]);
@@ -74,9 +74,14 @@ export default function BackofficeDashboard() {
     }
   };
 
+  const navigation = useNavigation();
+
   useEffect(() => {
-    loadDashboardData();
-  }, []);
+    const unsubscribe = navigation.addListener('focus', () => {
+      loadDashboardData();
+    });
+    return unsubscribe;
+  }, [navigation]);
 
   // Función para desloguearse y limpiar sesión
   const handleLogout = () => {
@@ -140,19 +145,21 @@ export default function BackofficeDashboard() {
               const currentReservas = currentReservasJson ? JSON.parse(currentReservasJson) : [];
               
               const simulatedReserva = {
-                id: Date.now(),
-                cantidad_de_personas: 4 + Math.floor(Math.random() * 4),
-                estado: 'Confirmado',
-                fecha_reserva: '02/06/2026',
-                horario_de_reserva: '21:30',
-                nombre_cliente: 'Luis Diaz',
-                telefono_cliente: '1123456789',
-                ubicacion: 'Salón Principal',
+                id: Date.now().toString(),
+                cantidad: 4 + Math.floor(Math.random() * 4),
+                estado: 'Confirmada',
+                fecha: '27/04/2026',
+                horario: '21:30',
+                cliente: 'Luis Diaz',
+                turno: 'Noche',
+                nombreDia: 'Lunes 27 de abril',
+                diaSemana: 'Lunes',
+                nroDia: '27',
               };
 
               await AsyncStorage.setItem('reservas', JSON.stringify([simulatedReserva, ...currentReservas]));
               loadDashboardData();
-              Alert.alert('Simulación exitosa', `Se añadió la reserva a nombre de "${simulatedReserva.nombre_cliente}" para hoy.`);
+              Alert.alert('Simulación exitosa', `Se añadió la reserva a nombre de "${simulatedReserva.cliente}" para hoy.`);
             } catch (e) {
               console.error(e);
             }

@@ -54,13 +54,7 @@ export default function PerfilScreen() {
           <View style={styles.headerIconsRow}>
             
             {/* Flecha de volver CORREGIDA */}
-            <TouchableOpacity onPress={() => {
-              if (router.canGoBack()) {
-                router.back();
-              } else {
-                router.replace('/(tabs)');
-              }
-            }}>
+            <TouchableOpacity onPress={() => router.replace('/(tabs)')}>
               <Ionicons name="arrow-back" size={24} color="white" />
             </TouchableOpacity>
 

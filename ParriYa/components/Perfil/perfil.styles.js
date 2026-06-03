@@ -6,7 +6,7 @@ import { SIZES } from "../../constants/sizes";
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.backgroundDark,
+    backgroundColor: COLORS.backgroundLight,
   },
   scrollContent: {
     flexGrow: 1,
@@ -41,13 +41,10 @@ export const styles = StyleSheet.create({
     backgroundColor: COLORS.backgroundLight,
     borderTopLeftRadius: 35,
     borderTopRightRadius: 35,
-    borderBottomLeftRadius: 35,
-    borderBottomRightRadius: 35,
     marginTop: -50,
     paddingTop: 45,
     paddingHorizontal: 25,
     paddingBottom: 40,
-    marginBottom: 20, 
   },
   inputWrapper: {
     marginBottom: 20,

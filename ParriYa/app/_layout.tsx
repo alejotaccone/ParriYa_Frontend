@@ -23,24 +23,25 @@ function RootLayoutNav() {
         const u = await AsyncStorage.getItem('activeUser');
         const userObj = u ? JSON.parse(u) : null;
 
-        const inBackoffice = segments[0] === 'backoffice';
-        const inTabs = segments[0] === '(tabs)';
-        const isAuthRoute = ['login', 'registro', 'ingresar_mail', 'verificacion', 'nueva_contrasena'].includes(segments[0] || '');
+        const segs = segments as string[];
+        const inBackoffice = segs[0] === 'backoffice';
+        const inTabs = segs[0] === '(tabs)';
+        const isAuthRoute = ['login', 'registro', 'ingresar_mail', 'verificacion', 'nueva_contrasena'].includes(segs[0] || '');
 
         if (userObj) {
           if (userObj.rol === 'admin') {
             if (!inBackoffice) {
-              router.replace('/backoffice');
+              router.replace('/backoffice' as any);
             }
           } else {
             if (inBackoffice || isAuthRoute) {
-              router.replace('/(tabs)');
+              router.replace('/(tabs)' as any);
             }
           }
         } else {
-          const isPublic = segments.length === 0 || segments[0] === 'index' || isAuthRoute;
+          const isPublic = segs.length === 0 || segs[0] === 'index' || isAuthRoute;
           if (!isPublic) {
-            router.replace('/login');
+            router.replace('/login' as any);
           }
         }
       } catch (e) {

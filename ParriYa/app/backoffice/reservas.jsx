@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Alert, StatusBar, Modal, TextInput } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useNavigation } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { styles } from '../../components/Backoffice/backoffice.styles';
@@ -63,9 +63,14 @@ export default function BackofficeReservas() {
     }
   };
 
+  const navigation = useNavigation();
+
   useEffect(() => {
-    loadReservations();
-  }, []);
+    const unsubscribe = navigation.addListener('focus', () => {
+      loadReservations();
+    });
+    return unsubscribe;
+  }, [navigation]);
 
   // Filtra las reservas del día seleccionado
   const reservasDelDia = reservations.filter((r) => r.fecha === selectedFecha);

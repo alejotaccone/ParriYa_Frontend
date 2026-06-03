@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, StatusBar, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, StatusBar, Alert, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
@@ -35,25 +35,34 @@ export default function AdminPerfilScreen() {
   }, []);
 
   const handleLogout = () => {
-    Alert.alert(
-      'Cerrar Sesión',
-      '¿Estás seguro de que deseas salir del panel de administración?',
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        {
-          text: 'Salir',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await AsyncStorage.removeItem('activeUser');
-              router.replace('/login');
-            } catch (e) {
-              console.error(e);
-            }
+    const doLogout = async () => {
+      try {
+        await AsyncStorage.removeItem('activeUser');
+        router.replace('/login');
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
+    if (Platform.OS === 'web') {
+      const confirmed = window.confirm('¿Estás seguro de que deseas salir del panel de administración?');
+      if (confirmed) {
+        doLogout();
+      }
+    } else {
+      Alert.alert(
+        'Cerrar Sesión',
+        '¿Estás seguro de que deseas salir del panel de administración?',
+        [
+          { text: 'Cancelar', style: 'cancel' },
+          {
+            text: 'Salir',
+            style: 'destructive',
+            onPress: doLogout,
           },
-        },
-      ]
-    );
+        ]
+      );
+    }
   };
 
   return (
@@ -157,7 +166,7 @@ export default function AdminPerfilScreen() {
             activeOpacity={0.8}
             onPress={handleLogout}
           >
-            <Text style={styles.logoutButtonText}>Cerrar Sesion</Text>
+            <Text style={styles.logoutButtonText}>Cerrar sesión</Text>
             <Ionicons
               name="log-out"
               size={22}

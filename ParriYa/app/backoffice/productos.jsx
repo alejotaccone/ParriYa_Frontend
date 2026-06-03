@@ -70,11 +70,11 @@ export default function BackofficeProductos() {
     setDescripcionInput(product.descripcion);
     setPrecioInput(product.precio.toString());
     
-    // Si la imagen es un require local (número), mostramos vacío la URL o una descripción
-    if (typeof product.img_url === 'number') {
-      setImgUrlInput(''); // Deja ingresar URL nueva
-    } else {
+    // Si la imagen es una URL de la web (string), la asignamos al input, sino la dejamos vacía
+    if (typeof product.img_url === 'string') {
       setImgUrlInput(product.img_url);
+    } else {
+      setImgUrlInput('');
     }
     
     setSelectedCategoryOptionId(product.categoria_id || '1');
@@ -102,8 +102,8 @@ export default function BackofficeProductos() {
       
       // La imagen será o la URL provista, o el fallback, o conservará el require local si es edición y no se cambió
       let finalImg = imgUrlInput.trim() || fallbackLogoUrl;
-      if (editingProduct && !imgUrlInput.trim() && typeof editingProduct.img_url === 'number') {
-        finalImg = editingProduct.img_url; // Conserva el require local original
+      if (editingProduct && !imgUrlInput.trim() && typeof editingProduct.img_url !== 'string') {
+        finalImg = editingProduct.img_url; // Conserva el require local original (número u objeto)
       }
 
       if (editingProduct) {
@@ -278,7 +278,7 @@ export default function BackofficeProductos() {
         ) : (
           productosFiltrados.map((item) => {
             const catName = CATEGORIAS.find((c) => c.id === item.categoria_id)?.nombre || 'Categoría';
-            const isLocalAsset = typeof item.img_url === 'number';
+            const isLocalAsset = typeof item.img_url !== 'string';
 
             return (
               <TouchableOpacity 
@@ -353,7 +353,7 @@ export default function BackofficeProductos() {
                     style={styles.modalImagePreview}
                     resizeMode="cover"
                   />
-                ) : editingProduct && typeof editingProduct.img_url === 'number' ? (
+                ) : editingProduct && typeof editingProduct.img_url !== 'string' ? (
                   <Image 
                     source={editingProduct.img_url}
                     style={styles.modalImagePreview}

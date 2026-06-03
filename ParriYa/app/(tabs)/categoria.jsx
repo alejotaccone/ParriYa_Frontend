@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { View, FlatList } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import Header from '../../components/Header/Header';
@@ -14,6 +14,12 @@ const FILTROS = ['Todo', ...CATEGORIAS.map((c) => c.nombre)];
 export default function CategoriaScreen() {
   const { categoriaSeleccionada } = useLocalSearchParams();
   const [filtroActivo, setFiltroActivo] = useState(categoriaSeleccionada || 'Todo');
+
+  useEffect(() => {
+    if (categoriaSeleccionada) {
+      setFiltroActivo(categoriaSeleccionada);
+    }
+  }, [categoriaSeleccionada]);
   const { busquedaGlobal } = useSearch();
   const { favoriteItems, toggleFavorite, isFavorite } = useCart();
 

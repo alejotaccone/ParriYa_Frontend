@@ -214,8 +214,6 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: COLORS.secondary, // El marrón oscuro
     paddingVertical: 12,
-    borderTopLeftRadius: 25,
-    borderTopRightRadius: 25,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: -4 },
     shadowOpacity: 0.1,
