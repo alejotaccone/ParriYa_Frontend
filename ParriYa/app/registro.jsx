@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, Image, Alert } from 'react-nat
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from '../components/Auth/login.styles'; // Ajustá la ruta
+import api from '../services/api';
 
 export default function RegistroScreen() {
   const router = useRouter();
@@ -22,7 +23,7 @@ export default function RegistroScreen() {
         <View style={styles.inputWrapper}>
           <Text style={styles.inputLabel}>Usuario</Text>
           <View style={styles.inputContainer}>
-            <TextInput style={styles.textInput} placeholder="usuario.123" placeholderTextColor="#8E8E93" value={username} onChangeText={setUsername} />
+            <TextInput style={styles.textInput} placeholder="usuario.123" placeholderTextColor="#8E8E93" value={username} onChangeText={setUsername} autoCapitalize="none" />
           </View>
         </View>
 
@@ -38,7 +39,7 @@ export default function RegistroScreen() {
         <View style={styles.inputWrapper}>
           <Text style={styles.inputLabel}>Email</Text>
           <View style={styles.inputContainer}>
-            <TextInput style={styles.textInput} placeholder="enzoB@gmail.com" placeholderTextColor="#8E8E93" keyboardType="email-address" value={email} onChangeText={setEmail} />
+            <TextInput style={styles.textInput} placeholder="enzoB@gmail.com" placeholderTextColor="#8E8E93" keyboardType="email-address" autoCapitalize="none" value={email} onChangeText={setEmail} />
           </View>
         </View>
 
@@ -58,13 +59,37 @@ export default function RegistroScreen() {
               return;
             }
 
-            const user = { username, password, email, telefono };
             try {
-              await AsyncStorage.setItem('registeredUser', JSON.stringify(user));
-              await AsyncStorage.setItem('activeUser', JSON.stringify(user));
+              // Registrar el usuario en el backend
+              const response = await api.post('/auth/registro', {
+                nombre: username.trim(),
+                email: email.trim(),
+                password: password,
+                telefono: telefono.trim()
+              });
+
+              const token = response.data.token;
+              await AsyncStorage.setItem('authToken', token);
+
+              // Cargar perfil del usuario registrado
+              const profileResponse = await api.get('/usuario/perfil', {
+                headers: { Authorization: `Bearer ${token}` }
+              });
+
+              const profile = profileResponse.data;
+              const userObj = {
+                username: profile.nombre,
+                email: profile.email,
+                rol: profile.rol.toLowerCase(), // 'cliente'
+                telefono: profile.telefono,
+              };
+
+              await AsyncStorage.setItem('activeUser', JSON.stringify(userObj));
               router.replace('/(tabs)');
-            } catch (e) {
-              Alert.alert('Error', 'No se pudo guardar la cuenta. Intenta nuevamente.');
+            } catch (error) {
+              console.error('Error al registrar usuario:', error);
+              const errorMsg = error.response?.data?.message || 'No se pudo crear la cuenta. Intenta nuevamente.';
+              Alert.alert('Error', errorMsg);
             }
           }}
         >

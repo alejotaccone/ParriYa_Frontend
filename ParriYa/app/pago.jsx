@@ -1,17 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Image, Alert, Modal } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
-import { PRODUCTOS } from '../constants/mocks';
 import { useCart } from '../components/CartContext';
 import { styles } from '../components/Pago/pago.styles';
-
-const SUGERENCIAS_MOCK = PRODUCTOS.slice(0, 3).map(p => ({
-  id: p.id,
-  nombre: p.nombre,
-  image: p.img_url,
-}));
+import api, { resolveProductImg } from '../services/api';
 
 export default function PagoScreen() {
   const router = useRouter();
@@ -19,6 +13,26 @@ export default function PagoScreen() {
   const [metodoPago, setMetodoPago] = useState('mercado_pago');
   const [guardarDatos, setGuardarDatos] = useState(true);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [sugerencias, setSugerencias] = useState([]);
+
+  useEffect(() => {
+    async function loadSugerencias() {
+      try {
+        const response = await api.get('/productos');
+        if (response.data && response.data.length > 0) {
+          const mapped = response.data.slice(0, 3).map((p) => ({
+            id: String(p.id),
+            nombre: p.nombre,
+            image: resolveProductImg(p.nombre, p.imgUrl || p.img_url),
+          }));
+          setSugerencias(mapped);
+        }
+      } catch (error) {
+        console.warn('Error cargando sugerencias en pago:', error.message);
+      }
+    }
+    loadSugerencias();
+  }, []);
 
   const tarifaServicio = 3000;
   const subtotal = cartItems.reduce((sum, item) => sum + item.precio * item.cantidad, 0);
@@ -37,40 +51,29 @@ export default function PagoScreen() {
         return;
       }
 
-      const activeUser = JSON.parse(storedUser);
-      const existingOrdersJson = await AsyncStorage.getItem('orders');
-      const existingOrders = existingOrdersJson ? JSON.parse(existingOrdersJson) : [];
-      const nextOrderId = existingOrders.reduce((maxId, order) => Math.max(maxId, order.id), 0) + 1;
-      const fecha_pedido = new Date();
-      const formattedDate = `${fecha_pedido.getDate().toString().padStart(2, '0')}/${(fecha_pedido.getMonth() + 1)
-        .toString()
-        .padStart(2, '0')}/${fecha_pedido.getFullYear()}`;
-
-      const newOrder = {
-        id: nextOrderId,
-        usuario: activeUser.username || activeUser.email || 'anonimo',
-        fecha_pedido: formattedDate,
-        estado: 'Pendiente',
-        metodo_pago: metodoPago === 'efectivo' ? 'Efectivo' : 'Mercado Pago',
-        total,
-        tarifa_servicio: tarifaServicio,
-        subtotal,
-        cantidad_productos: cartItems.reduce((sum, item) => sum + item.cantidad, 0),
-        items: cartItems.map((item) => ({
-          id: item.id,
-          producto_nombre: item.nombre,
+      // Payload para el backend Spring Boot (PedidoRequest)
+      const requestBody = {
+        horarioRetiro: "20:00:00", // Horario predeterminado o configurable
+        total: total,
+        detalles: cartItems.map((item) => ({
+          productoId: parseInt(item.id, 10),
           cantidad: item.cantidad,
-          precio_unitario: item.precio,
-          subtotal: item.precio * item.cantidad,
+          precioUnitario: item.precio
         })),
+        pagos: [
+          {
+            metodo: metodoPago === 'efectivo' ? 'EFECTIVO' : 'MERCADO_PAGO',
+            monto: total
+          }
+        ]
       };
 
-      await AsyncStorage.setItem('orders', JSON.stringify([newOrder, ...existingOrders]));
+      await api.post('/pedidos', requestBody);
       clearCart();
       setShowConfirmation(true);
     } catch (error) {
-      console.error('Error guardando pedido:', error);
-      Alert.alert('Error', 'No se pudo guardar el pedido. Intenta de nuevo.');
+      console.error('Error guardando pedido en backend:', error.response?.data || error.message);
+      Alert.alert('Error', 'No se pudo procesar el pedido con el servidor. Intenta de nuevo.');
     }
   };
 
@@ -167,7 +170,7 @@ export default function PagoScreen() {
         {/* Sección ¿Te olvidaste algo? */}
         <Text style={styles.sectionTitle}>¿Te olvidaste algo?</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.suggestionsContainer}>
-          {SUGERENCIAS_MOCK.map((item) => (
+          {sugerencias.map((item) => (
             <TouchableOpacity
               key={item.id}
               style={styles.suggestionCard}

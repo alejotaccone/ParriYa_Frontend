@@ -5,12 +5,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { styles } from '../../components/Backoffice/backoffice.styles';
 import { COLORS } from '../../constants/colors';
-import { PRODUCTOS, CATEGORIAS } from '../../constants/mocks';
+import api, { resolveProductImg, resolveCategoryImg } from '../../services/api';
 
 export default function BackofficeProductos() {
   const router = useRouter();
   const [products, setProducts] = useState([]);
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState('Todo');
+  const [categoriesList, setCategoriesList] = useState([]);
 
   // Estados del Formulario Modal (ABM)
   const [modalVisible, setModalVisible] = useState(false);
@@ -22,23 +23,51 @@ export default function BackofficeProductos() {
   const [selectedCategoryOptionId, setSelectedCategoryOptionId] = useState('1'); // Carnes por defecto
   const [stockInput, setStockInput] = useState('10');
 
-  // Carga y siembra los productos iniciales en AsyncStorage
-  const loadProducts = async () => {
+  const loadCategories = async () => {
     try {
-      const storedJson = await AsyncStorage.getItem('products');
-      if (storedJson) {
-        setProducts(JSON.parse(storedJson));
+      const response = await api.get('/categorias');
+      if (response.data && response.data.length > 0) {
+        const mapped = response.data.map(c => ({
+          id: String(c.id),
+          nombre: c.nombre,
+          img_url: resolveCategoryImg(c.nombre, c.imgUrl || c.img_url)
+        }));
+        setCategoriesList(mapped);
       } else {
-        await AsyncStorage.setItem('products', JSON.stringify(PRODUCTOS));
-        setProducts(PRODUCTOS);
+        setCategoriesList([]);
       }
     } catch (e) {
-      console.error('Error cargando productos:', e);
-      setProducts(PRODUCTOS);
+      console.warn('Error cargando categorias backoffice:', e.message);
+      setCategoriesList([]);
+    }
+  };
+
+  const loadProducts = async () => {
+    try {
+      const response = await api.get('/productos');
+      if (response.data && response.data.length > 0) {
+        const mapped = response.data.map((p) => ({
+          id: String(p.id),
+          nombre: p.nombre,
+          descripcion: p.descripcion,
+          precio: p.precio,
+          stock: p.stock,
+          img_url: resolveProductImg(p.nombre, p.imgUrl || p.img_url),
+          categoria_id: String(p.categoriaId !== undefined ? p.categoriaId : p.categoria_id),
+          estado: p.estado,
+        }));
+        setProducts(mapped);
+      } else {
+        setProducts([]);
+      }
+    } catch (e) {
+      console.warn('Error cargando productos backoffice:', e.message);
+      setProducts([]);
     }
   };
 
   useEffect(() => {
+    loadCategories();
     loadProducts();
   }, []);
 
@@ -47,7 +76,7 @@ export default function BackofficeProductos() {
     if (selectedCategoryFilter === 'Todo') return true;
     
     // Obtenemos el nombre de la categoria correspondiente a p.categoria_id
-    const cat = CATEGORIAS.find((c) => c.id === p.categoria_id);
+    const cat = categoriesList.find((c) => c.id === p.categoria_id);
     return cat && cat.nombre === selectedCategoryFilter;
   });
 
@@ -58,7 +87,7 @@ export default function BackofficeProductos() {
     setDescripcionInput('');
     setPrecioInput('');
     setImgUrlInput('');
-    setSelectedCategoryOptionId('1');
+    setSelectedCategoryOptionId(categoriesList[0]?.id || '1');
     setStockInput('10');
     setModalVisible(true);
   };
@@ -71,7 +100,7 @@ export default function BackofficeProductos() {
     setPrecioInput(product.precio.toString());
     
     // Si la imagen es una URL de la web (string), la asignamos al input, sino la dejamos vacía
-    if (typeof product.img_url === 'string') {
+    if (typeof product.img_url === 'string' && (product.img_url.startsWith('http://') || product.img_url.startsWith('https://'))) {
       setImgUrlInput(product.img_url);
     } else {
       setImgUrlInput('');
@@ -82,7 +111,7 @@ export default function BackofficeProductos() {
     setModalVisible(true);
   };
 
-  // Guarda los cambios del producto (Crear / Editar) en AsyncStorage
+  // Guarda los cambios del producto (Crear / Editar) en la BDD a través de Axios
   const handleSaveProduct = async () => {
     if (!nombreInput || !descripcionInput || !precioInput) {
       Alert.alert('Campos incompletos', 'Por favor completa nombre, descripción y precio.');
@@ -97,55 +126,37 @@ export default function BackofficeProductos() {
     }
 
     try {
-      let updatedProducts = [];
       const fallbackLogoUrl = 'https://raw.githubusercontent.com/alejotaccone/ParriYa_Frontend/main/assets/images/Logo.png';
-      
-      // La imagen será o la URL provista, o el fallback, o conservará el require local si es edición y no se cambió
       let finalImg = imgUrlInput.trim() || fallbackLogoUrl;
+
       if (editingProduct && !imgUrlInput.trim() && typeof editingProduct.img_url !== 'string') {
-        finalImg = editingProduct.img_url; // Conserva el require local original (número u objeto)
+        finalImg = fallbackLogoUrl;
       }
 
+      const body = {
+        nombre: nombreInput,
+        descripcion: descripcionInput,
+        precio: precioNum,
+        stock: isNaN(stockNum) ? 10 : stockNum,
+        imgUrl: finalImg,
+        categoriaId: parseInt(selectedCategoryOptionId, 10)
+      };
+
       if (editingProduct) {
-        // --- MODO EDICIÓN ---
-        updatedProducts = products.map((p) => {
-          if (p.id === editingProduct.id) {
-            return {
-              ...p,
-              nombre: nombreInput,
-              descripcion: descripcionInput,
-              precio: precioNum,
-              img_url: finalImg,
-              categoria_id: selectedCategoryOptionId,
-              stock: isNaN(stockNum) ? 10 : stockNum,
-            };
-          }
-          return p;
-        });
+        // --- MODO EDICIÓN BACKEND ---
+        await api.put(`/productos/${editingProduct.id}`, body);
         Alert.alert('Producto editado', `Se guardaron los cambios del producto "${nombreInput}".`);
       } else {
-        // --- MODO CREACIÓN ---
-        const nextId = products.reduce((max, p) => Math.max(max, Number(p.id)), 0) + 1;
-        const newProduct = {
-          id: nextId.toString(),
-          nombre: nombreInput,
-          descripcion: descripcionInput,
-          precio: precioNum,
-          img_url: finalImg,
-          categoria_id: selectedCategoryOptionId,
-          stock: isNaN(stockNum) ? 10 : stockNum,
-          estado: 'disponible',
-        };
-        updatedProducts = [newProduct, ...products];
+        // --- MODO CREACIÓN BACKEND ---
+        await api.post('/productos', body);
         Alert.alert('Producto creado', `Se agregó "${nombreInput}" al catálogo de productos.`);
       }
 
-      await AsyncStorage.setItem('products', JSON.stringify(updatedProducts));
-      setProducts(updatedProducts);
+      await loadProducts();
       setModalVisible(false);
     } catch (e) {
-      console.error(e);
-      Alert.alert('Error', 'No se pudo guardar el producto.');
+      console.error('Error al guardar producto:', e.response?.data || e.message);
+      Alert.alert('Error', 'No se pudo guardar el producto en el servidor.');
     }
   };
 
@@ -160,10 +171,14 @@ export default function BackofficeProductos() {
           text: 'Eliminar',
           style: 'destructive',
           onPress: async () => {
-            const updated = products.filter((p) => p.id !== productId);
-            await AsyncStorage.setItem('products', JSON.stringify(updated));
-            setProducts(updated);
-            Alert.alert('Eliminado', `Se eliminó "${nombre}" del catálogo.`);
+            try {
+              await api.delete(`/productos/${productId}`);
+              Alert.alert('Eliminado', `Se eliminó "${nombre}" del catálogo.`);
+              await loadProducts();
+            } catch (err) {
+              console.error('Error al eliminar producto:', err.message);
+              Alert.alert('Error', 'No se pudo eliminar el producto del servidor.');
+            }
           },
         },
       ]
@@ -182,12 +197,14 @@ export default function BackofficeProductos() {
           style: 'destructive',
           onPress: async () => {
             await AsyncStorage.removeItem('activeUser');
+            await AsyncStorage.removeItem('authToken');
             router.replace('/login');
           },
         },
       ]
     );
   };
+
 
   return (
     <View style={styles.mainContainer}>
@@ -241,7 +258,7 @@ export default function BackofficeProductos() {
           </TouchableOpacity>
 
           {/* Resto de Categorías de la BDD */}
-          {CATEGORIAS.map((cat) => {
+          {categoriesList.map((cat) => {
             const isActive = cat.nombre === selectedCategoryFilter;
             return (
               <TouchableOpacity
@@ -277,7 +294,7 @@ export default function BackofficeProductos() {
           </Text>
         ) : (
           productosFiltrados.map((item) => {
-            const catName = CATEGORIAS.find((c) => c.id === item.categoria_id)?.nombre || 'Categoría';
+            const catName = categoriesList.find((c) => c.id === item.categoria_id)?.nombre || 'Categoría';
             const isLocalAsset = typeof item.img_url !== 'string';
 
             return (
@@ -436,7 +453,7 @@ export default function BackofficeProductos() {
               <View style={styles.addModalInputWrapper}>
                 <Text style={styles.addModalInputLabel}>Categoría</Text>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 5 }}>
-                  {CATEGORIAS.map((cat) => {
+                  {categoriesList.map((cat) => {
                     const isSelected = cat.id === selectedCategoryOptionId;
                     return (
                       <TouchableOpacity

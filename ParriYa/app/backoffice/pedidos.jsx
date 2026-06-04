@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { styles } from '../../components/Backoffice/backoffice.styles';
 import { COLORS } from '../../constants/colors';
+import api from '../../services/api';
 
 // --- MOCK DETAILS FROM THE IMAGE FOR SEEDING ---
 const PEDIDOS_DETALLE_MOCK = [
@@ -69,57 +70,46 @@ export default function BackofficePedidos() {
   const [selectedStatus, setSelectedStatus] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
 
-  // Carga y combina pedidos reales con los de diseño usando un Seeder local
+  // Carga los pedidos reales del Backend
   const loadOrders = async () => {
     try {
-      const storedOrdersJson = await AsyncStorage.getItem('orders');
-      let allOrders = [];
-
-      if (storedOrdersJson) {
-        allOrders = JSON.parse(storedOrdersJson);
-      } else {
-        // Sembrar datos iniciales si no hay nada en AsyncStorage
-        // Esto permite que los mocks también sean editables en tiempo real
-        const seedOrders = PEDIDOS_DETALLE_MOCK.map((o) => ({
-          id: Number(o.id),
-          usuario: o.cliente,
-          fecha_pedido: '02/06/2026',
-          estado: 'Entregado',
-          metodo_pago: 'Mercado Pago',
-          total: o.total,
-          cantidad_productos: o.cantidad_productos,
-          items: o.items.map((item, idx) => ({
-            id: idx + 1,
-            producto_nombre: item.nombre,
-            cantidad: item.cantidad,
-            precio_unitario: item.precio,
-            subtotal: item.precio * item.cantidad,
+      const response = await api.get('/pedidos');
+      if (response.data && response.data.length > 0) {
+        const formatted = response.data.map((o) => ({
+          id: o.id.toString().padStart(3, '0'),
+          rawId: o.id,
+          cliente: o.nombreUsuario || 'Cliente',
+          cantidad_productos: (o.detalles || []).reduce((sum, det) => sum + det.cantidad, 0),
+          items: (o.detalles || []).map((item) => ({
+            nombre: item.nombreProducto || 'Producto',
+            cantidad: item.cantidad || 1,
+            precio: item.subtotal || 0,
           })),
+          total: o.total,
+          estado: o.estado || 'Recibido',
         }));
-        await AsyncStorage.setItem('orders', JSON.stringify(seedOrders));
-        allOrders = seedOrders;
+        setOrders(formatted);
+      } else {
+        setOrders([]);
       }
-
-      const formatted = allOrders.map((o) => ({
-        id: o.id.toString().padStart(3, '0'),
-        cliente: o.usuario.split('@')[0],
-        cantidad_productos: o.cantidad_productos || 0,
-        items: (o.items || []).map((item) => ({
-          nombre: item.producto_nombre || 'Producto',
-          cantidad: item.cantidad || 1,
-          precio: item.subtotal || 0,
-        })),
-        total: o.total,
-        estado: o.estado || 'Recibido',
-      }));
-
-      setOrders(formatted);
     } catch (error) {
-      console.error('Error cargando pedidos en Backoffice:', error);
+      console.warn('Error cargando pedidos en Backoffice del backend:', error.message);
+      setOrders([]);
     }
   };
 
   const navigation = useNavigation();
+
+  useEffect(() => {
+    loadOrders();
+
+    // Refresco automático cada 10 segundos
+    const interval = setInterval(() => {
+      loadOrders();
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -135,29 +125,18 @@ export default function BackofficePedidos() {
     setModalVisible(true);
   };
 
-  // Función que persiste el nuevo estado en el AsyncStorage local al confirmar
+  // Función que persiste el nuevo estado en el Backend
   const handleConfirmStatus = async () => {
     if (!selectedOrder) return;
     
     try {
-      const storedOrdersJson = await AsyncStorage.getItem('orders');
-      if (storedOrdersJson) {
-        const currentOrders = JSON.parse(storedOrdersJson);
-        const updatedOrders = currentOrders.map((o) => {
-          if (o.id.toString().padStart(3, '0') === selectedOrder.id) {
-            return { ...o, estado: selectedStatus };
-          }
-          return o;
-        });
-
-        await AsyncStorage.setItem('orders', JSON.stringify(updatedOrders));
-        setModalVisible(false);
-        loadOrders(); // Recargar datos
-        Alert.alert('Estado actualizado', `Se cambió el estado del pedido #${selectedOrder.id} a "${selectedStatus}".`);
-      }
+      await api.put(`/pedidos/${selectedOrder.rawId}/estado?nuevoEstado=${selectedStatus}`);
+      setModalVisible(false);
+      loadOrders(); // Recargar datos
+      Alert.alert('Estado actualizado', `Se cambió el estado del pedido #${selectedOrder.id} a "${selectedStatus}".`);
     } catch (error) {
-      console.error('Error al actualizar estado:', error);
-      Alert.alert('Error', 'No se pudo guardar el nuevo estado.');
+      console.error('Error al actualizar estado en el backend:', error.response?.data || error.message);
+      Alert.alert('Error', 'No se pudo guardar el nuevo estado en el servidor.');
     }
   };
 

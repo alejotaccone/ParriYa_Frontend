@@ -3,27 +3,16 @@ import { View, Text, Image, TouchableOpacity, ScrollView, Modal } from "react-na
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import ContadorCantidad from "../components/Contador/ContadorCantidad";
-import { PRODUCTOS } from "../constants/mocks";
 import { useCart } from "../components/CartContext";
 import { styles } from "../components/Detalle/detalle.styles";
 
-const DETALLE_PRODUCTOS = Object.fromEntries(
-  PRODUCTOS.map(p => [
-    p.id,
-    {
-      id: p.id,
-      nombre: p.nombre,
-      precio: p.precio,
-      image: p.img_url,
-      descripcionLarga: p.descripcion,
-    }
-  ])
-);
+import api, { resolveProductImg } from "../services/api";
 
 export default function DetalleScreen() {
   const router = useRouter();
   const { idProducto } = useLocalSearchParams();
-  const producto = DETALLE_PRODUCTOS[idProducto] || DETALLE_PRODUCTOS["1"];
+
+  const [producto, setProducto] = useState(null);
 
   const [cantidad, setCantidad] = useState(1);
   const [showFavoriteModal, setShowFavoriteModal] = useState(false);
@@ -32,8 +21,31 @@ export default function DetalleScreen() {
   const [cartMessage, setCartMessage] = useState("");
   const { addToCart, toggleFavorite, isFavorite } = useCart();
 
-  const precioTotal = producto.precio * cantidad;
-  const favorito = isFavorite(producto.id);
+  useEffect(() => {
+    const fetchProducto = async () => {
+      try {
+        const response = await api.get(`/productos/${idProducto}`);
+        if (response.data) {
+          const p = response.data;
+          setProducto({
+            id: String(p.id),
+            nombre: p.nombre,
+            precio: p.precio,
+            image: resolveProductImg(p.nombre, p.imgUrl || p.img_url),
+            descripcionLarga: p.descripcion,
+          });
+        }
+      } catch (error) {
+        console.warn(`Error al buscar detalles del producto ${idProducto}:`, error.message);
+      }
+    };
+    if (idProducto) {
+      fetchProducto();
+    }
+  }, [idProducto]);
+
+  const precioTotal = (producto?.precio || 0) * cantidad;
+  const favorito = producto ? isFavorite(producto.id) : false;
 
   useEffect(() => {
     if (!showFavoriteModal) return;
@@ -64,6 +76,14 @@ export default function DetalleScreen() {
     setCartMessage(`Se ha agregado "${producto.nombre}" x${cantidad}`);
     setShowCartModal(true);
   };
+
+  if (!producto) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <Text style={{ color: '#8E8E93', fontSize: 16 }}>Cargando detalles...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>

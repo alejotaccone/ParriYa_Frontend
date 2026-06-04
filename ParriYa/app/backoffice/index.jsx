@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { styles } from '../../components/Backoffice/backoffice.styles';
 import { COLORS } from '../../constants/colors';
+import api from '../../services/api';
 
 // --- DATOS MOCK ORIGINALES DE LA IMAGEN ---
 const PEDIDOS_MOCK_DISENO = [
@@ -34,47 +35,86 @@ export default function BackofficeDashboard() {
   const [reservas, setReservas] = useState([]);
   const [feedback, setFeedback] = useState([]);
 
-  // Carga y combina datos de AsyncStorage con los datos de diseño mockup
+  // Carga los datos del Backoffice Dashboard desde la base de datos (Backend)
   const loadDashboardData = async () => {
     try {
-      // 1. Obtener y parsear Pedidos reales de AsyncStorage
-      const storedOrdersJson = await AsyncStorage.getItem('orders');
-      const realOrders = storedOrdersJson ? JSON.parse(storedOrdersJson) : [];
-      
-      const formattedRealOrders = realOrders.map((o) => ({
-        id: o.id.toString().padStart(3, '0'),
-        cliente: o.usuario.split('@')[0], // Muestra nombre de usuario sin dominio si es mail
-        estado: o.estado || 'Recibido',
-        precio: o.total,
-      }));
+      // 1. Obtener Pedidos del Backend
+      try {
+        const pedRes = await api.get('/pedidos/dashboard');
+        if (pedRes.data && pedRes.data.length > 0) {
+          const mappedOrders = pedRes.data.map(o => ({
+            id: String(o.id).padStart(3, '0'),
+            cliente: o.nombreCliente || 'Cliente',
+            estado: o.estado || 'Recibido',
+            precio: o.precio || 0,
+          }));
+          setOrders(mappedOrders);
+        } else {
+          setOrders([]);
+        }
+      } catch (err) {
+        console.warn('Error fetching orders dashboard from backend:', err.message);
+        setOrders([]);
+      }
 
-      // Combinar pedidos (los reales nuevos aparecen primero en la lista)
-      setOrders([...formattedRealOrders, ...PEDIDOS_MOCK_DISENO]);
+      // 2. Obtener Reservas del Backend
+      try {
+        const resRes = await api.get('/reservas/dashboard/hoy');
+        if (resRes.data && resRes.data.length > 0) {
+          const mappedReservas = resRes.data.map((r, idx) => ({
+            id: `back_${idx}`,
+            horario: String(r.horario || '').substring(0, 5),
+            cliente: r.nombreCliente || 'Cliente',
+            cantidad: r.cantidadPersonas || 2,
+          }));
+          setReservas(mappedReservas);
+        } else {
+          setReservas([]);
+        }
+      } catch (err) {
+        console.warn('Error fetching reservations dashboard from backend:', err.message);
+        setReservas([]);
+      }
 
-      // 2. Obtener y parsear Reservas reales de AsyncStorage
-      const storedReservasJson = await AsyncStorage.getItem('reservas');
-      const realReservas = storedReservasJson ? JSON.parse(storedReservasJson) : [];
-      
-      const formattedRealReservas = realReservas.map((r, index) => ({
-        id: r.id ? r.id.toString() : `real_${index}`,
-        horario: r.horario || r.horario_de_reserva || '21:00',
-        cliente: r.cliente || r.nombre_cliente || 'Cliente',
-        cantidad: r.cantidad || r.cantidad_de_personas || 2,
-      }));
+      // 3. Obtener Feedback del Backend
+      try {
+        const feedRes = await api.get('/feedback/recientes');
+        if (feedRes.data && feedRes.data.length > 0) {
+          const mappedFeedback = feedRes.data.map(f => ({
+            id: String(f.id),
+            cliente: f.nombreCliente || 'Cliente',
+            comentario: f.comentario || '',
+            calificacion: f.calificacion || 5.0,
+          }));
+          setFeedback(mappedFeedback);
+        } else {
+          setFeedback([]);
+        }
+      } catch (err) {
+        console.warn('Error fetching feedback from backend:', err.message);
+        setFeedback([]);
+      }
 
-      setReservas([...formattedRealReservas, ...RESERVAS_MOCK_DISENO]);
-
-      // 3. Feedback
-      setFeedback(FEEDBACK_MOCK_DISENO);
     } catch (error) {
       console.error('Error cargando datos del Backoffice:', error);
-      setOrders(PEDIDOS_MOCK_DISENO);
-      setReservas(RESERVAS_MOCK_DISENO);
-      setFeedback(FEEDBACK_MOCK_DISENO);
+      setOrders([]);
+      setReservas([]);
+      setFeedback([]);
     }
   };
 
   const navigation = useNavigation();
+
+  useEffect(() => {
+    loadDashboardData();
+
+    // Refresco automático cada 10 segundos para emular tiempo real
+    const interval = setInterval(() => {
+      loadDashboardData();
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {

@@ -1,17 +1,36 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, Image, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { CATEGORIAS } from '../../constants/mocks';
 import { styles } from './Categorias.styles';
-
-const CATEGORIAS_DATA = CATEGORIAS.map(c => ({
-  id: c.id,
-  nombre: c.nombre,
-  image: c.img_url,
-}));
+import api, { resolveCategoryImg } from '../../services/api';
 
 const Categorias = () => {
   const router = useRouter(); 
+  const [categoriasList, setCategoriasList] = useState([]);
+
+  useEffect(() => {
+    const fetchCategorias = async () => {
+      try {
+        const response = await api.get('/categorias');
+        if (response.data && response.data.length > 0) {
+          const mapped = response.data.map(c => ({
+            id: String(c.id),
+            nombre: c.nombre,
+            image: resolveCategoryImg(c.nombre, c.imgUrl || c.img_url)
+          }));
+          setCategoriasList(mapped);
+        } else {
+          setCategoriasList([]);
+        }
+      } catch (error) {
+        console.warn('Error al buscar categorías del backend:', error.message);
+        setCategoriasList([]);
+      }
+    };
+
+    fetchCategorias();
+  }, []);
 
   const renderItem = ({ item }) => (
     <TouchableOpacity 
@@ -40,7 +59,7 @@ const Categorias = () => {
       <Text style={styles.sectionTitle}>CATEGORIAS</Text>
       
       <FlatList
-        data={CATEGORIAS_DATA}
+        data={categoriasList}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
         horizontal
@@ -51,4 +70,4 @@ const Categorias = () => {
   );
 };
 
-export default Categorias;
+export default Categorias;

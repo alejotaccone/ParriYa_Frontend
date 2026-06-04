@@ -4,83 +4,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { styles } from '../components/Historial/detalle_pedido.styles';
-
-const PEDIDOS_MOCK = [
-  {
-    id: 6,
-    fecha_pedido: '16/04/2026',
-    estado: 'Finalizado',
-    metodo_pago: 'Mercado Pago',
-    total: 32000,
-    cantidad_productos: 2,
-    usuario: 'usuario.123',
-  },
-  {
-    id: 5,
-    fecha_pedido: '12/04/2026',
-    estado: 'Finalizado',
-    metodo_pago: 'Mercado Pago',
-    total: 32000,
-    cantidad_productos: 3,
-    usuario: 'usuario.123',
-  },
-  {
-    id: 4,
-    fecha_pedido: '07/03/2026',
-    estado: 'Cancelado',
-    metodo_pago: 'Tarjeta',
-    total: 41000,
-    cantidad_productos: 3,
-    usuario: 'otro.usuario',
-  },
-];
-
-const DETALLES_MOCK = {
-  6: {
-    pedido: {
-      id: 6,
-      fecha_pedido: '16/04/2026',
-      estado: 'Finalizado',
-      metodo_pago: 'Mercado Pago',
-      total: 32000,
-      cantidad_productos: 2,
-    },
-    items: [
-      { id: 1, producto_nombre: 'Ribs de cerdo', cantidad: 1, subtotal: 20000 },
-      { id: 2, producto_nombre: 'Papas Fritas', cantidad: 1, subtotal: 12000 },
-    ],
-  },
-  5: {
-    pedido: {
-      id: 5,
-      fecha_pedido: '12/04/2026',
-      estado: 'Finalizado',
-      metodo_pago: 'Mercado Pago',
-      total: 32000,
-      cantidad_productos: 3,
-    },
-    items: [
-      { id: 1, producto_nombre: 'Ribs de cerdo', cantidad: 1, subtotal: 20000 },
-      { id: 2, producto_nombre: 'Chorizo', cantidad: 1, subtotal: 5000 },
-      { id: 3, producto_nombre: 'Papas Fritas', cantidad: 1, subtotal: 7000 },
-    ],
-  },
-  4: {
-    pedido: {
-      id: 4,
-      fecha_pedido: '07/03/2026',
-      estado: 'Cancelado',
-      metodo_pago: 'Tarjeta',
-      total: 41000,
-      cantidad_productos: 3,
-    },
-    items: [
-      { id: 1, producto_nombre: 'Vacío', cantidad: 1, subtotal: 24000 },
-      { id: 2, producto_nombre: 'Ensalada', cantidad: 1, subtotal: 7000 },
-      { id: 3, producto_nombre: 'Bebida', cantidad: 1, subtotal: 10000 },
-    ],
-  },
-};
+import api from '../services/api';
 
 export default function DetallePedidoScreen() {
   const router = useRouter();
@@ -98,36 +22,45 @@ export default function DetallePedidoScreen() {
           return;
         }
 
-        const pedidoId = Number(id);
-        const storedOrdersJson = await AsyncStorage.getItem('orders');
-        const storedOrders = storedOrdersJson ? JSON.parse(storedOrdersJson) : [];
-        const storedOrder = storedOrders.find((order) => order.id === pedidoId);
-
-        if (storedOrder) {
-          setPedido(storedOrder);
-          setDetalleItems(storedOrder.items || []);
+        const response = await api.get(`/pedidos/${id}`);
+        if (response.data) {
+          const p = response.data;
+          setPedido({
+            id: p.id,
+            fecha_pedido: p.fechaPedido ? new Date(p.fechaPedido).toLocaleDateString('es-AR') : 'Reciente',
+            estado: p.estado || 'Recibido',
+            metodo_pago: (p.pagos && p.pagos.length > 0) ? p.pagos[0].metodo : 'Efectivo',
+            total: p.total,
+            cantidad_productos: (p.detalles || []).reduce((sum, det) => sum + det.cantidad, 0),
+          });
+          setDetalleItems((p.detalles || []).map(det => ({
+            id: det.id,
+            producto_nombre: det.nombreProducto || 'Producto',
+            cantidad: det.cantidad || 1,
+            subtotal: det.subtotal || 0,
+          })));
         } else {
-          const orderData = DETALLES_MOCK[pedidoId];
-          if (orderData) {
-            setPedido(orderData.pedido);
-            setDetalleItems(orderData.items);
-          } else {
-            const fallbackPedido = PEDIDOS_MOCK.find((p) => p.id === pedidoId);
-            setPedido(
-              fallbackPedido || {
-                id: pedidoId,
-                fecha_pedido: '',
-                estado: 'Desconocido',
-                metodo_pago: 'Desconocido',
-                total: 0,
-                cantidad_productos: 0,
-              }
-            );
-            setDetalleItems([]);
-          }
+          setPedido({
+            id: Number(id),
+            fecha_pedido: '',
+            estado: 'Desconocido',
+            metodo_pago: 'Desconocido',
+            total: 0,
+            cantidad_productos: 0,
+          });
+          setDetalleItems([]);
         }
       } catch (error) {
-        console.error('Error cargando detalle de pedido:', error);
+        console.error('Error cargando detalle de pedido del backend:', error.message);
+        setPedido({
+          id: Number(id),
+          fecha_pedido: '',
+          estado: 'Error al cargar',
+          metodo_pago: 'Desconocido',
+          total: 0,
+          cantidad_productos: 0,
+        });
+        setDetalleItems([]);
       } finally {
         setLoading(false);
       }

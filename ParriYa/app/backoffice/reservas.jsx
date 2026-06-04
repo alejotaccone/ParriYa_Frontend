@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { styles } from '../../components/Backoffice/backoffice.styles';
 import { COLORS } from '../../constants/colors';
+import api from '../../services/api';
 
 // --- SEED DE RESERVAS INICIALES (MOCKUP EXACTO) ---
 const RESERVAS_SEED_DATA = [
@@ -29,15 +30,64 @@ const RESERVAS_SEED_DATA = [
   { id: '14', fecha: '29/04/2026', nombreDia: 'Miercoles 29 de abril', diaSemana: 'Miercoles', nroDia: '29', turno: 'Noche', cliente: 'Bruno Titos', horario: '22:30', cantidad: 2, estado: 'Cancelada' },
 ];
 
-const DIAS_CAROUSEL = [
-  { fecha: '27/04/2026', nro: '27', nombre: 'Lunes', fullText: 'Lunes 27 de abril' },
-  { fecha: '28/04/2026', nro: '28', nombre: 'Martes', fullText: 'Martes 28 de abril' },
-  { fecha: '29/04/2026', nro: '29', nombre: 'Mierc.', fullText: 'Miercoles 29 de abril' },
-];
+const generateDaysCarousel = () => {
+  const days = [];
+  const names = ['Dom.', 'Lunes', 'Martes', 'Mierc.', 'Jueves', 'Viernes', 'Sab.'];
+  const fullNames = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+  const monthNames = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+
+  for (let i = -3; i <= 3; i++) {
+    const d = new Date();
+    d.setDate(d.getDate() + i);
+
+    const dayName = names[d.getDay()];
+    const nroDia = String(d.getDate());
+    
+    const dd = String(d.getDate()).padStart(2, '0');
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const yyyy = d.getFullYear();
+    const fecha = `${dd}/${mm}/${yyyy}`;
+
+    const fullText = `${fullNames[d.getDay()]} ${d.getDate()} de ${monthNames[d.getMonth()]}`;
+
+    days.push({
+      fecha,
+      nro: nroDia,
+      nombre: dayName,
+      fullText
+    });
+  }
+  return days;
+};
+
+const DIAS_CAROUSEL = generateDaysCarousel();
+
+const formatToBackendDate = (fechaStr) => {
+  const parts = fechaStr.split('/');
+  if (parts.length === 3) {
+    return `${parts[2]}-${parts[1]}-${parts[0]}`;
+  }
+  return fechaStr;
+};
+
+const formatFromBackendDate = (fechaBackendStr) => {
+  if (!fechaBackendStr) return '';
+  const parts = fechaBackendStr.split('-');
+  if (parts.length === 3) {
+    return `${parts[2]}/${parts[1]}/${parts[0]}`;
+  }
+  return fechaBackendStr;
+};
 
 export default function BackofficeReservas() {
   const router = useRouter();
-  const [selectedFecha, setSelectedFecha] = useState('27/04/2026');
+  
+  const todayDd = String(new Date().getDate()).padStart(2, '0');
+  const todayMm = String(new Date().getMonth() + 1).padStart(2, '0');
+  const todayYyyy = new Date().getFullYear();
+  const todayFormatted = `${todayDd}/${todayMm}/${todayYyyy}`;
+
+  const [selectedFecha, setSelectedFecha] = useState(todayFormatted);
   const [reservations, setReservations] = useState([]);
   
   // Estados para Modal de Agregar Reserva
@@ -47,23 +97,45 @@ export default function BackofficeReservas() {
   const [cantidadInput, setCantidadInput] = useState('');
   const [turnoInput, setTurnoInput] = useState('Mediodia'); // Mediodia o Noche
 
-  // Carga reservas de AsyncStorage y las siembra si no hay datos
   const loadReservations = async () => {
     try {
-      const storedJson = await AsyncStorage.getItem('reservas');
-      if (storedJson) {
-        setReservations(JSON.parse(storedJson));
-      } else {
-        await AsyncStorage.setItem('reservas', JSON.stringify(RESERVAS_SEED_DATA));
-        setReservations(RESERVAS_SEED_DATA);
-      }
+      const backendDate = formatToBackendDate(selectedFecha);
+      const response = await api.get(`/reservas/dia/${backendDate}`);
+      
+      const mapBackendReserva = (res, turnoName) => ({
+        id: String(res.id),
+        fecha: formatFromBackendDate(res.fechaDeReserva),
+        turno: turnoName, // 'Mediodia' o 'Noche'
+        cliente: res.nombreCliente,
+        horario: (res.horarioDeReserva || '').substring(0, 5), // '12:30:00' -> '12:30'
+        cantidad: res.cantidadDePersonas,
+        estado: res.estado === 'CANCELADA' ? 'Cancelada' : 'Confirmada',
+        telefono: res.telefonoCliente,
+        ubicacion: res.ubicacion || 'ADENTRO',
+      });
+
+      const tardeMapped = (response.data.turnoTarde || []).map(r => mapBackendReserva(r, 'Mediodia'));
+      const nocheMapped = (response.data.turnoNoche || []).map(r => mapBackendReserva(r, 'Noche'));
+      
+      setReservations([...tardeMapped, ...nocheMapped]);
     } catch (e) {
-      console.error('Error cargando reservas:', e);
-      setReservations(RESERVAS_SEED_DATA);
+      console.warn('Error cargando reservas de backend:', e.message);
+      setReservations([]);
     }
   };
 
   const navigation = useNavigation();
+
+  useEffect(() => {
+    loadReservations();
+
+    // Refresco automático de reservas cada 10 segundos
+    const interval = setInterval(() => {
+      loadReservations();
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, [selectedFecha]);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -83,35 +155,64 @@ export default function BackofficeReservas() {
 
   const currentDiaObj = DIAS_CAROUSEL.find((d) => d.fecha === selectedFecha) || DIAS_CAROUSEL[0];
 
-  // Función para alternar/cambiar el estado de una reserva (Confirmada <-> Cancelada) de forma rápida al tocarla
+  // Función para alternar/cambiar el estado de una reserva (Confirmada <-> Cancelada)
   const handleToggleReservaEstado = (reservaId) => {
+    const selectedRes = reservations.find(r => r.id === reservaId);
+    if (!selectedRes) return;
+
     Alert.alert(
       'Gestionar Reserva',
       'Elige una acción para esta reserva:',
       [
         {
-          text: 'Alternar Confirmada / Cancelada',
+          text: selectedRes.estado === 'Confirmada' ? 'Marcar como Cancelada' : 'Marcar como Confirmada',
           onPress: async () => {
-            const updated = reservations.map((r) => {
-              if (r.id === reservaId) {
-                return {
-                  ...r,
-                  estado: r.estado === 'Confirmada' ? 'Cancelada' : 'Confirmada',
-                };
-              }
-              return r;
-            });
-            await AsyncStorage.setItem('reservas', JSON.stringify(updated));
-            setReservations(updated);
+            try {
+              const newEstado = selectedRes.estado === 'Confirmada' ? 'CANCELADA' : 'CONFIRMADA';
+              const body = {
+                nombreCliente: selectedRes.cliente,
+                telefonoCliente: selectedRes.telefono || '',
+                cantidadDePersonas: selectedRes.cantidad,
+                fechaDeReserva: formatToBackendDate(selectedRes.fecha),
+                horarioDeReserva: selectedRes.horario.includes(':') ? (selectedRes.horario.length === 5 ? selectedRes.horario + ':00' : selectedRes.horario) : '12:00:00',
+                ubicacion: selectedRes.ubicacion || 'ADENTRO',
+                estado: newEstado
+              };
+              await api.put(`/reservas/${reservaId}`, body);
+              Alert.alert('Reserva actualizada', `El estado cambió a "${newEstado === 'CONFIRMADA' ? 'Confirmada' : 'Cancelada'}".`);
+              await loadReservations();
+            } catch (err) {
+              console.error('Error al actualizar reserva:', err.message);
+              // Fallback local
+              const updated = reservations.map((r) => {
+                if (r.id === reservaId) {
+                  return {
+                    ...r,
+                    estado: r.estado === 'Confirmada' ? 'Cancelada' : 'Confirmada',
+                  };
+                }
+                return r;
+              });
+              await AsyncStorage.setItem('reservas', JSON.stringify(updated));
+              setReservations(updated);
+            }
           },
         },
         {
           text: 'Eliminar Reserva',
           style: 'destructive',
           onPress: async () => {
-            const updated = reservations.filter((r) => r.id !== reservaId);
-            await AsyncStorage.setItem('reservas', JSON.stringify(updated));
-            setReservations(updated);
+            try {
+              await api.delete(`/reservas/${reservaId}`);
+              Alert.alert('Eliminado', 'La reserva fue cancelada/eliminada.');
+              await loadReservations();
+            } catch (err) {
+              console.error('Error al eliminar reserva:', err.message);
+              // Fallback local
+              const updated = reservations.filter((r) => r.id !== reservaId);
+              await AsyncStorage.setItem('reservas', JSON.stringify(updated));
+              setReservations(updated);
+            }
           },
         },
         { text: 'Cancelar', style: 'cancel' },
@@ -133,30 +234,50 @@ export default function BackofficeReservas() {
     }
 
     try {
-      const newReserva = {
-        id: Date.now().toString(),
-        fecha: selectedFecha,
-        nombreDia: currentDiaObj.fullText,
-        diaSemana: currentDiaObj.nombre,
-        nroDia: currentDiaObj.nro,
-        turno: turnoInput,
-        cliente: clienteInput,
-        horario: horarioInput,
-        cantidad: cantidadNum,
-        estado: 'Confirmada',
+      const formattedTime = horarioInput.includes(':') ? (horarioInput.length === 5 ? horarioInput + ':00' : horarioInput) : '20:00:00';
+      const body = {
+        nombreCliente: clienteInput,
+        telefonoCliente: '',
+        cantidadDePersonas: cantidadNum,
+        fechaDeReserva: formatToBackendDate(selectedFecha),
+        horarioDeReserva: formattedTime,
+        ubicacion: 'ADENTRO',
+        estado: 'CONFIRMADA'
       };
 
-      const updated = [...reservations, newReserva];
-      await AsyncStorage.setItem('reservas', JSON.stringify(updated));
-      setReservations(updated);
+      try {
+        await api.post('/reservas', body);
+        Alert.alert('Reserva guardada', `Se registró la reserva a nombre de "${clienteInput}".`);
+        await loadReservations();
+      } catch (backendErr) {
+        console.warn('Fallo guardado en backend, guardando localmente:', backendErr.message);
+        // Fallback local
+        const newReserva = {
+          id: Date.now().toString(),
+          fecha: selectedFecha,
+          nombreDia: currentDiaObj.fullText,
+          diaSemana: currentDiaObj.nombre,
+          nroDia: currentDiaObj.nro,
+          turno: turnoInput,
+          cliente: clienteInput,
+          horario: horarioInput,
+          cantidad: cantidadNum,
+          estado: 'Confirmada',
+          telefono: '',
+          ubicacion: 'ADENTRO'
+        };
+
+        const updated = [...reservations, newReserva];
+        await AsyncStorage.setItem('reservas', JSON.stringify(updated));
+        setReservations(updated);
+        Alert.alert('Reserva guardada localmente', `Se registró la reserva a nombre de "${clienteInput}".`);
+      }
       
       // Limpiar y cerrar
       setClienteInput('');
       setHorarioInput('');
       setCantidadInput('');
       setModalVisible(false);
-
-      Alert.alert('Reserva guardada', `Se registró la reserva a nombre de "${clienteInput}".`);
     } catch (e) {
       console.error(e);
       Alert.alert('Error', 'No se pudo registrar la reserva.');
@@ -175,6 +296,7 @@ export default function BackofficeReservas() {
           style: 'destructive',
           onPress: async () => {
             await AsyncStorage.removeItem('activeUser');
+            await AsyncStorage.removeItem('authToken');
             router.replace('/login');
           },
         },
@@ -218,6 +340,20 @@ export default function BackofficeReservas() {
           text: 'Simular nueva Reserva',
           onPress: async () => {
             try {
+              const body = {
+                nombreCliente: 'Claudia Paz',
+                telefonoCliente: '',
+                cantidadDePersonas: 4,
+                fechaDeReserva: formatToBackendDate(selectedFecha),
+                horarioDeReserva: '21:30:00',
+                ubicacion: 'ADENTRO',
+                estado: 'CONFIRMADA'
+              };
+              await api.post('/reservas', body);
+              await loadReservations();
+              Alert.alert('Simulación exitosa', 'Reserva simulada guardada en backend.');
+            } catch (e) {
+              console.warn('Error al simular en backend, simulando localmente:', e.message);
               const newRes = {
                 id: Date.now().toString(),
                 fecha: selectedFecha,
@@ -229,13 +365,13 @@ export default function BackofficeReservas() {
                 horario: '21:30',
                 cantidad: 4,
                 estado: 'Confirmada',
+                telefono: '',
+                ubicacion: 'ADENTRO'
               };
               const updated = [...reservations, newRes];
               await AsyncStorage.setItem('reservas', JSON.stringify(updated));
               setReservations(updated);
-              Alert.alert('Simulación exitosa', 'Reserva simulada guardada.');
-            } catch (e) {
-              console.error(e);
+              Alert.alert('Simulación exitosa', 'Reserva simulada guardada localmente.');
             }
           },
         },
@@ -243,6 +379,7 @@ export default function BackofficeReservas() {
       ]
     );
   };
+
 
   return (
     <View style={styles.mainContainer}>

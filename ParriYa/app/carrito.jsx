@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -11,19 +11,33 @@ import {
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import CarritoItem from "../components/CarritoItem/CarritoItem";
-import { PRODUCTOS } from "../constants/mocks";
 import { useCart } from "../components/CartContext";
 import { styles } from "../components/Carrito/carrito.styles";
-
-const SUGERENCIAS_DATA = PRODUCTOS.filter((p) => ["10", "11", "12"].includes(p.id)).map((p) => ({
-  id: p.id,
-  nombre: p.nombre,
-  image: p.img_url,
-}));
+import api, { resolveProductImg } from "../services/api";
 
 export default function CarritoScreen() {
   const router = useRouter();
   const { cartItems, removeFromCart, updateQuantity, addToCart } = useCart();
+  const [sugerencias, setSugerencias] = useState([]);
+
+  useEffect(() => {
+    async function loadSugerencias() {
+      try {
+        const response = await api.get('/productos');
+        if (response.data && response.data.length > 0) {
+          const mapped = response.data.slice(0, 3).map((p) => ({
+            id: String(p.id),
+            nombre: p.nombre,
+            image: resolveProductImg(p.nombre, p.imgUrl || p.img_url),
+          }));
+          setSugerencias(mapped);
+        }
+      } catch (error) {
+        console.warn('Error cargando sugerencias en carrito:', error.message);
+      }
+    }
+    loadSugerencias();
+  }, []);
 
   const tarifaServicio = 3000;
 
@@ -101,7 +115,7 @@ export default function CarritoScreen() {
         <View style={styles.suggestionsContainer}>
           <Text style={styles.suggestionsTitle}>¿Queres agregar algo mas?</Text>
           <FlatList
-            data={SUGERENCIAS_DATA}
+            data={sugerencias}
             renderItem={renderSugerencia}
             keyExtractor={(item) => item.id}
             horizontal

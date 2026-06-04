@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, Image, Alert, Platform } from 
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from '../components/Auth/login.styles'; // Ajustá la ruta
+import api from '../services/api';
 
 const showAlert = (title, message) => {
   if (Platform.OS === 'web') {
@@ -26,9 +27,9 @@ export default function LoginScreen() {
         <Text style={styles.title}>Iniciar Sesion</Text>
 
         <View style={styles.inputWrapper}>
-          <Text style={styles.inputLabel}>Usuario</Text>
+          <Text style={styles.inputLabel}>Email / Usuario</Text>
           <View style={styles.inputContainer}>
-            <TextInput style={styles.textInput} placeholder="usuario.123" placeholderTextColor="#8E8E93" value={username} onChangeText={setUsername} />
+            <TextInput style={styles.textInput} placeholder="usuario@mail.com" placeholderTextColor="#8E8E93" value={username} onChangeText={setUsername} autoCapitalize="none" keyboardType="email-address" />
           </View>
         </View>
 
@@ -43,62 +44,44 @@ export default function LoginScreen() {
           style={styles.mainButton}
           onPress={async () => {
             if (!username || !password) {
-              showAlert('Completa los campos', 'Debes ingresar usuario y contraseña.');
+              showAlert('Completa los campos', 'Debes ingresar email y contraseña.');
               return;
             }
 
             try {
-              // 1. Acceso de prueba rápido para el Administrador
-              if (username.toLowerCase() === 'admin') {
-                const adminUser = {
-                  username: 'admin',
-                  email: 'admin@parriya.com',
-                  rol: 'admin'
-                };
-                await AsyncStorage.setItem('activeUser', JSON.stringify(adminUser));
-                router.replace('/backoffice');
-                return;
-              }
+              // Llamar a la API de autenticación en el Backend
+              const response = await api.post('/auth/login', {
+                email: username.trim(),
+                password: password
+              });
 
-              const stored = await AsyncStorage.getItem('registeredUser');
-              if (!stored) {
-                showAlert('Usuario no registrado', 'Primero crea una cuenta para poder ingresar.');
-                return;
-              }
+              const token = response.data.token;
+              await AsyncStorage.setItem('authToken', token);
 
-              let savedUser;
-              try {
-                savedUser = JSON.parse(stored);
-              } catch (parseError) {
-                showAlert('Error de cuenta', 'No se pudo leer la cuenta registrada.');
-                return;
-              }
+              // Cargar el perfil del usuario utilizando el token obtenido
+              const profileResponse = await api.get('/usuario/perfil', {
+                headers: { Authorization: `Bearer ${token}` }
+              });
 
-              if (!savedUser?.username || !savedUser?.password) {
-                showAlert('Usuario no registrado', 'No se encontró una cuenta válida.');
-                return;
-              }
+              const profile = profileResponse.data;
+              const userObj = {
+                username: profile.nombre,
+                email: profile.email,
+                rol: profile.rol.toLowerCase(), // 'admin' o 'cliente'
+                telefono: profile.telefono,
+              };
 
-              if (savedUser.username !== username) {
-                showAlert('Usuario incorrecto', 'El usuario ingresado no coincide con la cuenta registrada.');
-                return;
-              }
-
-              if (savedUser.password !== password) {
-                showAlert('Contraseña incorrecta', 'La contraseña no coincide. Intenta de nuevo.');
-                return;
-              }
-
-              await AsyncStorage.setItem('activeUser', JSON.stringify(savedUser));
+              await AsyncStorage.setItem('activeUser', JSON.stringify(userObj));
               
-              // 2. Redirección basada en Rol de la base de datos (rol === 'admin')
-              if (savedUser.rol === 'admin') {
+              if (userObj.rol === 'admin') {
                 router.replace('/backoffice');
               } else {
                 router.replace('/(tabs)');
               }
             } catch (error) {
-              showAlert('Error', 'Ocurrió un problema al verificar tu cuenta.');
+              console.error('Error al iniciar sesión:', error);
+              const errorMsg = error.response?.data?.message || 'Usuario o contraseña incorrectos. Intenta de nuevo.';
+              showAlert('Error de autenticación', errorMsg);
             }
           }}
         >

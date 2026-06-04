@@ -5,60 +5,32 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { styles } from '../../components/Backoffice/backoffice.styles';
 import { COLORS } from '../../constants/colors';
-
-// --- MOCK DETAILS FROM THE IMAGE FOR PERSISTENT SEEDING ---
-const FEEDBACK_DETALLE_MOCK = [
-  {
-    id: '1',
-    cliente: 'Enzo Mussi',
-    fecha: 'Hoy, 14:32',
-    pedido_id: '023',
-    comentario: 'El lomo a la parrilla estaba en su punto exacto, muy tierno y jugoso. Las papas fritas crocantes como siempre. Definitivamente vuelvo.',
-    calificacion: 4,
-  },
-  {
-    id: '2',
-    cliente: 'Lucía Torres',
-    fecha: 'Ayer, 15:32',
-    pedido_id: '020',
-    comentario: 'Muy rico todo, el chorizo estaba perfecto. La entrega tardó un poco más de lo esperado pero el sabor lo vale.',
-    calificacion: 4,
-  },
-  {
-    id: '3',
-    cliente: 'Marcos Olise',
-    fecha: 'Hoy, 16:32',
-    pedido_id: '017',
-    comentario: 'Las papas fritas son un must, siempre crocantes y en el punto. El lomo también impecable. El mejor asado a domicilio de la zona.',
-    calificacion: 4,
-  },
-  {
-    id: '4',
-    cliente: 'Ana Paredes',
-    fecha: 'Hoy, 11:21',
-    pedido_id: '010',
-    comentario: 'El pollo estaba rico pero llegó un poco frío. Esperaba más jugosidad. La atención por WhatsApp fue buena.',
-    calificacion: 4,
-  },
-];
+import api from '../../services/api';
 
 export default function BackofficeFeedback() {
   const router = useRouter();
   const [feedbacks, setFeedbacks] = useState([]);
 
-  // Carga y combina feedbacks de AsyncStorage
+  // Carga feedbacks desde el backend
   const loadFeedbacks = async () => {
     try {
-      const storedJson = await AsyncStorage.getItem('feedbacks');
-      if (storedJson) {
-        setFeedbacks(JSON.parse(storedJson));
+      const response = await api.get('/feedback');
+      if (response.data && response.data.length > 0) {
+        const mapped = response.data.map((f) => ({
+          id: String(f.id),
+          cliente: f.nombreCliente || 'Cliente',
+          fecha: f.fecha ? new Date(f.fecha).toLocaleDateString('es-AR') : 'Reciente',
+          pedido_id: f.pedidoId ? String(f.pedidoId).padStart(3, '0') : 'N/A',
+          comentario: f.comentario || '',
+          calificacion: f.calificacion || 5,
+        }));
+        setFeedbacks(mapped);
       } else {
-        await AsyncStorage.setItem('feedbacks', JSON.stringify(FEEDBACK_DETALLE_MOCK));
-        setFeedbacks(FEEDBACK_DETALLE_MOCK);
+        setFeedbacks([]);
       }
     } catch (e) {
-      console.error('Error cargando feedbacks:', e);
-      setFeedbacks(FEEDBACK_DETALLE_MOCK);
+      console.warn('Error cargando feedbacks de backend:', e.message);
+      setFeedbacks([]);
     }
   };
 
@@ -85,27 +57,6 @@ export default function BackofficeFeedback() {
     return <View style={{ flexDirection: 'row' }}>{stars}</View>;
   };
 
-  // Función para gestionar y borrar feedbacks al tocarlos (Acción del admin)
-  const handleManageFeedback = (feedbackId, cliente) => {
-    Alert.alert(
-      'Gestionar Reseña',
-      `Elige una acción para el feedback de "${cliente}":`,
-      [
-        {
-          text: 'Eliminar de la vista',
-          style: 'destructive',
-          onPress: async () => {
-            const updated = feedbacks.filter((f) => f.id !== feedbackId);
-            await AsyncStorage.setItem('feedbacks', JSON.stringify(updated));
-            setFeedbacks(updated);
-            Alert.alert('Eliminado', 'Se ha removido el feedback.');
-          },
-        },
-        { text: 'Cancelar', style: 'cancel' },
-      ]
-    );
-  };
-
   // Función para desloguear
   const handleLogout = () => {
     Alert.alert(
@@ -118,6 +69,7 @@ export default function BackofficeFeedback() {
           style: 'destructive',
           onPress: async () => {
             await AsyncStorage.removeItem('activeUser');
+            await AsyncStorage.removeItem('authToken');
             router.replace('/login');
           },
         },
@@ -129,33 +81,8 @@ export default function BackofficeFeedback() {
   const handleQuickAction = () => {
     Alert.alert(
       'Acciones del Administrador',
-      'Simula operaciones para poblar la base de datos local:',
+      'Simula operaciones para poblar la base de datos:',
       [
-        {
-          text: 'Simular nuevo Feedback',
-          onPress: async () => {
-            try {
-              const currentJson = await AsyncStorage.getItem('feedbacks');
-              const current = currentJson ? JSON.parse(currentJson) : [];
-              
-              const newFeed = {
-                id: Date.now().toString(),
-                cliente: 'María Belén',
-                fecha: 'Hoy, 10:15',
-                pedido_id: '025',
-                comentario: 'El vacío al plato estaba increíble, cocido a la perfección. La entrega súper rápida y las porciones abundantes.',
-                calificacion: 5,
-              };
-
-              const updated = [newFeed, ...current];
-              await AsyncStorage.setItem('feedbacks', JSON.stringify(updated));
-              setFeedbacks(updated);
-              Alert.alert('Simulación exitosa', 'Se añadió una nueva reseña de 5 estrellas.');
-            } catch (e) {
-              console.error(e);
-            }
-          },
-        },
         {
           text: 'Simular nuevo Pedido',
           onPress: async () => {
