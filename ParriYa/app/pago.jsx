@@ -53,7 +53,7 @@ export default function PagoScreen() {
 
       // Payload para el backend Spring Boot (PedidoRequest)
       const requestBody = {
-        horarioRetiro: "20:00:00", // Horario predeterminado o configurable
+        horarioRetiro: "20:00:00",
         total: total,
         detalles: cartItems.map((item) => ({
           productoId: parseInt(item.id, 10),

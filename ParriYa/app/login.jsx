@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Image, Alert, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { styles } from '../components/Auth/login.styles'; // Ajustá la ruta
+import { styles } from '../components/Auth/login.styles';
 import api from '../services/api';
 
 const showAlert = (title, message) => {
@@ -20,8 +20,6 @@ export default function LoginScreen() {
 
   return (
     <View style={styles.mainContainer}>
-      {/* Si exportás el fondo degradado como PNG, descomentá esto: */}
-      {/* <Image source={require('../assets/images/fondo-auth.png')} style={styles.backgroundImage} resizeMode="cover" /> */}
 
       <View style={styles.card}>
         <Text style={styles.title}>Iniciar Sesion</Text>
@@ -49,7 +47,6 @@ export default function LoginScreen() {
             }
 
             try {
-              // Llamar a la API de autenticación en el Backend
               const response = await api.post('/auth/login', {
                 email: username.trim(),
                 password: password
@@ -58,7 +55,6 @@ export default function LoginScreen() {
               const token = response.data.token;
               await AsyncStorage.setItem('authToken', token);
 
-              // Cargar el perfil del usuario utilizando el token obtenido
               const profileResponse = await api.get('/usuario/perfil', {
                 headers: { Authorization: `Bearer ${token}` }
               });
@@ -67,7 +63,7 @@ export default function LoginScreen() {
               const userObj = {
                 username: profile.nombre,
                 email: profile.email,
-                rol: profile.rol.toLowerCase(), // 'admin' o 'cliente'
+                rol: profile.rol.toLowerCase(),
                 telefono: profile.telefono,
               };
 
@@ -80,7 +76,7 @@ export default function LoginScreen() {
               }
             } catch (error) {
               console.error('Error al iniciar sesión:', error);
-              const errorMsg = error.response?.data?.message || 'Usuario o contraseña incorrectos. Intenta de nuevo.';
+              const errorMsg = error.response?.data?.error || error.response?.data?.message || 'Usuario o contraseña incorrectos. Intenta de nuevo.';
               showAlert('Error de autenticación', errorMsg);
             }
           }}

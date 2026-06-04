@@ -11,7 +11,6 @@ export default function Index() {
     let checkDone = false;
     let targetRoute = '/login';
 
-    // 1. Iniciar la verificación del usuario en AsyncStorage en paralelo
     async function checkUser() {
       try {
         const activeUser = await AsyncStorage.getItem('activeUser');
@@ -35,7 +34,6 @@ export default function Index() {
     
     checkUser();
 
-    // 2. Temporizador estricto de 2.5 segundos (2500 ms) para el splash
     const timer = setTimeout(() => {
       const navigateWhenReady = () => {
         if (checkDone) {
@@ -68,7 +66,7 @@ export default function Index() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#260C05', // Color de respaldo marrón
+    backgroundColor: '#260C05',
     width: '100%',
     height: '100%',
   },

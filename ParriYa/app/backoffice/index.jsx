@@ -38,6 +38,11 @@ export default function BackofficeDashboard() {
   // Carga los datos del Backoffice Dashboard desde la base de datos (Backend)
   const loadDashboardData = async () => {
     try {
+      const activeUserJson = await AsyncStorage.getItem('activeUser');
+      if (!activeUserJson) return;
+      const user = JSON.parse(activeUserJson);
+      if (user.rol !== 'admin') return;
+
       // 1. Obtener Pedidos del Backend
       try {
         const pedRes = await api.get('/pedidos/dashboard');

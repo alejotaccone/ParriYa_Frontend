@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { styles } from '../components/Auth/auth.styles'; // Ajustá esta ruta
+import { styles } from '../components/Auth/auth.styles';
 
 export default function NuevaContrasenaScreen() {
   const router = useRouter();
@@ -34,7 +34,7 @@ export default function NuevaContrasenaScreen() {
 
         <TouchableOpacity 
           style={styles.confirmButton}
-          onPress={() => router.push('/(tabs)')} // O a donde quieras que vaya al terminar
+          onPress={() => router.push('/(tabs)')}
         >
           <Text style={styles.confirmButtonText}>Confirmar</Text>
         </TouchableOpacity>

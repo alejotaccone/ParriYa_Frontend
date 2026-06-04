@@ -8,10 +8,9 @@ import { styles } from '../../components/Perfil/perfil.styles';
 export default function AdminPerfilScreen() {
   const router = useRouter();
   const [usuario, setUsuario] = useState({
-    username: 'Admin123',
-    email: 'admin123@gmail.com',
-    telefono: '+54 9 11 1234-5678',
-    direccion: 'Lima 757, C1073 Cdad. Autónoma de Buenos Aires',
+    username: '',
+    email: '',
+    telefono: '',
   });
 
   useEffect(() => {
@@ -21,10 +20,9 @@ export default function AdminPerfilScreen() {
         if (stored) {
           const savedUser = JSON.parse(stored);
           setUsuario({
-            username: savedUser.username === 'admin' ? 'Admin123' : savedUser.username || 'Admin123',
-            email: savedUser.email === 'admin@parriya.com' ? 'admin123@gmail.com' : savedUser.email || 'admin123@gmail.com',
-            telefono: savedUser.telefono || '+54 9 11 1234-5678',
-            direccion: savedUser.direccion || 'Lima 757, C1073 Cdad. Autónoma de Buenos Aires',
+            username: savedUser.username || '',
+            email: savedUser.email || '',
+            telefono: savedUser.telefono || '',
           });
         }
       } catch (e) {
@@ -119,19 +117,6 @@ export default function AdminPerfilScreen() {
                 style={styles.textInput}
                 value={usuario.email}
                 editable={false}
-              />
-            </View>
-          </View>
-
-          {/* Campo: Dirección */}
-          <View style={styles.inputWrapper}>
-            <Text style={styles.inputLabel}>Dirreccion</Text>
-            <View style={styles.inputContainer}>
-              <TextInput
-                style={styles.textInput}
-                value={usuario.direccion}
-                editable={false}
-                multiline={true}
               />
             </View>
           </View>

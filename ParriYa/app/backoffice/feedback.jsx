@@ -14,6 +14,11 @@ export default function BackofficeFeedback() {
   // Carga feedbacks desde el backend
   const loadFeedbacks = async () => {
     try {
+      const activeUserJson = await AsyncStorage.getItem('activeUser');
+      if (!activeUserJson) return;
+      const user = JSON.parse(activeUserJson);
+      if (user.rol !== 'admin') return;
+
       const response = await api.get('/feedback');
       if (response.data && response.data.length > 0) {
         const mapped = response.data.map((f) => ({
@@ -143,11 +148,9 @@ export default function BackofficeFeedback() {
         contentContainerStyle={{ paddingBottom: 20 }}
       >
         {feedbacks.map((item) => (
-          <TouchableOpacity 
+          <View 
             key={item.id} 
             style={styles.feedbackDetailCard}
-            activeOpacity={0.8}
-            onPress={() => handleManageFeedback(item.id, item.cliente)}
           >
             {/* Header: Cliente y Estrellas */}
             <View style={styles.feedbackHeaderRow}>
@@ -166,7 +169,7 @@ export default function BackofficeFeedback() {
               {item.comentario}
             </Text>
 
-          </TouchableOpacity>
+          </View>
         ))}
       </ScrollView>
 

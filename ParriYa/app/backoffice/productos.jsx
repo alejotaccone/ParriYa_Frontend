@@ -13,18 +13,22 @@ export default function BackofficeProductos() {
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState('Todo');
   const [categoriesList, setCategoriesList] = useState([]);
 
-  // Estados del Formulario Modal (ABM)
   const [modalVisible, setModalVisible] = useState(false);
-  const [editingProduct, setEditingProduct] = useState(null); // null = Crear, productObj = Editar
+  const [editingProduct, setEditingProduct] = useState(null);
   const [nombreInput, setNombreInput] = useState('');
   const [descripcionInput, setDescripcionInput] = useState('');
   const [precioInput, setPrecioInput] = useState('');
   const [imgUrlInput, setImgUrlInput] = useState('');
-  const [selectedCategoryOptionId, setSelectedCategoryOptionId] = useState('1'); // Carnes por defecto
+  const [selectedCategoryOptionId, setSelectedCategoryOptionId] = useState('1');
   const [stockInput, setStockInput] = useState('10');
 
   const loadCategories = async () => {
     try {
+      const activeUserJson = await AsyncStorage.getItem('activeUser');
+      if (!activeUserJson) return;
+      const user = JSON.parse(activeUserJson);
+      if (user.rol !== 'admin') return;
+
       const response = await api.get('/categorias');
       if (response.data && response.data.length > 0) {
         const mapped = response.data.map(c => ({
@@ -44,6 +48,11 @@ export default function BackofficeProductos() {
 
   const loadProducts = async () => {
     try {
+      const activeUserJson = await AsyncStorage.getItem('activeUser');
+      if (!activeUserJson) return;
+      const user = JSON.parse(activeUserJson);
+      if (user.rol !== 'admin') return;
+
       const response = await api.get('/productos');
       if (response.data && response.data.length > 0) {
         const mapped = response.data.map((p) => ({
@@ -143,11 +152,9 @@ export default function BackofficeProductos() {
       };
 
       if (editingProduct) {
-        // --- MODO EDICIÓN BACKEND ---
         await api.put(`/productos/${editingProduct.id}`, body);
         Alert.alert('Producto editado', `Se guardaron los cambios del producto "${nombreInput}".`);
       } else {
-        // --- MODO CREACIÓN BACKEND ---
         await api.post('/productos', body);
         Alert.alert('Producto creado', `Se agregó "${nombreInput}" al catálogo de productos.`);
       }
@@ -210,7 +217,6 @@ export default function BackofficeProductos() {
     <View style={styles.mainContainer}>
       <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
 
-      {/* --- HEADER CON VOLVER Y BOTÓN AGREGAR (+) --- */}
       <View style={styles.header}>
         <View style={styles.backHeaderRow}>
           <TouchableOpacity 
@@ -232,14 +238,12 @@ export default function BackofficeProductos() {
         </View>
       </View>
 
-      {/* --- CATEGORIAS CAROUSEL FILTER BAR --- */}
       <View>
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.categoryScroll}
         >
-          {/* Opción Todo */}
           <TouchableOpacity
             activeOpacity={0.8}
             style={[
@@ -257,7 +261,6 @@ export default function BackofficeProductos() {
             </Text>
           </TouchableOpacity>
 
-          {/* Resto de Categorías de la BDD */}
           {categoriesList.map((cat) => {
             const isActive = cat.nombre === selectedCategoryFilter;
             return (
@@ -502,7 +505,7 @@ export default function BackofficeProductos() {
         <TouchableOpacity 
           style={styles.navItem} 
           activeOpacity={0.7}
-          onPress={handleOpenCreateModal} // Al estar en esta pantalla, + abre directamente la creación de producto
+          onPress={handleOpenCreateModal}
         >
           <Ionicons name="add" size={32} color="white" />
         </TouchableOpacity>

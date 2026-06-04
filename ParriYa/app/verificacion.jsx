@@ -8,7 +8,6 @@ export default function VerificacionScreen() {
   const router = useRouter();
   const inputRefs = useRef([]);
 
-  // Pequeña función para que al escribir salte al siguiente cuadradito automáticamente
   const handleTextChange = (text, index) => {
     if (text.length === 1 && index < 5) {
       inputRefs.current[index + 1].focus();

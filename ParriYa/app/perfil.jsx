@@ -17,7 +17,6 @@ export default function PerfilScreen() {
     username: '',
     email: '',
     telefono: '',
-    direccion: 'No especificada',
   });
 
   useEffect(() => {
@@ -33,7 +32,6 @@ export default function PerfilScreen() {
           username: savedUser.username || '',
           email: savedUser.email || '',
           telefono: savedUser.telefono || '',
-          direccion: savedUser.direccion || 'No especificada',
         });
       } catch (e) {
         router.replace('/login');
@@ -101,19 +99,6 @@ export default function PerfilScreen() {
             </View>
           </View>
 
-          {/* Campo: Dirección */}
-          <View style={styles.inputWrapper}>
-            <Text style={styles.inputLabel}>Direccion</Text>
-            <View style={styles.inputContainer}>
-              <TextInput
-                style={styles.textInput}
-                value={usuario.direccion}
-                editable={false}
-                multiline={true} // Permite que el texto baje si es muy largo
-              />
-            </View>
-          </View>
-
           {/* Campo: Teléfono */}
           <View style={styles.inputWrapper}>
             <Text style={styles.inputLabel}>Telefono</Text>
@@ -133,7 +118,7 @@ export default function PerfilScreen() {
           <TouchableOpacity 
             style={styles.menuRow} 
             activeOpacity={0.7}
-            onPress={() => router.push('/cambiar_contrasena')} // <--- AGREGAR ESTA LÍNEA
+            onPress={() => router.push('/cambiar_contrasena')}
           >
             <Text style={styles.menuRowText}>Cambiar contraseña</Text>
             <Ionicons name="chevron-forward" size={18} color="#8E8E93" />
@@ -156,7 +141,6 @@ export default function PerfilScreen() {
               try {
                 await AsyncStorage.removeItem('activeUser');
               } catch (e) {
-                // ignore
               }
               router.replace('/login');
             }}

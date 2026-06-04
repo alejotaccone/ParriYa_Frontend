@@ -47,7 +47,6 @@ export default function HistorialScreen() {
     <TouchableOpacity 
       style={styles.itemContainer} 
       activeOpacity={0.8}
-      // Acá le pasamos el ID del pedido a la nueva pantalla
       onPress={() => router.push({ pathname: '/detalle_pedido', params: { id: item.id } })}
     >
       {/* Fila superior: Fecha y etiqueta Monto */}

@@ -73,6 +73,11 @@ export default function BackofficePedidos() {
   // Carga los pedidos reales del Backend
   const loadOrders = async () => {
     try {
+      const activeUserJson = await AsyncStorage.getItem('activeUser');
+      if (!activeUserJson) return;
+      const user = JSON.parse(activeUserJson);
+      if (user.rol !== 'admin') return;
+
       const response = await api.get('/pedidos');
       if (response.data && response.data.length > 0) {
         const formatted = response.data.map((o) => ({

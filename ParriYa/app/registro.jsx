@@ -1,9 +1,17 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Image, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Image, Alert, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from '../components/Auth/login.styles'; // Ajustá la ruta
 import api from '../services/api';
+
+const showAlert = (title, message) => {
+  if (Platform.OS === 'web') {
+    window.alert(`${title}\n\n${message}`);
+  } else {
+    Alert.alert(title, message);
+  }
+};
 
 export default function RegistroScreen() {
   const router = useRouter();
@@ -14,12 +22,10 @@ export default function RegistroScreen() {
 
   return (
     <View style={styles.mainContainer}>
-      {/* <Image source={require('../assets/images/fondo-auth.png')} style={styles.backgroundImage} resizeMode="cover" /> */}
 
       <View style={styles.card}>
         <Text style={styles.title}>Crear cuenta</Text>
 
-        {/* Mapea a la columna 'nombre' */}
         <View style={styles.inputWrapper}>
           <Text style={styles.inputLabel}>Usuario</Text>
           <View style={styles.inputContainer}>
@@ -27,7 +33,6 @@ export default function RegistroScreen() {
           </View>
         </View>
 
-        {/* Mapea a la columna 'password_hash' */}
         <View style={styles.inputWrapper}>
           <Text style={styles.inputLabel}>Contraseña</Text>
           <View style={styles.inputContainer}>
@@ -35,7 +40,6 @@ export default function RegistroScreen() {
           </View>
         </View>
 
-        {/* Mapea a la columna 'email' */}
         <View style={styles.inputWrapper}>
           <Text style={styles.inputLabel}>Email</Text>
           <View style={styles.inputContainer}>
@@ -43,7 +47,6 @@ export default function RegistroScreen() {
           </View>
         </View>
 
-        {/* Mapea a la columna 'telefono' */}
         <View style={styles.inputWrapper}>
           <Text style={styles.inputLabel}>Telefono</Text>
           <View style={styles.inputContainer}>
@@ -55,12 +58,11 @@ export default function RegistroScreen() {
           style={styles.mainButton}
           onPress={async () => {
             if (!username || !password || !email || !telefono) {
-              Alert.alert('Completa los campos', 'Debes completar todos los datos para registrarte.');
+              showAlert('Completa los campos', 'Debes completar todos los datos para registrarte.');
               return;
             }
 
             try {
-              // Registrar el usuario en el backend
               const response = await api.post('/auth/registro', {
                 nombre: username.trim(),
                 email: email.trim(),
@@ -71,7 +73,6 @@ export default function RegistroScreen() {
               const token = response.data.token;
               await AsyncStorage.setItem('authToken', token);
 
-              // Cargar perfil del usuario registrado
               const profileResponse = await api.get('/usuario/perfil', {
                 headers: { Authorization: `Bearer ${token}` }
               });
@@ -80,7 +81,7 @@ export default function RegistroScreen() {
               const userObj = {
                 username: profile.nombre,
                 email: profile.email,
-                rol: profile.rol.toLowerCase(), // 'cliente'
+                rol: profile.rol.toLowerCase(),
                 telefono: profile.telefono,
               };
 
@@ -88,8 +89,8 @@ export default function RegistroScreen() {
               router.replace('/(tabs)');
             } catch (error) {
               console.error('Error al registrar usuario:', error);
-              const errorMsg = error.response?.data?.message || 'No se pudo crear la cuenta. Intenta nuevamente.';
-              Alert.alert('Error', errorMsg);
+              const errorMsg = error.response?.data?.error || error.response?.data?.message || 'No se pudo crear la cuenta. Intenta nuevamente.';
+              showAlert('Error', errorMsg);
             }
           }}
         >

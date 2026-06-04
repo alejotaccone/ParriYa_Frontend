@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { styles } from '../components/Auth/login.styles'; // Ajustá la ruta
+import { styles } from '../components/Auth/login.styles';
 
 export default function IngresarMailScreen() {
   const router = useRouter();

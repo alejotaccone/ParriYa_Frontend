@@ -28,9 +28,11 @@ function RootLayoutNav() {
         const inTabs = segs[0] === '(tabs)';
         const isAuthRoute = ['login', 'registro', 'ingresar_mail', 'verificacion', 'nueva_contrasena'].includes(segs[0] || '');
 
+        const isCommonRoute = ['cambiar_contrasena', 'verificacion', 'nueva_contrasena'].includes(segs[0] || '');
+
         if (userObj) {
           if (userObj.rol === 'admin') {
-            if (!inBackoffice) {
+            if (!inBackoffice && !isCommonRoute) {
               router.replace('/backoffice' as any);
             }
           } else {
@@ -61,7 +63,6 @@ function RootLayoutNav() {
       <Stack.Screen name="detalle_pedido" options={{ headerShown: false }} />
       <Stack.Screen name="detalle" options={{ headerShown: false }} />
       <Stack.Screen name="pago" options={{ headerShown: false }} />
-      <Stack.Screen name="favoritos" options={{ headerShown: false }} />
       <Stack.Screen name="cambiar_contrasena" options={{ headerShown: false }} />
       <Stack.Screen name="verificacion" options={{ headerShown: false }} />
       <Stack.Screen name="nueva_contrasena" options={{ headerShown: false }} />

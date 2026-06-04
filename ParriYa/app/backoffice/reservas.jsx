@@ -7,29 +7,6 @@ import { styles } from '../../components/Backoffice/backoffice.styles';
 import { COLORS } from '../../constants/colors';
 import api from '../../services/api';
 
-// --- SEED DE RESERVAS INICIALES (MOCKUP EXACTO) ---
-const RESERVAS_SEED_DATA = [
-  // Lunes 27 de Abril
-  { id: '1', fecha: '27/04/2026', nombreDia: 'Lunes 27 de abril', diaSemana: 'Lunes', nroDia: '27', turno: 'Mediodia', cliente: 'Enzo Mussi', horario: '12:00', cantidad: 4, estado: 'Confirmada' },
-  { id: '2', fecha: '27/04/2026', nombreDia: 'Lunes 27 de abril', diaSemana: 'Lunes', nroDia: '27', turno: 'Mediodia', cliente: 'Luis Diaz', horario: '12:30', cantidad: 6, estado: 'Confirmada' },
-  { id: '3', fecha: '27/04/2026', nombreDia: 'Lunes 27 de abril', diaSemana: 'Lunes', nroDia: '27', turno: 'Mediodia', cliente: 'Luisa Jara', horario: '13:00', cantidad: 3, estado: 'Cancelada' },
-  { id: '4', fecha: '27/04/2026', nombreDia: 'Lunes 27 de abril', diaSemana: 'Lunes', nroDia: '27', turno: 'Noche', cliente: 'Enzo Mussi', horario: '21:30', cantidad: 4, estado: 'Confirmada' },
-  { id: '5', fecha: '27/04/2026', nombreDia: 'Lunes 27 de abril', diaSemana: 'Lunes', nroDia: '27', turno: 'Noche', cliente: 'Luis Diaz', horario: '20:30', cantidad: 6, estado: 'Confirmada' },
-  { id: '6', fecha: '27/04/2026', nombreDia: 'Lunes 27 de abril', diaSemana: 'Lunes', nroDia: '27', turno: 'Noche', cliente: 'Luisa Jara', horario: '22:30', cantidad: 3, estado: 'Confirmada' },
-  { id: '7', fecha: '27/04/2026', nombreDia: 'Lunes 27 de abril', diaSemana: 'Lunes', nroDia: '27', turno: 'Noche', cliente: 'Claudia Paz', horario: '22:30', cantidad: 3, estado: 'Confirmada' },
-
-  // Martes 28 de Abril
-  { id: '8', fecha: '28/04/2026', nombreDia: 'Martes 28 de abril', diaSemana: 'Martes', nroDia: '28', turno: 'Mediodia', cliente: 'Manuel Neuer', horario: '12:30', cantidad: 2, estado: 'Confirmada' },
-  { id: '9', fecha: '28/04/2026', nombreDia: 'Martes 28 de abril', diaSemana: 'Martes', nroDia: '28', turno: 'Mediodia', cliente: 'Bruno Titos', horario: '13:15', cantidad: 4, estado: 'Confirmada' },
-  { id: '10', fecha: '28/04/2026', nombreDia: 'Martes 28 de abril', diaSemana: 'Martes', nroDia: '28', turno: 'Noche', cliente: 'Luisa Jara', horario: '21:00', cantidad: 4, estado: 'Confirmada' },
-  { id: '11', fecha: '28/04/2026', nombreDia: 'Martes 28 de abril', diaSemana: 'Martes', nroDia: '28', turno: 'Noche', cliente: 'Enzo Mussi', horario: '22:00', cantidad: 5, estado: 'Confirmada' },
-
-  // Miercoles 29 de Abril
-  { id: '12', fecha: '29/04/2026', nombreDia: 'Miercoles 29 de abril', diaSemana: 'Miercoles', nroDia: '29', turno: 'Mediodia', cliente: 'Claudia Paz', horario: '13:00', cantidad: 3, estado: 'Confirmada' },
-  { id: '13', fecha: '29/04/2026', nombreDia: 'Miercoles 29 de abril', diaSemana: 'Miercoles', nroDia: '29', turno: 'Noche', cliente: 'Manuel Neuer', horario: '20:30', cantidad: 6, estado: 'Confirmada' },
-  { id: '14', fecha: '29/04/2026', nombreDia: 'Miercoles 29 de abril', diaSemana: 'Miercoles', nroDia: '29', turno: 'Noche', cliente: 'Bruno Titos', horario: '22:30', cantidad: 2, estado: 'Cancelada' },
-];
-
 const generateDaysCarousel = () => {
   const days = [];
   const names = ['Dom.', 'Lunes', 'Martes', 'Mierc.', 'Jueves', 'Viernes', 'Sab.'];
@@ -99,6 +76,11 @@ export default function BackofficeReservas() {
 
   const loadReservations = async () => {
     try {
+      const activeUserJson = await AsyncStorage.getItem('activeUser');
+      if (!activeUserJson) return;
+      const user = JSON.parse(activeUserJson);
+      if (user.rol !== 'admin') return;
+
       const backendDate = formatToBackendDate(selectedFecha);
       const response = await api.get(`/reservas/dia/${backendDate}`);
       
