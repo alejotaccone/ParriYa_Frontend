@@ -1,9 +1,10 @@
-import { StyleSheet, View, ScrollView } from 'react-native';
+import { View, ScrollView } from 'react-native';
 import Header from '../../components/Header/Header';
 import Banner from '../../components/Banner/Banner'; 
 import EstadoPedido from '../../components/EstadoPedido/EstadoPedido';
 import Categorias from '../../components/CategoriasInicio/Categorias';
 import MasVendidos from '../../components/MasVendidos/MasVendidos'; 
+import { styles } from './index.styles';
 
 export default function HomeScreen() {
   return (
@@ -25,12 +26,3 @@ export default function HomeScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1, 
-    backgroundColor: '#F5F5F5', 
-  },
-  scrollContent: {
-    paddingBottom: 30, // Le da un poco de aire al final para que el último producto no choque con la barra de abajo
-  }
-});

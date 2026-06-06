@@ -2,6 +2,8 @@ export const COLORS = {
   // Colores principales de ParriYa!
   primary: '#E76F41',       
   secondary: '#4B2610',     
+  splashBackground: '#260C05', // Marrón súper oscuro (Pantalla de presentación)
+  danger: '#DC3545',           // Rojo para acciones destructivas/alertas
   
   // Fondos
   backgroundLight: '#FFFFFF', 

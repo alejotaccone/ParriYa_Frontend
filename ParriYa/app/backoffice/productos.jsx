@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Alert, StatusBar, Modal, TextInput, Image } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Alert, StatusBar, Modal, TextInput, Image, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
@@ -167,49 +167,120 @@ export default function BackofficeProductos() {
     }
   };
 
+  // Función para eliminar producto desde el modal
+  const handleDelete = () => {
+    if (!editingProduct) return;
+
+    const performDelete = async () => {
+      try {
+        await api.delete(`/productos/${editingProduct.id}`);
+        if (Platform.OS === 'web') {
+          window.alert(`Se eliminó "${editingProduct.nombre}" del catálogo.`);
+        } else {
+          Alert.alert('Eliminado', `Se eliminó "${editingProduct.nombre}" del catálogo.`);
+        }
+        setModalVisible(false);
+        await loadProducts();
+      } catch (err) {
+        console.error('Error al eliminar producto:', err.message);
+        if (Platform.OS === 'web') {
+          window.alert('No se pudo eliminar el producto del servidor.');
+        } else {
+          Alert.alert('Error', 'No se pudo eliminar el producto del servidor.');
+        }
+      }
+    };
+
+    if (Platform.OS === 'web') {
+      const confirmed = window.confirm('¿Estás seguro de que querés eliminar este producto? Esta acción no se puede deshacer.');
+      if (confirmed) {
+        performDelete();
+      }
+    } else {
+      Alert.alert(
+        'Eliminar producto',
+        '¿Estás seguro de que querés eliminar este producto? Esta acción no se puede deshacer.',
+        [
+          { text: 'Cancelar', style: 'cancel' },
+          {
+            text: 'Eliminar',
+            style: 'destructive',
+            onPress: performDelete,
+          },
+        ]
+      );
+    }
+  };
+
   // Función para gestionar y eliminar productos
   const handleDeleteProduct = (productId, nombre) => {
-    Alert.alert(
-      'Eliminar Producto',
-      `¿Estás seguro de que quieres eliminar "${nombre}" del catálogo de la base de datos?`,
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        {
-          text: 'Eliminar',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await api.delete(`/productos/${productId}`);
-              Alert.alert('Eliminado', `Se eliminó "${nombre}" del catálogo.`);
-              await loadProducts();
-            } catch (err) {
-              console.error('Error al eliminar producto:', err.message);
-              Alert.alert('Error', 'No se pudo eliminar el producto del servidor.');
-            }
+    const performDelete = async () => {
+      try {
+        await api.delete(`/productos/${productId}`);
+        if (Platform.OS === 'web') {
+          window.alert(`Se eliminó "${nombre}" del catálogo.`);
+        } else {
+          Alert.alert('Eliminado', `Se eliminó "${nombre}" del catálogo.`);
+        }
+        await loadProducts();
+      } catch (err) {
+        console.error('Error al eliminar producto:', err.message);
+        if (Platform.OS === 'web') {
+          window.alert('No se pudo eliminar el producto del servidor.');
+        } else {
+          Alert.alert('Error', 'No se pudo eliminar el producto del servidor.');
+        }
+      }
+    };
+
+    if (Platform.OS === 'web') {
+      const confirmed = window.confirm(`¿Estás seguro de que quieres eliminar "${nombre}" del catálogo de la base de datos?`);
+      if (confirmed) {
+        performDelete();
+      }
+    } else {
+      Alert.alert(
+        'Eliminar Producto',
+        `¿Estás seguro de que quieres eliminar "${nombre}" del catálogo de la base de datos?`,
+        [
+          { text: 'Cancelar', style: 'cancel' },
+          {
+            text: 'Eliminar',
+            style: 'destructive',
+            onPress: performDelete,
           },
-        },
-      ]
-    );
+        ]
+      );
+    }
   };
 
   // Cierre de Sesión
   const handleLogout = () => {
-    Alert.alert(
-      'Cerrar Sesión',
-      '¿Estás seguro de que quieres salir del panel de administración?',
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        {
-          text: 'Salir',
-          style: 'destructive',
-          onPress: async () => {
-            await AsyncStorage.removeItem('activeUser');
-            await AsyncStorage.removeItem('authToken');
-            router.replace('/login');
+    const doLogout = async () => {
+      await AsyncStorage.removeItem('activeUser');
+      await AsyncStorage.removeItem('authToken');
+      router.replace('/login');
+    };
+
+    if (Platform.OS === 'web') {
+      const confirmed = window.confirm('¿Estás seguro de que quieres salir del panel de administración?');
+      if (confirmed) {
+        doLogout();
+      }
+    } else {
+      Alert.alert(
+        'Cerrar Sesión',
+        '¿Estás seguro de que quieres salir del panel de administración?',
+        [
+          { text: 'Cancelar', style: 'cancel' },
+          {
+            text: 'Salir',
+            style: 'destructive',
+            onPress: doLogout,
           },
-        },
-      ]
-    );
+        ]
+      );
+    }
   };
 
 
@@ -485,6 +556,17 @@ export default function BackofficeProductos() {
               >
                 <Text style={styles.modalConfirmButtonText}>Guardar</Text>
               </TouchableOpacity>
+
+              {/* Botón para Eliminar Producto (solo al editar) */}
+              {editingProduct && (
+                <TouchableOpacity
+                  style={styles.modalDeleteButton}
+                  activeOpacity={0.8}
+                  onPress={handleDelete}
+                >
+                  <Text style={styles.modalDeleteButtonText}>Eliminar producto</Text>
+                </TouchableOpacity>
+              )}
 
             </ScrollView>
 

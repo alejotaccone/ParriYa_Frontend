@@ -798,4 +798,17 @@ export const styles = StyleSheet.create({
     color: COLORS.textDescription,
     lineHeight: 20,
   },
+  modalDeleteButton: {
+    paddingVertical: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 10,
+    backgroundColor: 'transparent',
+  },
+  modalDeleteButtonText: {
+    color: COLORS.danger,
+    fontSize: FONTS.bodyLarge,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
 });

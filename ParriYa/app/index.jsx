@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
-import { StyleSheet, StatusBar, ImageBackground } from 'react-native';
+import { StatusBar, ImageBackground } from 'react-native';
 import { useRouter, Stack } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { COLORS } from '../constants/colors';
+import { styles } from './index.styles';
 
 export default function Index() {
   const router = useRouter();
@@ -63,11 +63,3 @@ export default function Index() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#260C05',
-    width: '100%',
-    height: '100%',
-  },
-});
