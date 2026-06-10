@@ -1,54 +1,4 @@
-import * as ReactNative from 'react-native';
 import React, { useEffect } from 'react';
-
-// Monkey-patch global para aplicar Epilogue y mapear los pesos (weights) automáticamente
-const OriginalText = ReactNative.Text;
-const OriginalTextInput = ReactNative.TextInput;
-
-const patchStyle = (style) => {
-  const flatStyle = ReactNative.StyleSheet.flatten(style);
-  let fontFamily = 'Epilogue_400Regular';
-  let overrideWeight = false;
-
-  if (flatStyle) {
-    if (flatStyle.fontWeight === 'bold' || flatStyle.fontWeight === '700') {
-      fontFamily = 'Epilogue_700Bold';
-      overrideWeight = true;
-    } else if (flatStyle.fontWeight === '600') {
-      fontFamily = 'Epilogue_600SemiBold';
-      overrideWeight = true;
-    } else if (flatStyle.fontWeight === '500') {
-      fontFamily = 'Epilogue_500Medium';
-      overrideWeight = true;
-    } else if (flatStyle.fontFamily) {
-      fontFamily = flatStyle.fontFamily;
-    }
-  }
-
-  return [
-    { fontFamily },
-    style,
-    overrideWeight ? { fontWeight: undefined } : null
-  ];
-};
-
-const CustomText = (props) => {
-  const { style, children, ...rest } = props;
-  return <OriginalText {...rest} style={patchStyle(style)}>{children}</OriginalText>;
-};
-
-const CustomTextInput = (props) => {
-  const { style, ...rest } = props;
-  return <OriginalTextInput {...rest} style={patchStyle(style)} />;
-};
-
-try {
-  console.log('--- PATCH DE FUENTES ACTIVADO ---');
-  ReactNative.Text = CustomText;
-  ReactNative.TextInput = CustomTextInput;
-} catch (e) {
-  console.error("Error al aplicar patch de fuentes:", e);
-}
 
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack, useRouter, useSegments } from 'expo-router';
@@ -149,7 +99,6 @@ export default function RootLayout() {
     Epilogue_700Bold,
   });
 
-  console.log('--- ROOT LAYOUT EVALUADO ---, fontsLoaded:', fontsLoaded, 'fontError:', fontError);
 
   useEffect(() => {
     if (fontsLoaded || fontError) {

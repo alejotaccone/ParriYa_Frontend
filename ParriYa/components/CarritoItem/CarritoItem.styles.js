@@ -104,8 +104,7 @@ export const styles = StyleSheet.create({
     elevation: 3,
   },
 
-  // --- AGREGÁ ESTO ACÁ ABAJO ---
   cardContainerWithDelete: {
-    marginRight: 0, // Ajuste armónico para que se pegue al botón como en tu Figma
+    marginRight: 0,
   },
 });

@@ -14,7 +14,7 @@ const STATE_MAPPING = {
   },
   2: {
     label: 'Preparando',
-    description: 'La parrilla esta preparando tu pedido', // Coincide con tu diseño
+    description: 'La parrilla esta preparando tu pedido',
     segments: 2,
   },
   3: {
