@@ -9,6 +9,8 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   sectionTitle: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.bodyLarge, // Antes: 16
     fontWeight: 'bold',
     color: COLORS.textMuted, // Antes: '#8E8E93'
@@ -42,6 +44,8 @@ export const styles = StyleSheet.create({
     height: '70%',
   },
   itemText: {
+    fontFamily: FONTS.family.medium,
+
     fontSize: FONTS.small, // Antes: 14
     fontWeight: '500',
     color: COLORS.textMain, // Antes: '#333333'

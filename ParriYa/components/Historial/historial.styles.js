@@ -29,6 +29,8 @@ export const styles = StyleSheet.create({
     marginRight: 15,
   },
   headerTitle: {
+    fontFamily: FONTS.family.bold,
+
     flex: 1,
     fontSize: FONTS.h3, // Antes: 22
     fontWeight: 'bold',
@@ -47,10 +49,14 @@ export const styles = StyleSheet.create({
     borderRadius: 20,
   },
   recientesText: {
+    fontFamily: FONTS.family.regular,
+
     fontSize: FONTS.body, // Antes: 15
     color: COLORS.textMuted, // Antes: '#8E8E93'
   },
   recientesBold: {
+    fontFamily: FONTS.family.bold,
+
     fontWeight: 'bold',
     color: COLORS.textMain, // Antes: '#333333'
   },
@@ -73,12 +79,16 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   emptyText: {
+    fontFamily: FONTS.family.regular,
+
     fontSize: FONTS.body,
     color: COLORS.textMain,
     textAlign: 'center',
     marginBottom: 8,
   },
   emptySubtext: {
+    fontFamily: FONTS.family.regular,
+
     fontSize: FONTS.small,
     color: COLORS.textMuted,
     textAlign: 'center',
@@ -95,11 +105,15 @@ export const styles = StyleSheet.create({
     marginTop: 10,
   },
   dateText: {
+    fontFamily: FONTS.family.medium,
+
     fontSize: FONTS.small, // Antes: 13
     color: COLORS.textMuted, // Antes: '#8E8E93'
     fontWeight: '500',
   },
   montoLabel: {
+    fontFamily: FONTS.family.medium,
+
     fontSize: FONTS.small, // Antes: 13
     color: COLORS.textMuted, // Antes: '#8E8E93'
     fontWeight: '500',
@@ -117,16 +131,22 @@ export const styles = StyleSheet.create({
     flex: 1,
   },
   pedidoTitle: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.bodyLarge, // Antes: 16
     fontWeight: 'bold',
     color: COLORS.textMain, // Antes: '#333333'
     marginBottom: 4,
   },
   productosText: {
+    fontFamily: FONTS.family.regular,
+
     fontSize: FONTS.small, // Antes: 13
     color: COLORS.textMuted, // Antes: '#8E8E93'
   },
   totalText: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.h4, // Antes: 18
     fontWeight: 'bold',
     color: COLORS.textMain, // Antes: '#333333'

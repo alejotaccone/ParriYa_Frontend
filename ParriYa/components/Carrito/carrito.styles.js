@@ -30,6 +30,8 @@ export const styles = StyleSheet.create({
     marginRight: 15,
   },
   headerTitle: {
+    fontFamily: FONTS.family.bold,
+
     flex: 1,
     fontSize: FONTS.h3, // Antes: 22
     fontWeight: "bold",
@@ -43,11 +45,15 @@ export const styles = StyleSheet.create({
     marginVertical: 15,
   },
   deliveryMethod: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.bodyLarge, // Antes: 16
     fontWeight: "bold",
     color: COLORS.textMain, // Antes: "#333333"
   },
   deliveryTime: {
+    fontFamily: FONTS.family.regular,
+
     fontSize: FONTS.small, // Antes: 13 (unificado a 14)
     color: COLORS.textMuted, // Antes: "#8E8E93"
     marginTop: 2,
@@ -60,6 +66,8 @@ export const styles = StyleSheet.create({
     marginBottom: 25,
   },
   suggestionsTitle: {
+    fontFamily: FONTS.family.semiBold,
+
     fontSize: FONTS.bodyLarge, // Antes: 16
     fontWeight: "600",
     color: COLORS.textMain, // Antes: "#333333"
@@ -94,6 +102,8 @@ export const styles = StyleSheet.create({
     height: "100%",
   },
   suggestionName: {
+    fontFamily: FONTS.family.medium,
+
     fontSize: FONTS.small, // Antes: 13 (unificado a 14)
     fontWeight: "500",
     color: COLORS.textMain, // Antes: "#333333"
@@ -112,6 +122,8 @@ export const styles = StyleSheet.create({
     elevation: 10,
   },
   resumenTitle: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.h4, // Antes: 18
     fontWeight: "bold",
     color: COLORS.textMain, // Antes: "#333333"
@@ -123,10 +135,14 @@ export const styles = StyleSheet.create({
     marginBottom: 10,
   },
   resumenLabel: {
+    fontFamily: FONTS.family.regular,
+
     fontSize: FONTS.small, // Antes: 14
     color: COLORS.textMuted, // Antes: "#8E8E93"
   },
   resumenValue: {
+    fontFamily: FONTS.family.medium,
+
     fontSize: FONTS.small, // Antes: 14
     color: COLORS.textMain, // Antes: "#333333"
     fontWeight: "500",
@@ -143,11 +159,15 @@ export const styles = StyleSheet.create({
     marginBottom: 20,
   },
   subtotalLabel: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.h4, // Antes: 18
     fontWeight: "bold",
     color: COLORS.textMain, // Antes: "#333333"
   },
   subtotalValue: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.h3, // Antes: 22
     fontWeight: "bold",
     color: COLORS.textMain, // Antes: "#333333"
@@ -160,6 +180,8 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
   },
   payButtonText: {
+    fontFamily: FONTS.family.bold,
+
     color: COLORS.backgroundLight, // Antes: "white"
     fontSize: FONTS.h4, // Antes: 18
     fontWeight: "bold",

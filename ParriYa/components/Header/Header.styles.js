@@ -21,11 +21,15 @@ export const styles = StyleSheet.create({
     flexDirection: "column",
   },
   titleText: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.h1, // <-- ANTES: 32
     fontWeight: "bold",
     color: COLORS.secondary,
   },
   addressText: {
+    fontFamily: FONTS.family.regular,
+
     fontSize: FONTS.bodyLarge, // <-- ANTES: 16
     color: COLORS.secondary,
     marginTop: 4,
@@ -61,6 +65,8 @@ export const styles = StyleSheet.create({
     marginRight: 10,
   },
   searchInput: {
+    fontFamily: FONTS.family.regular,
+
     flex: 1,
     fontSize: FONTS.bodyLarge, // <-- ANTES: 16
     color: COLORS.textMain,

@@ -8,6 +8,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   sectionTitle: {
+    fontFamily: FONTS.family.bold,
     fontSize: FONTS.bodyLarge,
     fontWeight: 'bold',
     color: COLORS.textMuted,
@@ -26,12 +27,14 @@ export const styles = StyleSheet.create({
     elevation: 4,
   },
   restaurantText: {
+    fontFamily: FONTS.family.bold,
     fontSize: FONTS.bodyLarge,
     fontWeight: 'bold',
     color: COLORS.dropdownDark, // El verde oscuro de la paleta
     marginBottom: 6,
   },
   estimatedTimeText: {
+    fontFamily: FONTS.family.bold,
     fontSize: FONTS.h4,
     fontWeight: 'bold',
     color: COLORS.backgroundLight,
@@ -56,6 +59,7 @@ export const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF', // Blanco puro
   },
   descriptionText: {
+    fontFamily: FONTS.family.medium,
     fontSize: FONTS.small,
     fontWeight: '500',
     color: COLORS.backgroundLight,
@@ -83,6 +87,7 @@ export const styles = StyleSheet.create({
     flex: 0.65,
   },
   reviewButtonText: {
+    fontFamily: FONTS.family.bold,
     color: COLORS.primary,
     fontWeight: 'bold',
     fontSize: FONTS.body,
@@ -99,6 +104,7 @@ export const styles = StyleSheet.create({
     flex: 0.3,
   },
   dismissButtonText: {
+    fontFamily: FONTS.family.semiBold,
     color: '#FFFFFF',
     fontWeight: '600',
     fontSize: FONTS.body,
@@ -123,6 +129,7 @@ export const styles = StyleSheet.create({
     elevation: 10,
   },
   modalTitle: {
+    fontFamily: FONTS.family.bold,
     fontSize: FONTS.h4 || 20,
     fontWeight: 'bold',
     color: '#260C05',
@@ -130,6 +137,7 @@ export const styles = StyleSheet.create({
     textAlign: 'center',
   },
   modalSubtitle: {
+    fontFamily: FONTS.family.regular,
     fontSize: FONTS.body || 15,
     color: COLORS.textMuted || '#8E8E93',
     marginBottom: 20,
@@ -146,12 +154,14 @@ export const styles = StyleSheet.create({
     marginHorizontal: 4,
   },
   inputLabel: {
+    fontFamily: FONTS.family.semiBold,
     fontSize: FONTS.body || 15,
     fontWeight: '600',
     color: '#260C05',
     marginBottom: 8,
   },
   textInput: {
+    fontFamily: FONTS.family.regular,
     backgroundColor: '#F5F5F7',
     borderRadius: 15,
     padding: 15,
@@ -176,6 +186,7 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   modalCancelButtonText: {
+    fontFamily: FONTS.family.bold,
     color: '#8E8E93',
     fontWeight: 'bold',
     fontSize: FONTS.body || 15,
@@ -189,6 +200,7 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   modalSubmitButtonText: {
+    fontFamily: FONTS.family.bold,
     color: '#FFFFFF',
     fontWeight: 'bold',
     fontSize: FONTS.body || 15,

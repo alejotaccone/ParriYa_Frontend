@@ -60,22 +60,30 @@ export const styles = StyleSheet.create({
     marginBottom: 8,
   },
   title: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.h2, // Antes: 26
     fontWeight: "bold",
     color: COLORS.textMain, // Antes: "#333333"
   },
   subtitle: {
+    fontFamily: FONTS.family.regular,
+
     fontSize: FONTS.small, // Antes: 14
     color: COLORS.textSecondary, // Antes: "#777777"
     marginBottom: 20,
   },
   descriptionTitle: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.bodyLarge, // Antes: 16
     fontWeight: "bold",
     color: COLORS.textMain, // Antes: "#333333"
     marginBottom: 8,
   },
   descriptionText: {
+    fontFamily: FONTS.family.regular,
+
     fontSize: FONTS.body, // Antes: 15
     color: COLORS.textDescription, // Antes: "#555555"
     lineHeight: 22,
@@ -95,11 +103,15 @@ export const styles = StyleSheet.create({
     marginBottom: 20,
   },
   priceLabel: {
+    fontFamily: FONTS.family.semiBold,
+
     fontSize: FONTS.small, // Antes: 14
     color: COLORS.textSecondary, // Antes: "#777777"
     fontWeight: "600",
   },
   priceValue: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.price, // Antes: 28
     fontWeight: "bold",
     color: COLORS.secondary, // Antes: "#4B2610"
@@ -118,6 +130,8 @@ export const styles = StyleSheet.create({
     elevation: 5,
   },
   addButtonText: {
+    fontFamily: FONTS.family.bold,
+
     color: COLORS.backgroundLight, // Antes: "white"
     fontSize: FONTS.h4, // Antes: 18
     fontWeight: "bold",
@@ -141,6 +155,8 @@ export const styles = StyleSheet.create({
     elevation: 8,
   },
   favoriteModalText: {
+    fontFamily: FONTS.family.semiBold,
+
     marginTop: 10,
     fontSize: FONTS.bodyLarge,
     fontWeight: '600',
@@ -165,6 +181,8 @@ export const styles = StyleSheet.create({
     zIndex: 10,
   },
   selectorLabel: {
+    fontFamily: FONTS.family.semiBold,
+
     fontSize: FONTS.small, // Antes: 14
     fontWeight: "600",
     color: COLORS.textMain, // Antes: "#333333"
@@ -192,6 +210,8 @@ export const styles = StyleSheet.create({
     borderRadius: 20,
   },
   dropdownText: {
+    fontFamily: FONTS.family.medium,
+
     color: COLORS.backgroundLight, // Antes: "white"
     fontSize: FONTS.body, // Antes: 15
     fontWeight: "500",
@@ -213,6 +233,8 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   optionText: {
+    fontFamily: FONTS.family.regular,
+
     color: COLORS.backgroundLight, // Antes: "white"
     fontSize: FONTS.bodyLarge, // Antes: 16
     fontWeight: "400",

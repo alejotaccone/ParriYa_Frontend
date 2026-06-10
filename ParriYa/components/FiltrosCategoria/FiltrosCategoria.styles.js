@@ -25,6 +25,8 @@ export const styles = StyleSheet.create({
     backgroundColor: COLORS.secondary, // Antes: '#4B2610'
   },
   chipText: {
+    fontFamily: FONTS.family.semiBold,
+
     fontSize: FONTS.small, // Antes: 14
     fontWeight: '600',
     color: COLORS.textMain, // Antes: '#333333'

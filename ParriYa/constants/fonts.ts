@@ -7,5 +7,13 @@ export const FONTS = {
   body: 15,       // Texto normal (Ej: Nombre de los productos, textos de inputs del perfil)
   small: 14,      // Textos un poco más chicos (Ej: Cantidades "x1", subtítulos grises)
   xSmall: 12,     // Textos muy chiquitos (Ej: Las etiquetas flotantes de los inputs, sugerencias)
-  price: 28, // Un tamaño especial ultra grande para el precio del Detalle
+  price: 28,      // Un tamaño especial ultra grande para el precio del Detalle
+
+  // Mapeo de familia de fuentes Google Epilogue
+  family: {
+    regular: 'Epilogue_400Regular',
+    medium: 'Epilogue_500Medium',
+    semiBold: 'Epilogue_600SemiBold',
+    bold: 'Epilogue_700Bold',
+  }
 };

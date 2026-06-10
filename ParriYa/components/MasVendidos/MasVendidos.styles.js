@@ -10,6 +10,8 @@ export const styles = StyleSheet.create({
     marginBottom: 30,
   },
   sectionTitle: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.bodyLarge, // Antes: 16
     fontWeight: "bold",
     color: COLORS.textMuted, // Antes: "#8E8E93"
@@ -26,6 +28,8 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   seeAllText: {
+    fontFamily: FONTS.family.semiBold,
+
     fontSize: FONTS.small,
     color: COLORS.primary,
     fontWeight: '600',

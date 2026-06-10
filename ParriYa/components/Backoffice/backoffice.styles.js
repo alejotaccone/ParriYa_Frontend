@@ -26,6 +26,8 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 25,
   },
   headerTitle: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.h1,
     fontWeight: 'bold',
     color: COLORS.secondary, // Marrón oscuro
@@ -48,6 +50,8 @@ export const styles = StyleSheet.create({
     marginBottom: 12,
   },
   sectionTitle: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.bodyLarge,
     fontWeight: 'bold',
     color: COLORS.textMuted,
@@ -59,6 +63,8 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
   linkText: {
+    fontFamily: FONTS.family.semiBold,
+
     fontSize: FONTS.small,
     fontWeight: '600',
     color: COLORS.textMuted,
@@ -85,6 +91,8 @@ export const styles = StyleSheet.create({
     marginBottom: 5,
   },
   tableHeaderCol: {
+    fontFamily: FONTS.family.semiBold,
+
     fontSize: FONTS.xSmall,
     fontWeight: '600',
     color: COLORS.textMuted,
@@ -103,6 +111,8 @@ export const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   tableCol: {
+    fontFamily: FONTS.family.regular,
+
     fontSize: FONTS.body,
     color: COLORS.textMain,
     textAlign: 'center',
@@ -135,36 +145,48 @@ export const styles = StyleSheet.create({
 
   // --- ESTILOS DE TEXTO ESPECÍFICOS ---
   orderNoText: {
+    fontFamily: FONTS.family.medium,
+
     fontSize: FONTS.body,
     fontWeight: '500',
     color: '#333333',
     textAlign: 'center',
   },
   clientNameText: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.body,
     fontWeight: 'bold',
     color: '#333333',
     textAlign: 'center',
   },
   statusText: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.body,
     fontWeight: 'bold',
     color: COLORS.primary, // El naranja/rojo del mockup ("Entregado")
     textAlign: 'center',
   },
   priceText: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.body,
     fontWeight: 'bold',
     color: '#333333',
     textAlign: 'center',
   },
   timeText: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.body,
     fontWeight: 'bold',
     color: '#333333',
     textAlign: 'center',
   },
   countText: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.body,
     fontWeight: 'bold',
     color: COLORS.primary, // El naranja/rojo de la cantidad de personas
@@ -187,6 +209,8 @@ export const styles = StyleSheet.create({
     marginBottom: 4,
   },
   feedbackClientName: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.body,
     fontWeight: 'bold',
     color: '#333333',
@@ -196,12 +220,16 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
   ratingText: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.small,
     fontWeight: 'bold',
     color: COLORS.textMuted,
     marginRight: 4,
   },
   feedbackComment: {
+    fontFamily: FONTS.family.regular,
+
     fontSize: FONTS.small,
     color: COLORS.textSecondary,
     lineHeight: 18,
@@ -241,6 +269,8 @@ export const styles = StyleSheet.create({
     zIndex: 10,
   },
   backHeaderTitle: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.h3,
     fontWeight: 'bold',
     color: '#FFFFFF', // Blanco para el título "Pedidos"
@@ -259,11 +289,15 @@ export const styles = StyleSheet.create({
     marginBottom: 15,
   },
   recientesText: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.bodyLarge,
     fontWeight: 'bold',
     color: COLORS.textMain,
   },
   ultimos7DiasText: {
+    fontFamily: FONTS.family.regular,
+
     fontSize: FONTS.small,
     color: COLORS.textMuted,
   },
@@ -286,16 +320,22 @@ export const styles = StyleSheet.create({
     marginBottom: 8,
   },
   orderIdText: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.bodyLarge,
     fontWeight: 'bold',
     color: COLORS.textMain,
   },
   orderClientName: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.bodyLarge,
     fontWeight: 'bold',
     color: COLORS.primary,
   },
   orderQtyLabel: {
+    fontFamily: FONTS.family.regular,
+
     fontSize: FONTS.small,
     color: COLORS.textMuted,
     marginBottom: 12,
@@ -307,6 +347,8 @@ export const styles = StyleSheet.create({
     paddingVertical: 6,
   },
   orderItemName: {
+    fontFamily: FONTS.family.regular,
+
     fontSize: FONTS.body,
     color: COLORS.textDescription,
   },
@@ -315,12 +357,16 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
   orderItemQty: {
+    fontFamily: FONTS.family.regular,
+
     fontSize: FONTS.body,
     color: COLORS.textMuted,
     marginRight: 25,
     textAlign: 'right',
   },
   orderItemPrice: {
+    fontFamily: FONTS.family.regular,
+
     fontSize: FONTS.body,
     color: COLORS.textDescription,
     width: 70,
@@ -336,11 +382,15 @@ export const styles = StyleSheet.create({
     marginTop: 10,
   },
   orderTotalLabel: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.body,
     fontWeight: 'bold',
     color: COLORS.textMain,
   },
   orderTotalPrice: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.body,
     fontWeight: 'bold',
     color: COLORS.textMain,
@@ -368,21 +418,29 @@ export const styles = StyleSheet.create({
     backgroundColor: '#D2F9D2', // Verde claro
   },
   statusBadgeTextRecibido: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.xSmall,
     fontWeight: 'bold',
     color: '#555555',
   },
   statusBadgeTextPreparando: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.xSmall,
     fontWeight: 'bold',
     color: '#E76F41',
   },
   statusBadgeTextListo: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.xSmall,
     fontWeight: 'bold',
     color: '#00A89F',
   },
   statusBadgeTextFinalizado: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.xSmall,
     fontWeight: 'bold',
     color: '#3D8C1A',
@@ -414,6 +472,8 @@ export const styles = StyleSheet.create({
     marginBottom: 15,
   },
   modalTitle: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.h3,
     fontWeight: 'bold',
     color: COLORS.textMain,
@@ -422,6 +482,8 @@ export const styles = StyleSheet.create({
     padding: 5,
   },
   modalSubtitle: {
+    fontFamily: FONTS.family.semiBold,
+
     fontSize: FONTS.body,
     fontWeight: '600',
     color: COLORS.textSecondary,
@@ -440,10 +502,14 @@ export const styles = StyleSheet.create({
     paddingVertical: 3,
   },
   modalItemText: {
+    fontFamily: FONTS.family.regular,
+
     fontSize: FONTS.small,
     color: COLORS.textDescription,
   },
   statusOptionsTitle: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.bodyLarge,
     fontWeight: 'bold',
     color: COLORS.textMain,
@@ -479,6 +545,8 @@ export const styles = StyleSheet.create({
     backgroundColor: '#D2F9D2',
   },
   statusBtnText: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.body,
     fontWeight: 'bold',
     color: '#8E8E93',
@@ -503,6 +571,8 @@ export const styles = StyleSheet.create({
     marginTop: 15,
   },
   modalConfirmButtonText: {
+    fontFamily: FONTS.family.bold,
+
     color: '#FFFFFF',
     fontSize: FONTS.bodyLarge,
     fontWeight: 'bold',
@@ -533,23 +603,31 @@ export const styles = StyleSheet.create({
     backgroundColor: COLORS.backgroundLight, // Blanco
   },
   calendarDayOfWeekTextActive: {
+    fontFamily: FONTS.family.semiBold,
+
     fontSize: FONTS.small,
     fontWeight: '600',
     color: '#FFFFFF',
     marginBottom: 5,
   },
   calendarDayOfWeekTextInactive: {
+    fontFamily: FONTS.family.medium,
+
     fontSize: FONTS.small,
     fontWeight: '500',
     color: COLORS.textMuted,
     marginBottom: 5,
   },
   calendarDayNumberTextActive: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: 32,
     fontWeight: 'bold',
     color: '#FFFFFF',
   },
   calendarDayNumberTextInactive: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: 32,
     fontWeight: 'bold',
     color: COLORS.textMain,
@@ -563,11 +641,15 @@ export const styles = StyleSheet.create({
     marginBottom: 15,
   },
   summaryDateText: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.bodyLarge,
     fontWeight: 'bold',
     color: COLORS.textMain,
   },
   summaryStatsText: {
+    fontFamily: FONTS.family.regular,
+
     fontSize: FONTS.small,
     color: COLORS.textMuted,
   },
@@ -577,18 +659,24 @@ export const styles = StyleSheet.create({
     marginBottom: 15,
   },
   shiftTitle: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.bodyLarge,
     fontWeight: 'bold',
     color: '#777777',
     marginBottom: 10,
   },
   stateTextConfirmada: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.body,
     fontWeight: 'bold',
     color: COLORS.primary, // El naranja/rojo de la confirmación
     textAlign: 'center',
   },
   stateTextCancelada: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.body,
     fontWeight: 'bold',
     color: '#D9534F', // El rojo para reservas canceladas
@@ -610,6 +698,8 @@ export const styles = StyleSheet.create({
     elevation: 4,
   },
   largeOrangeButtonText: {
+    fontFamily: FONTS.family.bold,
+
     color: '#FFFFFF',
     fontSize: FONTS.bodyLarge,
     fontWeight: 'bold',
@@ -621,12 +711,16 @@ export const styles = StyleSheet.create({
     marginVertical: 8,
   },
   addModalInputLabel: {
+    fontFamily: FONTS.family.semiBold,
+
     fontSize: FONTS.small,
     fontWeight: '600',
     color: COLORS.textMuted,
     marginBottom: 6,
   },
   addModalTextInput: {
+    fontFamily: FONTS.family.regular,
+
     borderWidth: 1,
     borderColor: COLORS.borderMedium,
     borderRadius: 12,
@@ -659,11 +753,15 @@ export const styles = StyleSheet.create({
     backgroundColor: COLORS.backgroundLight, // Blanco
   },
   categoryFilterTextActive: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.body,
     fontWeight: 'bold',
     color: '#FFFFFF',
   },
   categoryFilterTextInactive: {
+    fontFamily: FONTS.family.medium,
+
     fontSize: FONTS.body,
     fontWeight: '500',
     color: COLORS.textMain,
@@ -698,17 +796,23 @@ export const styles = StyleSheet.create({
     flex: 1,
   },
   productCardName: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.bodyLarge,
     fontWeight: 'bold',
     color: COLORS.textMain,
     marginBottom: 2,
   },
   productCardCategory: {
+    fontFamily: FONTS.family.regular,
+
     fontSize: FONTS.xSmall,
     color: COLORS.textMuted,
     marginBottom: 4,
   },
   productCardDescription: {
+    fontFamily: FONTS.family.regular,
+
     fontSize: FONTS.small,
     color: COLORS.textSecondary,
     lineHeight: 16,
@@ -742,6 +846,8 @@ export const styles = StyleSheet.create({
     height: '100%',
   },
   modalImageText: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.small,
     fontWeight: 'bold',
     color: COLORS.primary,
@@ -774,6 +880,8 @@ export const styles = StyleSheet.create({
     marginBottom: 6,
   },
   feedbackClientNameText: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.bodyLarge,
     fontWeight: 'bold',
     color: '#333333',
@@ -784,16 +892,22 @@ export const styles = StyleSheet.create({
     marginBottom: 10,
   },
   feedbackDateText: {
+    fontFamily: FONTS.family.regular,
+
     fontSize: FONTS.small,
     color: COLORS.textMuted,
     marginRight: 10,
   },
   feedbackOrderText: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.small,
     fontWeight: 'bold',
     color: COLORS.primary, // Naranja para el número de pedido
   },
   feedbackCommentText: {
+    fontFamily: FONTS.family.regular,
+
     fontSize: FONTS.body,
     color: COLORS.textDescription,
     lineHeight: 20,
@@ -806,6 +920,8 @@ export const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   modalDeleteButtonText: {
+    fontFamily: FONTS.family.bold,
+
     color: COLORS.danger,
     fontSize: FONTS.bodyLarge,
     fontWeight: 'bold',

@@ -25,6 +25,8 @@ export const styles = StyleSheet.create({
     elevation: 1,
   },
   text: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.bodyLarge,
     fontWeight: 'bold',
     paddingHorizontal: 15,

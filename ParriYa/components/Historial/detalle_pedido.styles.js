@@ -28,6 +28,8 @@ export const styles = StyleSheet.create({
     marginRight: 15,
   },
   headerTitle: {
+    fontFamily: FONTS.family.bold,
+
     flex: 1,
     fontSize: FONTS.h3, // Antes: 22
     fontWeight: 'bold',
@@ -46,12 +48,16 @@ export const styles = StyleSheet.create({
     marginBottom: 20,
   },
   cardTitle: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.bodyLarge, // Antes: 16
     fontWeight: 'bold',
     color: COLORS.textMain, // Antes: '#333333'
     marginBottom: 5,
   },
   cardSubtitle: {
+    fontFamily: FONTS.family.regular,
+
     fontSize: FONTS.small, // Antes: 14
     color: COLORS.textMuted, // Antes: '#8E8E93'
   },
@@ -62,6 +68,8 @@ export const styles = StyleSheet.create({
     marginBottom: 15,
   },
   itemName: {
+    fontFamily: FONTS.family.regular,
+
     fontSize: FONTS.body, // Antes: 15
     color: COLORS.textMuted, // Antes: '#8E8E93'
     flex: 1,
@@ -72,10 +80,14 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   itemQty: {
+    fontFamily: FONTS.family.regular,
+
     fontSize: FONTS.body, // Antes: 15
     color: COLORS.textMuted, // Antes: '#8E8E93'
   },
   itemPrice: {
+    fontFamily: FONTS.family.medium,
+
     fontSize: FONTS.body, // Antes: 15
     color: COLORS.textMuted, // Antes: '#8E8E93'
     fontWeight: '500',
@@ -104,11 +116,15 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
   totalLabel: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.bodyLarge, // Antes: 16
     fontWeight: 'bold',
     color: COLORS.textMain, // Antes: '#333333'
   },
   totalValue: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.h4, // Antes: 18
     fontWeight: 'bold',
     color: COLORS.textMain, // Antes: '#333333'
@@ -120,11 +136,15 @@ export const styles = StyleSheet.create({
     marginBottom: 15,
   },
   infoLabel: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.body, // Antes: 15
     fontWeight: 'bold',
     color: COLORS.textMain, // Antes: '#333333'
   },
   infoValue: {
+    fontFamily: FONTS.family.regular,
+
     fontSize: FONTS.body, // Antes: 15
     color: COLORS.textMuted, // Antes: '#8E8E93'
   },
@@ -136,6 +156,8 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
   emptyOrderText: {
+    fontFamily: FONTS.family.regular,
+
     fontSize: FONTS.body,
     color: COLORS.textMuted,
   },

@@ -52,6 +52,8 @@ export const styles = StyleSheet.create({
     paddingTop: 8, 
   },
   inputLabel: {
+    fontFamily: FONTS.family.medium,
+
     position: "absolute",
     top: 0,
     left: 15,
@@ -71,6 +73,8 @@ export const styles = StyleSheet.create({
     backgroundColor: COLORS.backgroundLight,
   },
   textInput: {
+    fontFamily: FONTS.family.semiBold,
+
     fontSize: FONTS.body, // ANTES: 15
     fontWeight: "600",
     color: COLORS.textMain,
@@ -87,6 +91,8 @@ export const styles = StyleSheet.create({
     paddingVertical: 15,
   },
   menuRowText: {
+    fontFamily: FONTS.family.semiBold,
+
     fontSize: FONTS.body, // ANTES: 15
     color: COLORS.textMuted,
     fontWeight: "600",
@@ -104,6 +110,8 @@ export const styles = StyleSheet.create({
     alignSelf: "center",
   },
   logoutButtonText: {
+    fontFamily: FONTS.family.bold,
+
     color: COLORS.primary,
     fontSize: FONTS.bodyLarge, // ANTES: 16
     fontWeight: "bold",

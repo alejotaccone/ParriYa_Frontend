@@ -14,6 +14,8 @@ export const styles = StyleSheet.create({
     overflow: 'hidden', 
   },
   titleSection: {
+    fontFamily: FONTS.family.semiBold,
+
     fontSize: FONTS.small, // Antes: 14
     color: COLORS.primaryLight, // Antes: '#FAD3C3'
     fontWeight: '600',
@@ -30,6 +32,8 @@ export const styles = StyleSheet.create({
     paddingRight: 10,
   },
   promoText: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.h3, // Antes: 22
     fontWeight: 'bold',
     color: COLORS.backgroundLight, // Antes: 'white'

@@ -13,6 +13,8 @@ export const styles = StyleSheet.create({
     paddingTop: 20,
   },
   title: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.h2,
     fontWeight: 'bold',
     color: COLORS.textMain,
@@ -36,12 +38,16 @@ export const styles = StyleSheet.create({
     elevation: 5,
   },
   emptyTitle: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.h3,
     fontWeight: 'bold',
     color: COLORS.textMain,
     marginBottom: 8,
   },
   emptyText: {
+    fontFamily: FONTS.family.regular,
+
     fontSize: FONTS.bodyLarge,
     color: COLORS.textSecondary,
     textAlign: 'center',

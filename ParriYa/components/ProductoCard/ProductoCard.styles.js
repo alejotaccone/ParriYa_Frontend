@@ -36,11 +36,15 @@ export const styles = StyleSheet.create({
     height: "100%", //[cite: 21]
   },
   title: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.bodyLarge, // Antes: 16[cite: 21]
     fontWeight: "bold", //[cite: 21]
     color: COLORS.textMain, // Antes: "#333"[cite: 21]
   },
   subtitle: {
+    fontFamily: FONTS.family.regular,
+
     fontSize: FONTS.xSmall, // Antes: 12[cite: 21]
     color: COLORS.textSecondary, // Antes: "#666" (Unificado al gris de las descripciones)[cite: 21]
     marginTop: 2, //[cite: 21]
@@ -65,6 +69,8 @@ export const styles = StyleSheet.create({
     marginTop: 8,
   },
   price: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.bodyLarge,
     fontWeight: 'bold',
     color: COLORS.textMain,
@@ -96,6 +102,8 @@ export const styles = StyleSheet.create({
     elevation: 8,
   },
   modalTitle: {
+    fontFamily: FONTS.family.bold,
+
     marginTop: 12,
     fontSize: FONTS.bodyLarge,
     fontWeight: 'bold',

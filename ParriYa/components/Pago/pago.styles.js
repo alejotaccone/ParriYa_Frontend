@@ -17,6 +17,8 @@ export const styles = StyleSheet.create({
     marginBottom: 30, 
   },
   sectionTitle: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.h4, // Antes: 18
     fontWeight: 'bold',
     color: COLORS.secondary, // Antes: '#4B2610'
@@ -29,6 +31,8 @@ export const styles = StyleSheet.create({
     marginBottom: 12,
   },
   resumenText: {
+    fontFamily: FONTS.family.regular,
+
     fontSize: FONTS.body, // Antes: 15
     color: COLORS.textMuted, // Antes: '#8E8E93'
   },
@@ -39,11 +43,15 @@ export const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   resumenQty: {
+    fontFamily: FONTS.family.regular,
+
     fontSize: FONTS.small, // Antes: 14
     color: COLORS.textMuted, // Antes: '#8E8E93'
     marginRight: 10,
   },
   resumenPrice: {
+    fontFamily: FONTS.family.regular,
+
     fontSize: FONTS.body, // Antes: 15
     color: COLORS.textMuted, // Antes: '#8E8E93'
   },
@@ -73,18 +81,24 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
   paymentText: {
+    fontFamily: FONTS.family.medium,
+
     color: COLORS.backgroundLight, // Antes: 'white'
     fontSize: FONTS.bodyLarge, // Antes: 16
     fontWeight: '500',
     marginLeft: 15,
   },
   paymentTextBold: {
+    fontFamily: FONTS.family.bold,
+
     color: COLORS.backgroundLight, // Antes: 'white'
     fontSize: FONTS.body, // Antes: 15
     fontWeight: 'bold',
     marginLeft: 15,
   },
   paymentSubtext: {
+    fontFamily: FONTS.family.regular,
+
     color: COLORS.backgroundLight, // Antes: 'white'
     fontSize: FONTS.small, // Antes: 13 (unificado a 14)
     marginLeft: 15,
@@ -102,6 +116,8 @@ export const styles = StyleSheet.create({
     marginBottom: 25,
   },
   checkboxText: {
+    fontFamily: FONTS.family.regular,
+
     fontSize: FONTS.small, // Antes: 14
     color: COLORS.textMuted, // Antes: '#8E8E93'
     marginLeft: 10,
@@ -127,6 +143,8 @@ export const styles = StyleSheet.create({
     marginBottom: 10,
   },
   suggestionName: {
+    fontFamily: FONTS.family.regular,
+
     fontSize: FONTS.xSmall, // Antes: 12
     color: COLORS.textMuted, // Antes: '#8E8E93'
     textAlign: 'center',
@@ -144,15 +162,21 @@ export const styles = StyleSheet.create({
     borderTopColor: COLORS.borderLight, // Antes: '#F0F0F0'
   },
   footerLabel: {
+    fontFamily: FONTS.family.regular,
+
     fontSize: FONTS.small, // Antes: 14
     color: COLORS.textMuted, // Antes: '#8E8E93'
   },
   footerTotal: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.h2, // Antes: 26
     fontWeight: 'bold',
     color: COLORS.textMain, // Antes: '#111111'
   },
   currencySymbol: {
+    fontFamily: FONTS.family.semiBold,
+
     color: COLORS.primary, // Antes: '#E76F41'
     fontSize: FONTS.h3, // Antes: 22
   },
@@ -163,6 +187,8 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 40,
   },
   payButtonText: {
+    fontFamily: FONTS.family.bold,
+
     color: COLORS.backgroundLight, // Antes: 'white'
     fontSize: FONTS.h4, // Antes: 18
     fontWeight: 'bold',
@@ -197,6 +223,8 @@ export const styles = StyleSheet.create({
     marginBottom: 20,
   },
   modalTitle: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.h3,
     fontWeight: 'bold',
     color: COLORS.primary,
@@ -204,6 +232,8 @@ export const styles = StyleSheet.create({
     textAlign: 'center',
   },
   modalSubtitle: {
+    fontFamily: FONTS.family.regular,
+
     fontSize: FONTS.body,
     color: COLORS.textMuted,
     textAlign: 'center',
@@ -216,6 +246,8 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 40,
   },
   modalButtonText: {
+    fontFamily: FONTS.family.bold,
+
     color: COLORS.backgroundLight,
     fontSize: FONTS.bodyLarge,
     fontWeight: 'bold',

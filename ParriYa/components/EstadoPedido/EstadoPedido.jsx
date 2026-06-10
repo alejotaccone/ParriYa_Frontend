@@ -99,6 +99,11 @@ const EstadoPedido = () => {
 
         // Si el pedido está entregado o finalizado, verificamos si el usuario ya cerró o calificó la orden
         if (orderState === 'entregado' || orderState === 'finalizado') {
+          if (latest.tieneFeedback) {
+            setCurrentStep(null);
+            return;
+          }
+
           const closedFeedbacks = await AsyncStorage.getItem('closedFeedbacks');
           const closedIds = closedFeedbacks ? JSON.parse(closedFeedbacks) : [];
           if (closedIds.includes(latest.id)) {
@@ -200,7 +205,31 @@ const EstadoPedido = () => {
       setCurrentStep(null); // Ocultar barra del home
     } catch (error) {
       console.error('Error al enviar reseña:', error);
-      const errorMsg = error.response?.data?.error || error.response?.data?.message || 'No se pudo enviar la reseña. Intenta de nuevo.';
+      
+      let errorMsg = 'No se pudo enviar la reseña. Intenta de nuevo.';
+      if (error.response?.data) {
+        if (typeof error.response.data === 'string') {
+          errorMsg = error.response.data;
+        } else {
+          errorMsg = error.response.data.error || error.response.data.message || errorMsg;
+        }
+      }
+
+      // Si el backend indica que ya existe una reseña, guardamos en closedFeedbacks para ocultar el banner
+      if (errorMsg.includes('Ya existe una reseña') || errorMsg.includes('feedback')) {
+        try {
+          const closedFeedbacks = await AsyncStorage.getItem('closedFeedbacks');
+          const closedIds = closedFeedbacks ? JSON.parse(closedFeedbacks) : [];
+          if (!closedIds.includes(latestOrder.id)) {
+            closedIds.push(latestOrder.id);
+            await AsyncStorage.setItem('closedFeedbacks', JSON.stringify(closedIds));
+          }
+          setCurrentStep(null); // Ocultar banner
+        } catch (e) {
+          console.error(e);
+        }
+      }
+
       showAlert('Error', errorMsg);
     } finally {
       setSubmittingFeedback(false);

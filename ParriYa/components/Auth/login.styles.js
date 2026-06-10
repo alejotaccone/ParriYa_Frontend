@@ -39,6 +39,8 @@ export const styles = StyleSheet.create({
   
   // --- TEXTOS E ICONOS ---
   title: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.h2,
     fontWeight: "bold",
     color: COLORS.primary,
@@ -46,6 +48,8 @@ export const styles = StyleSheet.create({
     textAlign: "center",
   },
   subtitle: {
+    fontFamily: FONTS.family.regular,
+
     fontSize: FONTS.xSmall,
     color: COLORS.textMuted,
     textAlign: "center",
@@ -78,6 +82,8 @@ export const styles = StyleSheet.create({
     paddingTop: 8,
   },
   inputLabel: {
+    fontFamily: FONTS.family.medium,
+
     position: "absolute",
     top: 0,
     left: 15,
@@ -97,6 +103,8 @@ export const styles = StyleSheet.create({
     width: "100%",
   },
   textInput: {
+    fontFamily: FONTS.family.semiBold,
+
     fontSize: FONTS.body,
     fontWeight: "600",
     color: COLORS.textMain,
@@ -112,6 +120,8 @@ export const styles = StyleSheet.create({
     marginTop: 10,
   },
   mainButtonText: {
+    fontFamily: FONTS.family.bold,
+
     color: COLORS.backgroundLight,
     fontSize: FONTS.bodyLarge,
     fontWeight: "bold",
@@ -119,17 +129,23 @@ export const styles = StyleSheet.create({
   
   // --- ENLACES ---
   linkText: {
+    fontFamily: FONTS.family.medium,
+
     color: COLORS.primary,
     fontSize: FONTS.small,
     fontWeight: "500",
     marginTop: 20,
   },
   footerText: {
+    fontFamily: FONTS.family.regular,
+
     color: COLORS.textMuted,
     fontSize: FONTS.small,
     marginTop: 15,
   },
   footerTextBold: {
+    fontFamily: FONTS.family.bold,
+
     color: COLORS.primary,
     fontWeight: "bold",
   },

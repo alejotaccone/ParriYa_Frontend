@@ -41,17 +41,23 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
   },
   price: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.small, // Antes: 13 (lo unificamos a la escala general)
     fontWeight: "bold",
     color: COLORS.primary, // Antes: "#E76F41"
   },
   name: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.body, // Antes: 15
     fontWeight: "bold",
     color: COLORS.textMain, // Antes: "#333333"
     marginTop: 2,
   },
   description: {
+    fontFamily: FONTS.family.regular,
+
     fontSize: FONTS.xSmall, // Antes: 12
     color: COLORS.textMuted, // Antes: "#8E8E93"
     marginTop: 1,
@@ -69,11 +75,15 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 5,
   },
   counterButtonText: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.bodyLarge, // Antes: 16
     fontWeight: "bold",
     color: COLORS.primary, // Antes: "#E76F41"
   },
   counterValue: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.small, // Antes: 14
     fontWeight: "bold",
     color: COLORS.textMain, // Antes: "#333333"

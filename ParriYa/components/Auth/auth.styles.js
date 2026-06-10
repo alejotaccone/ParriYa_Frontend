@@ -45,6 +45,8 @@ export const styles = StyleSheet.create({
     paddingTop: 8,
   },
   inputLabel: {
+    fontFamily: FONTS.family.medium,
+
     position: "absolute",
     top: 0,
     left: 15,
@@ -63,6 +65,8 @@ export const styles = StyleSheet.create({
     paddingVertical: 15,
   },
   textInput: {
+    fontFamily: FONTS.family.semiBold,
+
     fontSize: FONTS.body,
     fontWeight: "600",
     color: COLORS.textMain,
@@ -79,6 +83,8 @@ export const styles = StyleSheet.create({
     paddingVertical: 15,
   },
   forgotText: {
+    fontFamily: FONTS.family.semiBold,
+
     fontSize: FONTS.body,
     color: COLORS.textMuted,
     fontWeight: "600",
@@ -94,6 +100,8 @@ export const styles = StyleSheet.create({
     right: 25,
   },
   confirmButtonText: {
+    fontFamily: FONTS.family.bold,
+
     color: COLORS.backgroundLight,
     fontSize: FONTS.h4,
     fontWeight: "bold",
@@ -136,12 +144,16 @@ export const styles = StyleSheet.create({
     marginBottom: 20,
   },
   modalTitle: {
+    fontFamily: FONTS.family.bold,
+
     fontSize: FONTS.h3,
     fontWeight: "bold",
     color: COLORS.primary,
     marginBottom: 10,
   },
   modalSubtitle: {
+    fontFamily: FONTS.family.regular,
+
     fontSize: FONTS.small,
     color: COLORS.textMuted,
     textAlign: "center",
@@ -149,6 +161,8 @@ export const styles = StyleSheet.create({
     marginBottom: 25,
   },
   boldEmail: {
+    fontFamily: FONTS.family.bold,
+
     fontWeight: "bold",
     color: COLORS.textMain,
   },
@@ -159,6 +173,8 @@ export const styles = StyleSheet.create({
     marginBottom: 30,
   },
   codeBox: {
+    fontFamily: FONTS.family.bold,
+
     width: 40,
     height: 55,
     borderWidth: 1.5,
@@ -179,6 +195,8 @@ export const styles = StyleSheet.create({
     alignItems: "center",
   },
   verifyButtonText: {
+    fontFamily: FONTS.family.bold,
+
     color: COLORS.backgroundLight,
     fontSize: FONTS.bodyLarge,
     fontWeight: "bold",
