@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Image, Alert, Platform } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Image, Alert, Platform, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from '../components/Auth/login.styles'; // Ajustá la ruta
@@ -19,6 +19,7 @@ export default function RegistroScreen() {
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
   const [telefono, setTelefono] = useState('');
+  const [loading, setLoading] = useState(false);
 
   return (
     <View style={styles.mainContainer}>
@@ -55,19 +56,62 @@ export default function RegistroScreen() {
         </View>
 
         <TouchableOpacity 
-          style={styles.mainButton}
+          style={[styles.mainButton, loading && { opacity: 0.7 }]}
+          disabled={loading}
           onPress={async () => {
-            if (!username || !password || !email || !telefono) {
+            const trimmedUsername = username.trim();
+            const trimmedEmail = email.trim();
+            const trimmedTelefono = telefono.trim();
+
+            if (!trimmedUsername || !password || !trimmedEmail || !trimmedTelefono) {
               showAlert('Completa los campos', 'Debes completar todos los datos para registrarte.');
               return;
             }
 
+            // Validar Nombre: letras, espacios, acentos (2 a 50 caracteres), y evitar el carácter '@'
+            const nombreRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ' -]{2,50}$/;
+            if (!nombreRegex.test(trimmedUsername) || trimmedUsername.includes('@')) {
+              showAlert('Nombre inválido', 'El nombre solo puede contener letras y espacios, y debe tener entre 2 y 50 caracteres.');
+              return;
+            }
+
+            // Validar Email con regex estándar
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(trimmedEmail)) {
+              showAlert('Email inválido', 'Por favor, ingresa un correo electrónico con formato válido.');
+              return;
+            }
+
+            // Validar Teléfono: entre 7 y 20 caracteres (números, espacios, guiones, paréntesis y opcionalmente +)
+            const telefonoRegex = /^\+?[0-9\s\-()]{7,20}$/;
+            if (!telefonoRegex.test(trimmedTelefono)) {
+              showAlert('Teléfono inválido', 'Por favor, ingresa un número de teléfono válido (mínimo 7 dígitos).');
+              return;
+            }
+
+            // Validar Contraseña (mínimo 6 caracteres)
+            if (password.length < 6) {
+              showAlert('Contraseña muy corta', 'La contraseña debe tener al menos 6 caracteres.');
+              return;
+            }
+
+            // Validar que la contraseña no sea idéntica al correo electrónico ni al nombre de usuario
+            if (password.trim().toLowerCase() === trimmedEmail.toLowerCase()) {
+              showAlert('Contraseña inválida', 'La contraseña no puede ser igual al correo electrónico.');
+              return;
+            }
+            if (password.trim().toLowerCase() === trimmedUsername.toLowerCase()) {
+              showAlert('Contraseña inválida', 'La contraseña no puede ser igual al nombre de usuario.');
+              return;
+            }
+
+            setLoading(true);
             try {
               const response = await api.post('/auth/registro', {
-                nombre: username.trim(),
-                email: email.trim(),
+                nombre: trimmedUsername,
+                email: trimmedEmail,
                 password: password,
-                telefono: telefono.trim()
+                telefono: trimmedTelefono
               });
 
               const token = response.data.token;
@@ -91,10 +135,16 @@ export default function RegistroScreen() {
               console.error('Error al registrar usuario:', error);
               const errorMsg = error.response?.data?.error || error.response?.data?.message || 'No se pudo crear la cuenta. Intenta nuevamente.';
               showAlert('Error', errorMsg);
+            } finally {
+              setLoading(false);
             }
           }}
         >
-          <Text style={styles.mainButtonText}>Registrarse</Text>
+          {loading ? (
+            <ActivityIndicator color="white" />
+          ) : (
+            <Text style={styles.mainButtonText}>Registrarse</Text>
+          )}
         </TouchableOpacity>
 
         <TouchableOpacity onPress={() => router.back()}>
