@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { styles } from '../../components/Backoffice/backoffice.styles';
 import { COLORS } from '../../constants/colors';
+import { useTheme } from '../../components/ThemeContext';
 import api from '../../services/api';
 
 // --- MOCK DETAILS FROM THE IMAGE FOR SEEDING ---
@@ -63,6 +64,7 @@ const PEDIDOS_DETALLE_MOCK = [
 
 export default function BackofficePedidos() {
   const router = useRouter();
+  const { colors, isDarkMode } = useTheme();
   const [orders, setOrders] = useState([]);
   
   // Estados para controlar la ventana emergente de edición
@@ -238,8 +240,8 @@ export default function BackofficePedidos() {
   };
 
   return (
-    <View style={styles.mainContainer}>
-      <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
+    <View style={[styles.mainContainer, { backgroundColor: colors.background }]}>
+      <StatusBar translucent backgroundColor="transparent" barStyle={isDarkMode ? "light-content" : "dark-content"} />
 
       {/* --- HEADER ORANGE CON BOTÓN VOLVER --- */}
       <View style={styles.header}>
@@ -255,9 +257,9 @@ export default function BackofficePedidos() {
       </View>
 
       {/* --- RECIENTES BANNER --- */}
-      <View style={styles.recientesBanner}>
-        <Text style={styles.recientesText}>Recientes</Text>
-        <Text style={styles.ultimos7DiasText}>(Ultimos 7 dias)</Text>
+      <View style={[styles.recientesBanner, { backgroundColor: isDarkMode ? colors.card : '#EEEEEE' }]}>
+        <Text style={[styles.recientesText, { color: colors.text }]}>Recientes</Text>
+        <Text style={[styles.ultimos7DiasText, { color: colors.textMuted }]}>(Ultimos 7 dias)</Text>
       </View>
 
       {/* --- LISTADO DE DETALLE DE PEDIDOS --- */}
@@ -271,14 +273,21 @@ export default function BackofficePedidos() {
           return (
             <TouchableOpacity 
               key={order.id + orderIndex} 
-              style={styles.orderDetailCard}
+              style={[
+                styles.orderDetailCard,
+                {
+                  backgroundColor: colors.card,
+                  borderColor: isDarkMode ? colors.border : 'transparent',
+                  borderWidth: isDarkMode ? 1 : 0,
+                }
+              ]}
               activeOpacity={0.8}
               onPress={() => handleOpenStatusModal(order)}
             >
               
               {/* Header de la tarjeta */}
               <View style={styles.orderCardHeader}>
-                <Text style={styles.orderIdText}>Nro pedido: {order.id}</Text>
+                <Text style={[styles.orderIdText, { color: colors.text }]}>Nro pedido: {order.id}</Text>
                 
                 {/* Badge Visual del Estado de Preparación */}
                 <View
@@ -306,17 +315,17 @@ export default function BackofficePedidos() {
               </View>
 
               {/* Subtítulo cantidad de productos */}
-              <Text style={styles.orderQtyLabel}>
+              <Text style={[styles.orderQtyLabel, { color: colors.textMuted }]}>
                 Cantidad de productos: {order.cantidad_productos}
               </Text>
 
               {/* Listado de items del pedido */}
               {order.items.map((item, itemIndex) => (
                 <View key={itemIndex} style={styles.orderItemRow}>
-                  <Text style={styles.orderItemName}>{item.nombre}</Text>
+                  <Text style={[styles.orderItemName, { color: colors.text }]}>{item.nombre}</Text>
                   <View style={styles.orderItemRight}>
-                    <Text style={styles.orderItemQty}>x{item.cantidad}</Text>
-                    <Text style={styles.orderItemPrice}>
+                    <Text style={[styles.orderItemQty, { color: colors.textMuted }]}>x{item.cantidad}</Text>
+                    <Text style={[styles.orderItemPrice, { color: colors.text }]}>
                       ${item.precio.toLocaleString('es-AR')}
                     </Text>
                   </View>
@@ -324,9 +333,9 @@ export default function BackofficePedidos() {
               ))}
 
               {/* Total Row */}
-              <View style={styles.orderTotalRow}>
-                <Text style={styles.orderTotalLabel}>Total</Text>
-                <Text style={styles.orderTotalPrice}>
+              <View style={[styles.orderTotalRow, { borderTopColor: isDarkMode ? colors.border : '#F0F0F0' }]}>
+                <Text style={[styles.orderTotalLabel, { color: colors.text }]}>Total</Text>
+                <Text style={[styles.orderTotalPrice, { color: colors.text }]}>
                   ${order.total.toLocaleString('es-AR')}
                 </Text>
               </View>
@@ -344,36 +353,43 @@ export default function BackofficePedidos() {
         onRequestClose={() => setModalVisible(false)}
       >
         <View style={styles.modalOverlay}>
-          <View style={styles.modalCard}>
+          <View style={[
+            styles.modalCard,
+            {
+              backgroundColor: colors.card,
+              borderColor: isDarkMode ? colors.border : 'transparent',
+              borderWidth: isDarkMode ? 1 : 0,
+            }
+          ]}>
             
             {/* Header del Modal */}
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Pedido #{selectedOrder?.id}</Text>
+              <Text style={[styles.modalTitle, { color: colors.text }]}>Pedido #{selectedOrder?.id}</Text>
               <TouchableOpacity 
                 style={styles.modalCloseButton}
                 onPress={() => setModalVisible(false)}
               >
-                <Ionicons name="close" size={24} color={COLORS.textMain} />
+                <Ionicons name="close" size={24} color={colors.text} />
               </TouchableOpacity>
             </View>
 
             {/* Subtítulo: Cliente */}
-            <Text style={styles.modalSubtitle}>Cliente: {selectedOrder?.cliente}</Text>
+            <Text style={[styles.modalSubtitle, { color: colors.textMuted }]}>Cliente: {selectedOrder?.cliente}</Text>
 
             {/* Listado scrollable de los productos del pedido */}
-            <View style={styles.modalItemsList}>
+            <View style={[styles.modalItemsList, { borderBottomColor: isDarkMode ? colors.border : '#F0F0F0' }]}>
               <ScrollView showsVerticalScrollIndicator={false}>
                 {selectedOrder?.items.map((item, index) => (
                   <View key={index} style={styles.modalItemRow}>
-                    <Text style={styles.modalItemText}>{item.nombre}</Text>
-                    <Text style={styles.modalItemText}>x{item.cantidad} - ${item.precio.toLocaleString('es-AR')}</Text>
+                    <Text style={[styles.modalItemText, { color: colors.textMuted }]}>{item.nombre}</Text>
+                    <Text style={[styles.modalItemText, { color: colors.textMuted }]}>x{item.cantidad} - ${item.precio.toLocaleString('es-AR')}</Text>
                   </View>
                 ))}
               </ScrollView>
             </View>
 
             {/* Opciones de Selección de Estado */}
-            <Text style={styles.statusOptionsTitle}>Actualizar Estado</Text>
+            <Text style={[styles.statusOptionsTitle, { color: colors.text }]}>Actualizar Estado</Text>
 
             {/* 1. Estado: Recibido */}
             <TouchableOpacity
@@ -381,18 +397,19 @@ export default function BackofficePedidos() {
                 styles.statusOptionButton,
                 selectedStatus === 'Pendiente' || selectedStatus === 'Recibido' 
                   ? styles.statusBtnActiveRecibido 
-                  : styles.statusBtnInactive
+                  : [styles.statusBtnInactive, isDarkMode && { borderColor: colors.border }]
               ]}
               onPress={() => setSelectedStatus('Pendiente')}
             >
               <Ionicons 
                 name="checkmark-circle" 
                 size={20} 
-                color={selectedStatus === 'Pendiente' || selectedStatus === 'Recibido' ? '#555555' : '#E5E5EA'} 
+                color={selectedStatus === 'Pendiente' || selectedStatus === 'Recibido' ? '#555555' : (isDarkMode ? colors.border : '#E5E5EA')} 
               />
               <Text 
                 style={[
                   styles.statusBtnText,
+                  isDarkMode && { color: colors.textMuted },
                   (selectedStatus === 'Pendiente' || selectedStatus === 'Recibido') && styles.statusBtnTextActiveRecibido
                 ]}
               >
@@ -406,18 +423,19 @@ export default function BackofficePedidos() {
                 styles.statusOptionButton,
                 selectedStatus === 'Preparando' || selectedStatus === 'En preparación' || selectedStatus === 'En preparacion'
                   ? styles.statusBtnActivePreparando 
-                  : styles.statusBtnInactive
+                  : [styles.statusBtnInactive, isDarkMode && { borderColor: colors.border }]
               ]}
               onPress={() => setSelectedStatus('Preparando')}
             >
               <Ionicons 
                 name="play-circle" 
                 size={20} 
-                color={selectedStatus === 'Preparando' || selectedStatus === 'En preparación' || selectedStatus === 'En preparacion' ? '#E76F41' : '#E5E5EA'} 
+                color={selectedStatus === 'Preparando' || selectedStatus === 'En preparación' || selectedStatus === 'En preparacion' ? '#E76F41' : (isDarkMode ? colors.border : '#E5E5EA')} 
               />
               <Text 
                 style={[
                   styles.statusBtnText,
+                  isDarkMode && { color: colors.textMuted },
                   (selectedStatus === 'Preparando' || selectedStatus === 'En preparación' || selectedStatus === 'En preparacion') && styles.statusBtnTextActivePreparando
                 ]}
               >
@@ -431,18 +449,19 @@ export default function BackofficePedidos() {
                 styles.statusOptionButton,
                 selectedStatus === 'Listo' || selectedStatus === 'Listo para retirar'
                   ? styles.statusBtnActiveListo 
-                  : styles.statusBtnInactive
+                  : [styles.statusBtnInactive, isDarkMode && { borderColor: colors.border }]
               ]}
               onPress={() => setSelectedStatus('Listo')}
             >
               <Ionicons 
                 name="restaurant" 
                 size={18} 
-                color={selectedStatus === 'Listo' || selectedStatus === 'Listo para retirar' ? '#00A89F' : '#E5E5EA'} 
+                color={selectedStatus === 'Listo' || selectedStatus === 'Listo para retirar' ? '#00A89F' : (isDarkMode ? colors.border : '#E5E5EA')} 
               />
               <Text 
                 style={[
                   styles.statusBtnText,
+                  isDarkMode && { color: colors.textMuted },
                   (selectedStatus === 'Listo' || selectedStatus === 'Listo para retirar') && styles.statusBtnTextActiveListo
                 ]}
               >
@@ -456,18 +475,19 @@ export default function BackofficePedidos() {
                 styles.statusOptionButton,
                 selectedStatus === 'Finalizado' || selectedStatus === 'Entregado'
                   ? styles.statusBtnActiveFinalizado 
-                  : styles.statusBtnInactive
+                  : [styles.statusBtnInactive, isDarkMode && { borderColor: colors.border }]
               ]}
               onPress={() => setSelectedStatus('Finalizado')}
             >
               <Ionicons 
                 name="ribbon" 
                 size={20} 
-                color={selectedStatus === 'Finalizado' || selectedStatus === 'Entregado' ? '#3D8C1A' : '#E5E5EA'} 
+                color={selectedStatus === 'Finalizado' || selectedStatus === 'Entregado' ? '#3D8C1A' : (isDarkMode ? colors.border : '#E5E5EA')} 
               />
               <Text 
                 style={[
                   styles.statusBtnText,
+                  isDarkMode && { color: colors.textMuted },
                   (selectedStatus === 'Finalizado' || selectedStatus === 'Entregado') && styles.statusBtnTextActiveFinalizado
                 ]}
               >
@@ -495,7 +515,7 @@ export default function BackofficePedidos() {
           activeOpacity={0.7}
           onPress={() => router.replace('/backoffice')}
         >
-          <Ionicons name="home" size={26} color="white" />
+          <Ionicons name="home" size={26} color={COLORS.primary} />
         </TouchableOpacity>
 
         <TouchableOpacity 

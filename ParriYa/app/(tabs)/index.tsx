@@ -5,10 +5,13 @@ import EstadoPedido from '../../components/EstadoPedido/EstadoPedido';
 import Categorias from '../../components/CategoriasInicio/Categorias';
 import MasVendidos from '../../components/MasVendidos/MasVendidos'; 
 import { styles } from './index.styles';
+import { useTheme } from '../../components/ThemeContext';
 
 export default function HomeScreen() {
+  const { colors } = useTheme();
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* El Header queda afuera del ScrollView para que quede fijo arriba siempre */}
       <Header />      
       
@@ -25,4 +28,3 @@ export default function HomeScreen() {
     </View>
   );
 }
-

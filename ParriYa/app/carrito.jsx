@@ -14,11 +14,14 @@ import CarritoItem from "../components/CarritoItem/CarritoItem";
 import { useCart } from "../components/CartContext";
 import { styles } from "../components/Carrito/carrito.styles";
 import api, { resolveProductImg } from "../services/api";
+import { useTheme } from "../components/ThemeContext";
+import { COLORS } from "../constants/colors";
 
 export default function CarritoScreen() {
   const router = useRouter();
   const { cartItems, removeFromCart, updateQuantity, addToCart } = useCart();
   const [sugerencias, setSugerencias] = useState([]);
+  const { colors, isDarkMode } = useTheme();
 
   useEffect(() => {
     async function loadSugerencias() {
@@ -46,7 +49,14 @@ export default function CarritoScreen() {
 
   const renderSugerencia = ({ item }) => (
     <TouchableOpacity
-      style={styles.suggestionCard}
+      style={[
+        styles.suggestionCard,
+        {
+          backgroundColor: colors.card,
+          borderColor: isDarkMode ? colors.border : COLORS.borderLight,
+          borderWidth: 1,
+        }
+      ]}
       activeOpacity={0.8}
       onPress={() => router.push({ pathname: '/detalle', params: { idProducto: item.id } })}
     >
@@ -57,14 +67,14 @@ export default function CarritoScreen() {
           resizeMode="contain"
         />
       </View>
-      <Text style={styles.suggestionName} numberOfLines={1}>
+      <Text style={[styles.suggestionName, { color: colors.text }]} numberOfLines={1}>
         {item.nombre}
       </Text>
     </TouchableOpacity>
   );
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: isDarkMode ? COLORS.backgroundDark : COLORS.backgroundGray }]}>
       {/* Header Personalizado Naranja */}
       <View style={styles.header}>
         <TouchableOpacity
@@ -82,8 +92,10 @@ export default function CarritoScreen() {
       >
         {/* Info de Retiro */}
         <View style={styles.deliveryInfo}>
-          <Text style={styles.deliveryMethod}>Retiro en el local</Text>
-          <Text style={styles.deliveryTime}>
+          <Text style={[styles.deliveryMethod, { color: colors.text }]}>
+            Retiro en el local
+          </Text>
+          <Text style={[styles.deliveryTime, { color: colors.textMuted }]}>
             Tiempo estimado de preparacion: 15 - 30mins
           </Text>
         </View>
@@ -105,15 +117,17 @@ export default function CarritoScreen() {
               />
             ))
           ) : (
-            <Text style={{ textAlign: "center", color: "#8E8E93", marginVertical: 30 }}>
+            <Text style={{ textAlign: "center", color: colors.textMuted, marginVertical: 30 }}>
               Tu carrito está vacío. ¡Agregá algo rico!
             </Text>
           )}
         </View>
 
-        {/* Sección Carrusel:  */}
+        {/* Sección Carrusel: */}
         <View style={styles.suggestionsContainer}>
-          <Text style={styles.suggestionsTitle}>¿Queres agregar algo mas?</Text>
+          <Text style={[styles.suggestionsTitle, { color: colors.text }]}>
+            ¿Queres agregar algo mas?
+          </Text>
           <FlatList
             data={sugerencias}
             renderItem={renderSugerencia}
@@ -125,19 +139,26 @@ export default function CarritoScreen() {
         </View>
 
         {/* Resumen de Costos Fijo Inferior */}
-        <View style={styles.resumenContainer}>
-          <Text style={styles.resumenTitle}>Resumen</Text>
+        <View style={[
+          styles.resumenContainer,
+          {
+            backgroundColor: colors.card,
+            borderTopColor: isDarkMode ? colors.border : "transparent",
+            borderTopWidth: isDarkMode ? 1 : 0,
+          }
+        ]}>
+          <Text style={[styles.resumenTitle, { color: colors.text }]}>Resumen</Text>
 
           <View style={styles.resumenRow}>
-            <Text style={styles.resumenLabel}>Productos</Text>
-            <Text style={styles.resumenValue}>
+            <Text style={[styles.resumenLabel, { color: colors.textMuted }]}>Productos</Text>
+            <Text style={[styles.resumenValue, { color: colors.text }]}>
               ${subtotalProductos.toLocaleString("es-AR")}
             </Text>
           </View>
 
           <View style={styles.resumenRow}>
-            <Text style={styles.resumenLabel}>Tarifa de servicio</Text>
-            <Text style={styles.resumenValue}>
+            <Text style={[styles.resumenLabel, { color: colors.textMuted }]}>Tarifa de servicio</Text>
+            <Text style={[styles.resumenValue, { color: colors.text }]}>
               $
               {subtotalProductos > 0
                 ? tarifaServicio.toLocaleString("es-AR")
@@ -145,16 +166,16 @@ export default function CarritoScreen() {
             </Text>
           </View>
 
-          <View style={styles.divider} />
+          <View style={[styles.divider, { backgroundColor: colors.divider }]} />
 
           <View style={styles.subtotalRow}>
-            <Text style={styles.subtotalLabel}>Subtotal</Text>
-            <Text style={styles.subtotalValue}>
+            <Text style={[styles.subtotalLabel, { color: colors.text }]}>Subtotal</Text>
+            <Text style={[styles.subtotalValue, { color: colors.text }]}>
               ${totalFinal.toLocaleString("es-AR")}
             </Text>
           </View>
 
-          {/* Botón Ir a pagar actualizado */}
+          {/* Botón Ir a pagar */}
           <TouchableOpacity
             style={styles.payButton}
             activeOpacity={0.8}

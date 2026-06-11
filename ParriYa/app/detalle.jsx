@@ -5,21 +5,21 @@ import { Ionicons } from "@expo/vector-icons";
 import ContadorCantidad from "../components/Contador/ContadorCantidad";
 import { useCart } from "../components/CartContext";
 import { styles } from "../components/Detalle/detalle.styles";
-
 import api, { resolveProductImg } from "../services/api";
+import { useTheme } from "../components/ThemeContext";
+import { COLORS } from "../constants/colors";
 
 export default function DetalleScreen() {
   const router = useRouter();
   const { idProducto } = useLocalSearchParams();
-
   const [producto, setProducto] = useState(null);
-
   const [cantidad, setCantidad] = useState(1);
   const [showFavoriteModal, setShowFavoriteModal] = useState(false);
   const [favoriteMessage, setFavoriteMessage] = useState("");
   const [showCartModal, setShowCartModal] = useState(false);
   const [cartMessage, setCartMessage] = useState("");
   const { addToCart, toggleFavorite, isFavorite } = useCart();
+  const { colors, isDarkMode } = useTheme();
 
   useEffect(() => {
     const fetchProducto = async () => {
@@ -79,28 +79,28 @@ export default function DetalleScreen() {
 
   if (!producto) {
     return (
-      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
-        <Text style={{ color: '#8E8E93', fontSize: 16 }}>Cargando detalles...</Text>
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center', backgroundColor: colors.background }]}>
+        <Text style={{ color: colors.textMuted, fontSize: 16 }}>Cargando detalles...</Text>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <ScrollView
         showsVerticalScrollIndicator={false}
         nestedScrollEnabled={true}
       >
         {/* Imagen Principal y Botón Volver */}
-        <View style={styles.imageContainer}>
+        <View style={[styles.imageContainer, { backgroundColor: colors.box }]}>
           <TouchableOpacity
-            style={styles.backButton}
+            style={[styles.backButton, { backgroundColor: colors.card }]}
             onPress={() => router.back()}
           >
-            <Ionicons name="arrow-back" size={24} color="black" />
+            <Ionicons name="arrow-back" size={24} color={isDarkMode ? "white" : "black"} />
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.favoriteButton}
+            style={[styles.favoriteButton, { backgroundColor: colors.card }]}
             onPress={() => {
               toggleFavorite({
                 id: producto.id,
@@ -116,7 +116,7 @@ export default function DetalleScreen() {
             <Ionicons
               name={favorito ? "heart" : "heart-outline"}
               size={24}
-              color={favorito ? "#E76F41" : "black"}
+              color={favorito ? "#E76F41" : (isDarkMode ? "white" : "black")}
             />
           </TouchableOpacity>
           <Image
@@ -132,9 +132,9 @@ export default function DetalleScreen() {
             activeOpacity={1}
             onPress={() => setShowFavoriteModal(false)}
           >
-            <View style={styles.favoriteModalCard}>
+            <View style={[styles.favoriteModalCard, { backgroundColor: colors.card }]}>
               <Ionicons name="heart" size={28} color="#E76F41" />
-              <Text style={styles.favoriteModalText}>{favoriteMessage}</Text>
+              <Text style={[styles.favoriteModalText, { color: colors.text }]}>{favoriteMessage}</Text>
             </View>
           </TouchableOpacity>
         </Modal>
@@ -145,26 +145,26 @@ export default function DetalleScreen() {
             activeOpacity={1}
             onPress={() => setShowCartModal(false)}
           >
-            <View style={styles.favoriteModalCard}>
+            <View style={[styles.favoriteModalCard, { backgroundColor: colors.card }]}>
               <Ionicons name="cart" size={28} color="#4B2610" />
-              <Text style={styles.favoriteModalText}>{cartMessage}</Text>
+              <Text style={[styles.favoriteModalText, { color: colors.text }]}>{cartMessage}</Text>
             </View>
           </TouchableOpacity>
         </Modal>
 
         {/* Detalles del Producto */}
         <View style={styles.infoContainer}>
-          <Text style={styles.priceValue}>
+          <Text style={[styles.priceValue, { color: isDarkMode ? "#ffffff" : COLORS.secondary }]}>
             ${producto.precio.toLocaleString("es-AR")}
           </Text>
-          <Text style={styles.title}>{producto.nombre}</Text>
-          <Text style={styles.descriptionText}>
+          <Text style={[styles.title, { color: colors.text }]}>{producto.nombre}</Text>
+          <Text style={[styles.descriptionText, { color: isDarkMode ? "#cccccc" : COLORS.textDescription }]}>
             {producto.descripcionLarga}
           </Text>
 
           {/* Contador de Cantidad */}
           <View style={styles.cantidadWrapper}>
-            <Text style={styles.selectorLabel}>Cantidad</Text>
+            <Text style={[styles.selectorLabel, { color: colors.text }]}>Cantidad</Text>
             <ContadorCantidad
               cantidad={cantidad}
               onIncrement={() => setCantidad(cantidad + 1)}
@@ -175,7 +175,7 @@ export default function DetalleScreen() {
       </ScrollView>
 
       {/* Botón Añadir al Carrito Fijo Abajo */}
-      <View style={styles.footer}>
+      <View style={[styles.footer, { backgroundColor: colors.card, borderTopColor: colors.border }]}>
         <TouchableOpacity style={styles.addButton} activeOpacity={0.8} onPress={agregarAlCarrito}>
           <Text style={styles.addButtonText}>AÑADIR AL CARRITO</Text>
         </TouchableOpacity>

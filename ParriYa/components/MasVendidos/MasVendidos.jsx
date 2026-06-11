@@ -5,10 +5,13 @@ import ProductoCard from "../ProductoCard/ProductoCard";
 import { PRODUCTOS } from "../../constants/mocks";
 import { styles } from "./MasVendidos.styles";
 import api, { resolveProductImg } from "../../services/api";
+import { useTheme } from "../ThemeContext";
+import { COLORS } from "../../constants/colors";
 
 const MasVendidos = () => {
   const router = useRouter();
   const [productosList, setProductosList] = useState([]);
+  const { colors } = useTheme();
 
   useEffect(() => {
     const fetchProductosDestacados = async () => {
@@ -49,7 +52,7 @@ const MasVendidos = () => {
   return (
     <View style={styles.container}>
       <View style={styles.headerRow}>
-        <Text style={styles.sectionTitle}>PRODUCTOS DESTACADOS</Text>
+        <Text style={[styles.sectionTitle, { color: colors.textMuted }]}>PRODUCTOS DESTACADOS</Text>
         <TouchableOpacity style={styles.seeAllButton} onPress={handleVerTodos}>
           <Text style={styles.seeAllText}>Ver todos</Text>
         </TouchableOpacity>
@@ -74,4 +77,3 @@ const MasVendidos = () => {
 };
 
 export default MasVendidos;
-

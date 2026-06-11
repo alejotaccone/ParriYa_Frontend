@@ -3,15 +3,25 @@ import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { styles } from '../components/Auth/login.styles';
+import { useTheme } from '../components/ThemeContext';
+import { COLORS } from '../constants/colors';
 
 export default function IngresarMailScreen() {
   const router = useRouter();
+  const { colors, isDarkMode } = useTheme();
 
   return (
-    <View style={styles.modalContainer}>
-      <View style={styles.card}>
+    <View style={[styles.modalContainer, { backgroundColor: isDarkMode ? COLORS.backgroundDark : '#D1D1D1' }]}>
+      <View style={[
+        styles.card, 
+        { 
+          backgroundColor: colors.card, 
+          borderColor: isDarkMode ? colors.border : 'transparent', 
+          borderWidth: isDarkMode ? 1 : 0 
+        }
+      ]}>
         <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={24} color="#333333" />
+          <Ionicons name="arrow-back" size={24} color={isDarkMode ? "white" : "#333333"} />
         </TouchableOpacity>
 
         <View style={styles.iconCircle}>
@@ -20,22 +30,27 @@ export default function IngresarMailScreen() {
 
         <Text style={styles.title}>Ingresa tu email</Text>
         
-        <Text style={styles.subtitle}>
+        <Text style={[styles.subtitle, { color: colors.textMuted }]}>
           Introduce el email con el que te registraste. Te enviaremos un correo con un codigo para que puedas restablecer la contraseña
         </Text>
 
         <View style={styles.inputWrapper}>
-          <Text style={styles.inputLabel}>Email</Text>
-          <View style={styles.inputContainer}>
+          <Text style={[
+            styles.inputLabel, 
+            { 
+              backgroundColor: colors.card, 
+              color: colors.textMuted 
+            }
+          ]}>Email</Text>
+          <View style={[styles.inputContainer, { borderColor: colors.border }]}>
             <TextInput 
-              style={styles.textInput} 
+              style={[styles.textInput, { color: colors.text }]} 
               defaultValue="enzoB@gmail.com" 
               keyboardType="email-address"
             />
           </View>
         </View>
 
-        {/* Al tocar enviar, conectamos con la pantalla de verificación que ya tenés armada */}
         <TouchableOpacity 
           style={styles.mainButton}
           onPress={() => router.push('/verificacion')}

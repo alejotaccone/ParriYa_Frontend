@@ -4,6 +4,8 @@ import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from '../components/Auth/login.styles';
 import api from '../services/api';
+import { useTheme } from '../components/ThemeContext';
+import { COLORS } from '../constants/colors';
 
 const showAlert = (title, message) => {
   if (Platform.OS === 'web') {
@@ -17,24 +19,44 @@ export default function LoginScreen() {
   const router = useRouter();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const { colors, isDarkMode } = useTheme();
 
   return (
     <View style={styles.mainContainer}>
 
-      <View style={styles.card}>
+      <View style={[
+        styles.card, 
+        { 
+          backgroundColor: colors.card, 
+          borderColor: isDarkMode ? colors.border : 'transparent', 
+          borderWidth: isDarkMode ? 1 : 0 
+        }
+      ]}>
         <Text style={styles.title}>Iniciar Sesion</Text>
 
         <View style={styles.inputWrapper}>
-          <Text style={styles.inputLabel}>Email / Usuario</Text>
-          <View style={styles.inputContainer}>
-            <TextInput style={styles.textInput} placeholder="usuario@mail.com" placeholderTextColor="#8E8E93" value={username} onChangeText={setUsername} autoCapitalize="none" keyboardType="email-address" />
+          <Text style={[
+            styles.inputLabel, 
+            { 
+              backgroundColor: colors.card, 
+              color: colors.textMuted 
+            }
+          ]}>Email / Usuario</Text>
+          <View style={[styles.inputContainer, { borderColor: colors.border }]}>
+            <TextInput style={[styles.textInput, { color: colors.text }]} placeholder="usuario@mail.com" placeholderTextColor="#8E8E93" value={username} onChangeText={setUsername} autoCapitalize="none" keyboardType="email-address" />
           </View>
         </View>
 
         <View style={styles.inputWrapper}>
-          <Text style={styles.inputLabel}>Contraseña</Text>
-          <View style={styles.inputContainer}>
-            <TextInput style={styles.textInput} secureTextEntry value={password} onChangeText={setPassword} />
+          <Text style={[
+            styles.inputLabel, 
+            { 
+              backgroundColor: colors.card, 
+              color: colors.textMuted 
+            }
+          ]}>Contraseña</Text>
+          <View style={[styles.inputContainer, { borderColor: colors.border }]}>
+            <TextInput style={[styles.textInput, { color: colors.text }]} secureTextEntry value={password} onChangeText={setPassword} />
           </View>
         </View>
 
@@ -89,7 +111,7 @@ export default function LoginScreen() {
         </TouchableOpacity>
 
         <TouchableOpacity onPress={() => router.push('/registro')}>
-          <Text style={styles.footerText}>
+          <Text style={[styles.footerText, { color: colors.textMuted }]}>
             No estas registrado? <Text style={styles.footerTextBold}>Crea tu cuenta</Text>
           </Text>
         </TouchableOpacity>

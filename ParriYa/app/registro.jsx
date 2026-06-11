@@ -4,6 +4,8 @@ import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from '../components/Auth/login.styles'; // Ajustá la ruta
 import api from '../services/api';
+import { useTheme } from '../components/ThemeContext';
+import { COLORS } from '../constants/colors';
 
 const showAlert = (title, message) => {
   if (Platform.OS === 'web') {
@@ -20,38 +22,70 @@ export default function RegistroScreen() {
   const [email, setEmail] = useState('');
   const [telefono, setTelefono] = useState('');
   const [loading, setLoading] = useState(false);
+  const { colors, isDarkMode } = useTheme();
 
   return (
     <View style={styles.mainContainer}>
 
-      <View style={styles.card}>
+      <View style={[
+        styles.card, 
+        { 
+          backgroundColor: colors.card, 
+          borderColor: isDarkMode ? colors.border : 'transparent', 
+          borderWidth: isDarkMode ? 1 : 0 
+        }
+      ]}>
         <Text style={styles.title}>Crear cuenta</Text>
 
         <View style={styles.inputWrapper}>
-          <Text style={styles.inputLabel}>Usuario</Text>
-          <View style={styles.inputContainer}>
-            <TextInput style={styles.textInput} placeholder="usuario.123" placeholderTextColor="#8E8E93" value={username} onChangeText={setUsername} autoCapitalize="none" />
+          <Text style={[
+            styles.inputLabel, 
+            { 
+              backgroundColor: colors.card, 
+              color: colors.textMuted 
+            }
+          ]}>Usuario</Text>
+          <View style={[styles.inputContainer, { borderColor: colors.border }]}>
+            <TextInput style={[styles.textInput, { color: colors.text }]} placeholder="usuario.123" placeholderTextColor="#8E8E93" value={username} onChangeText={setUsername} autoCapitalize="none" />
           </View>
         </View>
 
         <View style={styles.inputWrapper}>
-          <Text style={styles.inputLabel}>Contraseña</Text>
-          <View style={styles.inputContainer}>
-            <TextInput style={styles.textInput} secureTextEntry value={password} onChangeText={setPassword} />
+          <Text style={[
+            styles.inputLabel, 
+            { 
+              backgroundColor: colors.card, 
+              color: colors.textMuted 
+            }
+          ]}>Contraseña</Text>
+          <View style={[styles.inputContainer, { borderColor: colors.border }]}>
+            <TextInput style={[styles.textInput, { color: colors.text }]} secureTextEntry value={password} onChangeText={setPassword} />
           </View>
         </View>
 
         <View style={styles.inputWrapper}>
-          <Text style={styles.inputLabel}>Email</Text>
-          <View style={styles.inputContainer}>
-            <TextInput style={styles.textInput} placeholder="enzoB@gmail.com" placeholderTextColor="#8E8E93" keyboardType="email-address" autoCapitalize="none" value={email} onChangeText={setEmail} />
+          <Text style={[
+            styles.inputLabel, 
+            { 
+              backgroundColor: colors.card, 
+              color: colors.textMuted 
+            }
+          ]}>Email</Text>
+          <View style={[styles.inputContainer, { borderColor: colors.border }]}>
+            <TextInput style={[styles.textInput, { color: colors.text }]} placeholder="enzoB@gmail.com" placeholderTextColor="#8E8E93" keyboardType="email-address" autoCapitalize="none" value={email} onChangeText={setEmail} />
           </View>
         </View>
 
         <View style={styles.inputWrapper}>
-          <Text style={styles.inputLabel}>Telefono</Text>
-          <View style={styles.inputContainer}>
-            <TextInput style={styles.textInput} placeholder="+54 9 11 1122-3344" placeholderTextColor="#8E8E93" keyboardType="phone-pad" value={telefono} onChangeText={setTelefono} />
+          <Text style={[
+            styles.inputLabel, 
+            { 
+              backgroundColor: colors.card, 
+              color: colors.textMuted 
+            }
+          ]}>Telefono</Text>
+          <View style={[styles.inputContainer, { borderColor: colors.border }]}>
+            <TextInput style={[styles.textInput, { color: colors.text }]} placeholder="+54 9 11 1122-3344" placeholderTextColor="#8E8E93" keyboardType="phone-pad" value={telefono} onChangeText={setTelefono} />
           </View>
         </View>
 
@@ -148,7 +182,7 @@ export default function RegistroScreen() {
         </TouchableOpacity>
 
         <TouchableOpacity onPress={() => router.back()}>
-          <Text style={styles.footerText}>
+          <Text style={[styles.footerText, { color: colors.textMuted }]}>
             Ya tenes cuenta? <Text style={styles.footerTextBold}>Inicia sesion</Text>
           </Text>
         </TouchableOpacity>

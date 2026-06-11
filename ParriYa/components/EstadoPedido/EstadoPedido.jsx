@@ -5,6 +5,8 @@ import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { styles } from './EstadoPedido.styles';
 import api from '../../services/api';
+import { useTheme } from '../ThemeContext';
+import { COLORS } from '../../constants/colors';
 
 const STATE_MAPPING = {
   1: {
@@ -33,6 +35,7 @@ const EstadoPedido = () => {
   const [currentStep, setCurrentStep] = useState(null);
   const [estimatedTime, setEstimatedTime] = useState('');
   const [loading, setLoading] = useState(true);
+  const { colors, isDarkMode } = useTheme();
   
   // Estados para reseña / feedback
   const [latestOrder, setLatestOrder] = useState(null);
@@ -145,8 +148,6 @@ const EstadoPedido = () => {
     }
   };
 
-  // useFocusEffect fuerza a que cada vez que el Cliente vuelve a enfocar la pantalla principal (Home),
-  // se vuelva a disparar la lectura de la base de datos para ver si el admin actualizó el estado.
   useFocusEffect(
     useCallback(() => {
       fetchLatestOrder();
@@ -245,10 +246,10 @@ const EstadoPedido = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.sectionTitle}>ESTADO DEL PEDIDO</Text>
+      <Text style={[styles.sectionTitle, { color: colors.textMuted }]}>ESTADO DEL PEDIDO</Text>
 
       <View style={styles.card}>
-        <Text style={styles.restaurantText}>Parrilla "Los Pibes"</Text>
+        <Text style={styles.restaurantText}>Parrilla &quot;Los Pibes&quot;</Text>
         
         {currentStep !== 4 ? (
           <Text style={styles.estimatedTimeText}>
@@ -282,12 +283,12 @@ const EstadoPedido = () => {
         {currentStep === 4 && (
           <View style={styles.buttonRow}>
             <TouchableOpacity 
-              style={styles.reviewButton} 
+              style={[styles.reviewButton, { backgroundColor: colors.card }]} 
               activeOpacity={0.8}
               onPress={() => setShowFeedbackModal(true)}
             >
               <Ionicons name="star" size={18} color="#E76F41" />
-              <Text style={styles.reviewButtonText}>Dejar reseña</Text>
+              <Text style={[styles.reviewButtonText, { color: isDarkMode ? "#ffffff" : COLORS.primary }]}>Dejar reseña</Text>
             </TouchableOpacity>
 
             <TouchableOpacity 
@@ -309,11 +310,18 @@ const EstadoPedido = () => {
         onRequestClose={() => setShowFeedbackModal(false)}
       >
         <View style={styles.modalOverlay}>
-          <View style={styles.modalCard}>
-            <Text style={styles.modalTitle}>Dejar una reseña</Text>
+          <View style={[
+            styles.modalCard, 
+            { 
+              backgroundColor: colors.card, 
+              borderColor: isDarkMode ? colors.border : "transparent",
+              borderWidth: isDarkMode ? 1 : 0 
+            }
+          ]}>
+            <Text style={[styles.modalTitle, { color: colors.text }]}>Dejar una reseña</Text>
 
             {/* Selector de calificación (estrellas) */}
-            <Text style={styles.inputLabel}>Tu calificación</Text>
+            <Text style={[styles.inputLabel, { color: colors.text }]}>Tu calificación</Text>
             <View style={styles.starsContainer}>
               {[1, 2, 3, 4, 5].map((star) => (
                 <TouchableOpacity
@@ -332,9 +340,16 @@ const EstadoPedido = () => {
             </View>
 
             {/* Campo de comentario */}
-            <Text style={styles.inputLabel}>Tu opinión</Text>
+            <Text style={[styles.inputLabel, { color: colors.text }]}>Tu opinión</Text>
             <TextInput
-              style={styles.textInput}
+              style={[
+                styles.textInput, 
+                { 
+                  backgroundColor: colors.box, 
+                  color: colors.text, 
+                  borderColor: colors.border 
+                }
+              ]}
               placeholder="¿Qué te pareció la comida y la entrega?..."
               placeholderTextColor="#8E8E93"
               multiline
@@ -345,12 +360,12 @@ const EstadoPedido = () => {
 
             <View style={styles.modalButtonsRow}>
               <TouchableOpacity
-                style={styles.modalCancelButton}
+                style={[styles.modalCancelButton, { backgroundColor: colors.box }]}
                 activeOpacity={0.8}
                 disabled={submittingFeedback}
                 onPress={() => setShowFeedbackModal(false)}
               >
-                <Text style={styles.modalCancelButtonText}>Cancelar</Text>
+                <Text style={[styles.modalCancelButtonText, { color: colors.textMuted }]}>Cancelar</Text>
               </TouchableOpacity>
 
               <TouchableOpacity

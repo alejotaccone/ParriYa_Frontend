@@ -8,8 +8,11 @@ import { useCart } from '../../components/CartContext';
 import { useSearch } from '../../components/SearchContext';
 import { styles } from '../../components/Categoria/categoria.styles';
 import api, { resolveCategoryImg, resolveProductImg } from '../../services/api';
+import { useTheme } from '../../components/ThemeContext';
+import { COLORS } from '../../constants/colors';
 
 export default function CategoriaScreen() {
+  const { colors } = useTheme();
   const { categoriaSeleccionada } = useLocalSearchParams();
   const [filtroActivo, setFiltroActivo] = useState(categoriaSeleccionada || 'Todo');
   const [categorias, setCategorias] = useState([]);
@@ -94,7 +97,7 @@ export default function CategoriaScreen() {
   );
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <Header />
 
       <FiltrosCategoria
@@ -115,4 +118,4 @@ export default function CategoriaScreen() {
       />
     </View>
   );
-}
+}

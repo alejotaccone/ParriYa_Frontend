@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { styles } from '../../components/Backoffice/backoffice.styles';
 import { COLORS } from '../../constants/colors';
+import { useTheme } from '../../components/ThemeContext';
 import api from '../../services/api';
 
 const generateDaysCarousel = () => {
@@ -58,6 +59,7 @@ const formatFromBackendDate = (fechaBackendStr) => {
 
 export default function BackofficeReservas() {
   const router = useRouter();
+  const { colors, isDarkMode } = useTheme();
   
   const todayDd = String(new Date().getDate()).padStart(2, '0');
   const todayMm = String(new Date().getMonth() + 1).padStart(2, '0');
@@ -364,8 +366,8 @@ export default function BackofficeReservas() {
 
 
   return (
-    <View style={styles.mainContainer}>
-      <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
+    <View style={[styles.mainContainer, { backgroundColor: colors.background }]}>
+      <StatusBar translucent backgroundColor="transparent" barStyle={isDarkMode ? "light-content" : "dark-content"} />
 
       {/* --- HEADER ORANGE CON BOTÓN VOLVER --- */}
       <View style={styles.header}>
@@ -395,20 +397,26 @@ export default function BackofficeReservas() {
                 activeOpacity={0.8}
                 style={[
                   styles.calendarDayCard,
-                  isActive ? styles.calendarDayCardActive : styles.calendarDayCardInactive,
+                  isActive 
+                    ? styles.calendarDayCardActive 
+                    : [styles.calendarDayCardInactive, { backgroundColor: colors.card, borderColor: isDarkMode ? colors.border : 'transparent', borderWidth: isDarkMode ? 1 : 0 }],
                 ]}
                 onPress={() => setSelectedFecha(dia.fecha)}
               >
                 <Text
                   style={
-                    isActive ? styles.calendarDayOfWeekTextActive : styles.calendarDayOfWeekTextInactive
+                    isActive 
+                      ? styles.calendarDayOfWeekTextActive 
+                      : [styles.calendarDayOfWeekTextInactive, { color: colors.textMuted }]
                   }
                 >
                   {dia.nombre}
                 </Text>
                 <Text
                   style={
-                    isActive ? styles.calendarDayNumberTextActive : styles.calendarDayNumberTextInactive
+                    isActive 
+                      ? styles.calendarDayNumberTextActive 
+                      : [styles.calendarDayNumberTextInactive, { color: colors.text }]
                   }
                 >
                   {dia.nro}
@@ -421,8 +429,8 @@ export default function BackofficeReservas() {
 
       {/* --- FILA DE RESUMEN DIARIO --- */}
       <View style={styles.summaryRow}>
-        <Text style={styles.summaryDateText}>{currentDiaObj.fullText}</Text>
-        <Text style={styles.summaryStatsText}>
+        <Text style={[styles.summaryDateText, { color: colors.text }]}>{currentDiaObj.fullText}</Text>
+        <Text style={[styles.summaryStatsText, { color: colors.textMuted }]}>
           {totalReservasCount} reservas - {totalPersonasCount} personas
         </Text>
       </View>
@@ -435,20 +443,27 @@ export default function BackofficeReservas() {
         
         {/* --- TURNO MEDIODIA --- */}
         <View style={styles.shiftSection}>
-          <Text style={styles.shiftTitle}>Mediodia</Text>
+          <Text style={[styles.shiftTitle, { color: isDarkMode ? colors.textMuted : '#777777' }]}>Mediodia</Text>
           
-          <View style={styles.card}>
+          <View style={[
+            styles.card,
+            {
+              backgroundColor: colors.card,
+              borderColor: isDarkMode ? colors.border : 'transparent',
+              borderWidth: isDarkMode ? 1 : 0
+            }
+          ]}>
             {/* Cabecera Tabla */}
-            <View style={styles.tableHeader}>
-              <Text style={[styles.tableHeaderCol, styles.reservaColHorario]}>Horario</Text>
-              <Text style={[styles.tableHeaderCol, styles.reservaColNombre]}>Reserva a nombre de</Text>
-              <Text style={[styles.tableHeaderCol, styles.orderColEstado]}>Estado</Text>
-              <Text style={[styles.tableHeaderCol, styles.reservaColCantidad]}>Cantidad</Text>
+            <View style={[styles.tableHeader, { borderBottomColor: isDarkMode ? colors.border : '#F0F0F0' }]}>
+              <Text style={[styles.tableHeaderCol, styles.reservaColHorario, { color: colors.textMuted }]}>Horario</Text>
+              <Text style={[styles.tableHeaderCol, styles.reservaColNombre, { color: colors.textMuted }]}>Reserva a nombre de</Text>
+              <Text style={[styles.tableHeaderCol, styles.orderColEstado, { color: colors.textMuted }]}>Estado</Text>
+              <Text style={[styles.tableHeaderCol, styles.reservaColCantidad, { color: colors.textMuted }]}>Cantidad</Text>
             </View>
 
             {/* Filas */}
             {reservasMediodia.length === 0 ? (
-              <Text style={{ textAlign: 'center', color: '#8E8E93', marginVertical: 10 }}>
+              <Text style={{ textAlign: 'center', color: colors.textMuted, marginVertical: 10 }}>
                 No hay reservas para este turno.
               </Text>
             ) : (
@@ -457,12 +472,12 @@ export default function BackofficeReservas() {
                 return (
                   <TouchableOpacity 
                     key={item.id} 
-                    style={isLast ? styles.tableRowNoBorder : styles.tableRow}
+                    style={[isLast ? styles.tableRowNoBorder : styles.tableRow, !isLast && { borderBottomColor: isDarkMode ? colors.border : '#F2F2F2' }]}
                     activeOpacity={0.7}
                     onPress={() => handleToggleReservaEstado(item.id)}
                   >
-                    <Text style={[styles.timeText, styles.reservaColHorario]}>{item.horario}</Text>
-                    <Text style={[styles.clientNameText, styles.reservaColNombre]} numberOfLines={1}>{item.cliente}</Text>
+                    <Text style={[styles.timeText, styles.reservaColHorario, { color: colors.text }]}>{item.horario}</Text>
+                    <Text style={[styles.clientNameText, styles.reservaColNombre, { color: colors.text }]} numberOfLines={1}>{item.cliente}</Text>
                     <Text 
                       style={[
                         item.estado === 'Confirmada' ? styles.stateTextConfirmada : styles.stateTextCancelada,
@@ -481,20 +496,27 @@ export default function BackofficeReservas() {
 
         {/* --- TURNO NOCHE --- */}
         <View style={styles.shiftSection}>
-          <Text style={styles.shiftTitle}>Noche</Text>
+          <Text style={[styles.shiftTitle, { color: isDarkMode ? colors.textMuted : '#777777' }]}>Noche</Text>
           
-          <View style={styles.card}>
+          <View style={[
+            styles.card,
+            {
+              backgroundColor: colors.card,
+              borderColor: isDarkMode ? colors.border : 'transparent',
+              borderWidth: isDarkMode ? 1 : 0
+            }
+          ]}>
             {/* Cabecera Tabla */}
-            <View style={styles.tableHeader}>
-              <Text style={[styles.tableHeaderCol, styles.reservaColHorario]}>Horario</Text>
-              <Text style={[styles.tableHeaderCol, styles.reservaColNombre]}>Reserva a nombre de</Text>
-              <Text style={[styles.tableHeaderCol, styles.orderColEstado]}>Estado</Text>
-              <Text style={[styles.tableHeaderCol, styles.reservaColCantidad]}>Cantidad</Text>
+            <View style={[styles.tableHeader, { borderBottomColor: isDarkMode ? colors.border : '#F0F0F0' }]}>
+              <Text style={[styles.tableHeaderCol, styles.reservaColHorario, { color: colors.textMuted }]}>Horario</Text>
+              <Text style={[styles.tableHeaderCol, styles.reservaColNombre, { color: colors.textMuted }]}>Reserva a nombre de</Text>
+              <Text style={[styles.tableHeaderCol, styles.orderColEstado, { color: colors.textMuted }]}>Estado</Text>
+              <Text style={[styles.tableHeaderCol, styles.reservaColCantidad, { color: colors.textMuted }]}>Cantidad</Text>
             </View>
 
             {/* Filas */}
             {reservasNoche.length === 0 ? (
-              <Text style={{ textAlign: 'center', color: '#8E8E93', marginVertical: 10 }}>
+              <Text style={{ textAlign: 'center', color: colors.textMuted, marginVertical: 10 }}>
                 No hay reservas para este turno.
               </Text>
             ) : (
@@ -503,12 +525,12 @@ export default function BackofficeReservas() {
                 return (
                   <TouchableOpacity 
                     key={item.id} 
-                    style={isLast ? styles.tableRowNoBorder : styles.tableRow}
+                    style={[isLast ? styles.tableRowNoBorder : styles.tableRow, !isLast && { borderBottomColor: isDarkMode ? colors.border : '#F2F2F2' }]}
                     activeOpacity={0.7}
                     onPress={() => handleToggleReservaEstado(item.id)}
                   >
-                    <Text style={[styles.timeText, styles.reservaColHorario]}>{item.horario}</Text>
-                    <Text style={[styles.clientNameText, styles.reservaColNombre]} numberOfLines={1}>{item.cliente}</Text>
+                    <Text style={[styles.timeText, styles.reservaColHorario, { color: colors.text }]}>{item.horario}</Text>
+                    <Text style={[styles.clientNameText, styles.reservaColNombre, { color: colors.text }]} numberOfLines={1}>{item.cliente}</Text>
                     <Text 
                       style={[
                         item.estado === 'Confirmada' ? styles.stateTextConfirmada : styles.stateTextCancelada,
@@ -546,28 +568,35 @@ export default function BackofficeReservas() {
         onRequestClose={() => setModalVisible(false)}
       >
         <View style={styles.modalOverlay}>
-          <View style={styles.modalCard}>
+          <View style={[
+            styles.modalCard,
+            {
+              backgroundColor: colors.card,
+              borderColor: isDarkMode ? colors.border : 'transparent',
+              borderWidth: isDarkMode ? 1 : 0
+            }
+          ]}>
             
             {/* Header del Modal */}
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Nueva Reserva</Text>
+              <Text style={[styles.modalTitle, { color: colors.text }]}>Nueva Reserva</Text>
               <TouchableOpacity 
                 style={styles.modalCloseButton}
                 onPress={() => setModalVisible(false)}
               >
-                <Ionicons name="close" size={24} color={COLORS.textMain} />
+                <Ionicons name="close" size={24} color={colors.text} />
               </TouchableOpacity>
             </View>
 
-            <Text style={styles.modalSubtitle}>Fecha: {currentDiaObj.fullText}</Text>
+            <Text style={[styles.modalSubtitle, { color: colors.textMuted }]}>Fecha: {currentDiaObj.fullText}</Text>
 
             {/* Input: Nombre Cliente */}
             <View style={styles.addModalInputWrapper}>
-              <Text style={styles.addModalInputLabel}>Nombre del Cliente</Text>
+              <Text style={[styles.addModalInputLabel, { color: colors.textMuted }]}>Nombre del Cliente</Text>
               <TextInput
-                style={styles.addModalTextInput}
+                style={[styles.addModalTextInput, { backgroundColor: isDarkMode ? colors.box : 'transparent', borderColor: isDarkMode ? colors.border : COLORS.borderMedium, color: colors.text }]}
                 placeholder="Ej: Manuel Neuer"
-                placeholderTextColor="#8E8E93"
+                placeholderTextColor={isDarkMode ? colors.textMuted : "#8E8E93"}
                 value={clienteInput}
                 onChangeText={setClienteInput}
               />
@@ -575,11 +604,11 @@ export default function BackofficeReservas() {
 
             {/* Input: Horario */}
             <View style={styles.addModalInputWrapper}>
-              <Text style={styles.addModalInputLabel}>Horario (Ej: 13:00 o 21:30)</Text>
+              <Text style={[styles.addModalInputLabel, { color: colors.textMuted }]}>Horario (Ej: 13:00 o 21:30)</Text>
               <TextInput
-                style={styles.addModalTextInput}
+                style={[styles.addModalTextInput, { backgroundColor: isDarkMode ? colors.box : 'transparent', borderColor: isDarkMode ? colors.border : COLORS.borderMedium, color: colors.text }]}
                 placeholder="21:30"
-                placeholderTextColor="#8E8E93"
+                placeholderTextColor={isDarkMode ? colors.textMuted : "#8E8E93"}
                 value={horarioInput}
                 onChangeText={setHorarioInput}
               />
@@ -587,11 +616,11 @@ export default function BackofficeReservas() {
 
             {/* Input: Cantidad de personas */}
             <View style={styles.addModalInputWrapper}>
-              <Text style={styles.addModalInputLabel}>Cantidad de Personas</Text>
+              <Text style={[styles.addModalInputLabel, { color: colors.textMuted }]}>Cantidad de Personas</Text>
               <TextInput
-                style={styles.addModalTextInput}
+                style={[styles.addModalTextInput, { backgroundColor: isDarkMode ? colors.box : 'transparent', borderColor: isDarkMode ? colors.border : COLORS.borderMedium, color: colors.text }]}
                 placeholder="4"
-                placeholderTextColor="#8E8E93"
+                placeholderTextColor={isDarkMode ? colors.textMuted : "#8E8E93"}
                 keyboardType="numeric"
                 value={cantidadInput}
                 onChangeText={setCantidadInput}
@@ -600,17 +629,24 @@ export default function BackofficeReservas() {
 
             {/* Selector de Turno */}
             <View style={styles.addModalInputWrapper}>
-              <Text style={styles.addModalInputLabel}>Turno</Text>
+              <Text style={[styles.addModalInputLabel, { color: colors.textMuted }]}>Turno</Text>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 5 }}>
                 <TouchableOpacity
                   style={[
                     styles.statusOptionButton,
                     { flex: 0.48, marginVertical: 0 },
-                    turnoInput === 'Mediodia' ? styles.statusBtnActivePreparando : styles.statusBtnInactive
+                    turnoInput === 'Mediodia' 
+                      ? styles.statusBtnActivePreparando 
+                      : [styles.statusBtnInactive, isDarkMode && { borderColor: colors.border }]
                   ]}
                   onPress={() => setTurnoInput('Mediodia')}
                 >
-                  <Text style={[styles.statusBtnText, turnoInput === 'Mediodia' && styles.statusBtnTextActivePreparando, { marginLeft: 0, textAlign: 'center', width: '100%' }]}>
+                  <Text style={[
+                    styles.statusBtnText, 
+                    isDarkMode && { color: colors.textMuted },
+                    turnoInput === 'Mediodia' && styles.statusBtnTextActivePreparando, 
+                    { marginLeft: 0, textAlign: 'center', width: '100%' }
+                  ]}>
                     Mediodía
                   </Text>
                 </TouchableOpacity>
@@ -619,11 +655,18 @@ export default function BackofficeReservas() {
                   style={[
                     styles.statusOptionButton,
                     { flex: 0.48, marginVertical: 0 },
-                    turnoInput === 'Noche' ? styles.statusBtnActivePreparando : styles.statusBtnInactive
+                    turnoInput === 'Noche' 
+                      ? styles.statusBtnActivePreparando 
+                      : [styles.statusBtnInactive, isDarkMode && { borderColor: colors.border }]
                   ]}
                   onPress={() => setTurnoInput('Noche')}
                 >
-                  <Text style={[styles.statusBtnText, turnoInput === 'Noche' && styles.statusBtnTextActivePreparando, { marginLeft: 0, textAlign: 'center', width: '100%' }]}>
+                  <Text style={[
+                    styles.statusBtnText, 
+                    isDarkMode && { color: colors.textMuted },
+                    turnoInput === 'Noche' && styles.statusBtnTextActivePreparando, 
+                    { marginLeft: 0, textAlign: 'center', width: '100%' }
+                  ]}>
                     Noche
                   </Text>
                 </TouchableOpacity>
@@ -650,7 +693,7 @@ export default function BackofficeReservas() {
           activeOpacity={0.7}
           onPress={() => router.replace('/backoffice')}
         >
-          <Ionicons name="home" size={26} color="white" />
+          <Ionicons name="home" size={26} color={COLORS.primary} />
         </TouchableOpacity>
 
         <TouchableOpacity 

@@ -26,10 +26,9 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 25,
   },
   headerTitle: {
-    fontFamily: FONTS.family.bold,
+    fontFamily: FONTS.family.lobster,
 
     fontSize: FONTS.h1,
-    fontWeight: 'bold',
     color: COLORS.secondary, // Marrón oscuro
   },
   grillLogo: {

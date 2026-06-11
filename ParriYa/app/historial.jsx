@@ -5,11 +5,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { styles } from '../components/Historial/historial.styles';
 import api from '../services/api';
+import { useTheme } from '../components/ThemeContext';
+import { COLORS } from '../constants/colors';
 
 export default function HistorialScreen() {
   const router = useRouter();
   const [pedidos, setPedidos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { colors, isDarkMode } = useTheme();
 
   useEffect(() => {
     async function loadHistorial() {
@@ -51,21 +54,28 @@ export default function HistorialScreen() {
     >
       {/* Fila superior: Fecha y etiqueta Monto */}
       <View style={styles.dateRow}>
-        <Text style={styles.dateText}>{item.fecha_pedido}</Text>
-        <Text style={styles.montoLabel}>Monto</Text>
+        <Text style={[styles.dateText, { color: colors.textMuted }]}>{item.fecha_pedido}</Text>
+        <Text style={[styles.montoLabel, { color: colors.textMuted }]}>Monto</Text>
       </View>
 
       {/* Tarjeta gris del pedido */}
-      <View style={styles.pedidoCard}>
+      <View style={[
+        styles.pedidoCard, 
+        { 
+          backgroundColor: colors.card,
+          borderColor: isDarkMode ? colors.border : "transparent",
+          borderWidth: isDarkMode ? 1 : 0
+        }
+      ]}>
         <View style={styles.pedidoInfo}>
-          <Text style={styles.pedidoTitle}>
+          <Text style={[styles.pedidoTitle, { color: colors.text }]}>
             Pedido #{item.id.toString().padStart(2, '0')}
           </Text>
-          <Text style={styles.productosText}>
+          <Text style={[styles.productosText, { color: colors.textMuted }]}>
             Cantidad de productos ({item.cantidad_productos})
           </Text>
         </View>
-        <Text style={styles.totalText}>
+        <Text style={[styles.totalText, { color: colors.text }]}>
           ${item.total.toLocaleString('es-AR')}
         </Text>
       </View>
@@ -73,7 +83,7 @@ export default function HistorialScreen() {
   );
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Header Naranja */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
@@ -83,9 +93,16 @@ export default function HistorialScreen() {
       </View>
 
       {/* Píldora de Recientes */}
-      <View style={styles.recientesPill}>
-        <Text style={styles.recientesText}>
-          <Text style={styles.recientesBold}>Recientes </Text>
+      <View style={[
+        styles.recientesPill, 
+        { 
+          backgroundColor: colors.box,
+          borderColor: isDarkMode ? colors.border : "transparent",
+          borderWidth: isDarkMode ? 1 : 0
+        }
+      ]}>
+        <Text style={[styles.recientesText, { color: colors.textMuted }]}>
+          <Text style={[styles.recientesBold, { color: colors.text }]}>Recientes </Text>
           (Ultimos 90 dias)
         </Text>
       </View>
@@ -102,7 +119,7 @@ export default function HistorialScreen() {
             </View>
           ) : (
             <View style={styles.emptyContainer}>
-              <Text style={styles.emptyText}>No se encontraron pedidos para este usuario.</Text>
+              <Text style={[styles.emptyText, { color: colors.text }]}>No se encontraron pedidos para este usuario.</Text>
             </View>
           )
         }

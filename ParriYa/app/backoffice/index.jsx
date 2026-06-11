@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { styles } from '../../components/Backoffice/backoffice.styles';
 import { COLORS } from '../../constants/colors';
+import { useTheme } from '../../components/ThemeContext';
 import api from '../../services/api';
 
 // --- DATOS MOCK ORIGINALES DE LA IMAGEN ---
@@ -31,6 +32,7 @@ const FEEDBACK_MOCK_DISENO = [
 
 export default function BackofficeDashboard() {
   const router = useRouter();
+  const { colors, isDarkMode } = useTheme();
   const [orders, setOrders] = useState([]);
   const [reservas, setReservas] = useState([]);
   const [feedback, setFeedback] = useState([]);
@@ -219,8 +221,8 @@ export default function BackofficeDashboard() {
   };
 
   return (
-    <View style={styles.mainContainer}>
-      <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
+    <View style={[styles.mainContainer, { backgroundColor: colors.background }]}>
+      <StatusBar translucent backgroundColor="transparent" barStyle={isDarkMode ? "light-content" : "dark-content"} />
 
       {/* --- HEADER ORANGE --- */}
       <View style={styles.header}>
@@ -243,37 +245,48 @@ export default function BackofficeDashboard() {
         {/* --- ULTIMOS PEDIDOS --- */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Ultimos Pedidos</Text>
+            <Text style={[styles.sectionTitle, { color: colors.textMuted }]}>Ultimos Pedidos</Text>
             <TouchableOpacity 
               style={styles.linkTextContainer}
               onPress={() => router.push('/backoffice/pedidos')}
             >
-              <Text style={styles.linkText}>Ver todos</Text>
-              <Ionicons name="arrow-forward" size={14} color={COLORS.textMuted} />
+              <Text style={[styles.linkText, { color: colors.textMuted }]}>Ver todos</Text>
+              <Ionicons name="arrow-forward" size={14} color={isDarkMode ? colors.textMuted : COLORS.textMuted} />
             </TouchableOpacity>
           </View>
 
-          <View style={styles.card}>
+          <View style={[
+            styles.card,
+            {
+              backgroundColor: colors.card,
+              borderColor: isDarkMode ? colors.border : "transparent",
+              borderWidth: isDarkMode ? 1 : 0,
+            }
+          ]}>
             {/* Cabecera de Tabla */}
-            <View style={styles.tableHeader}>
-              <Text style={[styles.tableHeaderCol, styles.orderColNro]}>Nro</Text>
-              <Text style={[styles.tableHeaderCol, styles.orderColNombre]}>Nombre/cliente</Text>
-              <Text style={[styles.tableHeaderCol, styles.orderColEstado]}>Estado</Text>
-              <Text style={[styles.tableHeaderCol, styles.orderColPrecio]}>Precio</Text>
+            <View style={[styles.tableHeader, { borderBottomColor: isDarkMode ? colors.border : '#F0F0F0' }]}>
+              <Text style={[styles.tableHeaderCol, styles.orderColNro, { color: colors.textMuted }]}>Nro</Text>
+              <Text style={[styles.tableHeaderCol, styles.orderColNombre, { color: colors.textMuted }]}>Nombre/cliente</Text>
+              <Text style={[styles.tableHeaderCol, styles.orderColEstado, { color: colors.textMuted }]}>Estado</Text>
+              <Text style={[styles.tableHeaderCol, styles.orderColPrecio, { color: colors.textMuted }]}>Precio</Text>
             </View>
 
             {/* Filas de Tabla */}
             {orders.slice(0, 5).map((item, index) => {
               const isLast = index === Math.min(orders.length, 5) - 1;
+              const rowBorderColor = isDarkMode ? colors.border : '#F2F2F2';
               return (
                 <View 
                   key={item.id + index} 
-                  style={isLast ? styles.tableRowNoBorder : styles.tableRow}
+                  style={[
+                    isLast ? styles.tableRowNoBorder : styles.tableRow,
+                    !isLast && { borderBottomColor: rowBorderColor }
+                  ]}
                 >
-                  <Text style={[styles.orderNoText, styles.orderColNro]}>#{item.id}</Text>
-                  <Text style={[styles.clientNameText, styles.orderColNombre]} numberOfLines={1}>{item.cliente}</Text>
+                  <Text style={[styles.orderNoText, styles.orderColNro, { color: colors.text }]}>#{item.id}</Text>
+                  <Text style={[styles.clientNameText, styles.orderColNombre, { color: colors.text }]} numberOfLines={1}>{item.cliente}</Text>
                   <Text style={[styles.statusText, styles.orderColEstado]}>{item.estado}</Text>
-                  <Text style={[styles.priceText, styles.orderColPrecio]}>
+                  <Text style={[styles.priceText, styles.orderColPrecio, { color: colors.text }]}>
                     ${(item.precio).toLocaleString('es-AR')}
                   </Text>
                 </View>
@@ -285,34 +298,45 @@ export default function BackofficeDashboard() {
         {/* --- RESERVAS DE HOY --- */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Reservas de Hoy</Text>
+            <Text style={[styles.sectionTitle, { color: colors.textMuted }]}>Reservas de Hoy</Text>
             <TouchableOpacity 
               style={styles.linkTextContainer}
               onPress={() => router.push('/backoffice/reservas')}
             >
-              <Text style={styles.linkText}>Ver todos</Text>
-              <Ionicons name="arrow-forward" size={14} color={COLORS.textMuted} />
+              <Text style={[styles.linkText, { color: colors.textMuted }]}>Ver todos</Text>
+              <Ionicons name="arrow-forward" size={14} color={isDarkMode ? colors.textMuted : COLORS.textMuted} />
             </TouchableOpacity>
           </View>
 
-          <View style={styles.card}>
+          <View style={[
+            styles.card,
+            {
+              backgroundColor: colors.card,
+              borderColor: isDarkMode ? colors.border : "transparent",
+              borderWidth: isDarkMode ? 1 : 0,
+            }
+          ]}>
             {/* Cabecera de Tabla */}
-            <View style={styles.tableHeader}>
-              <Text style={[styles.tableHeaderCol, styles.reservaColHorario]}>Horario</Text>
-              <Text style={[styles.tableHeaderCol, styles.reservaColNombre]}>Reserva a nombre de</Text>
-              <Text style={[styles.tableHeaderCol, styles.reservaColCantidad]}>Cantidad</Text>
+            <View style={[styles.tableHeader, { borderBottomColor: isDarkMode ? colors.border : '#F0F0F0' }]}>
+              <Text style={[styles.tableHeaderCol, styles.reservaColHorario, { color: colors.textMuted }]}>Horario</Text>
+              <Text style={[styles.tableHeaderCol, styles.reservaColNombre, { color: colors.textMuted }]}>Reserva a nombre de</Text>
+              <Text style={[styles.tableHeaderCol, styles.reservaColCantidad, { color: colors.textMuted }]}>Cantidad</Text>
             </View>
 
             {/* Filas de Tabla */}
             {reservas.slice(0, 4).map((item, index) => {
               const isLast = index === Math.min(reservas.length, 4) - 1;
+              const rowBorderColor = isDarkMode ? colors.border : '#F2F2F2';
               return (
                 <View 
                   key={item.id + index} 
-                  style={isLast ? styles.tableRowNoBorder : styles.tableRow}
+                  style={[
+                    isLast ? styles.tableRowNoBorder : styles.tableRow,
+                    !isLast && { borderBottomColor: rowBorderColor }
+                  ]}
                 >
-                  <Text style={[styles.timeText, styles.reservaColHorario]}>{item.horario}</Text>
-                  <Text style={[styles.clientNameText, styles.reservaColNombre]} numberOfLines={1}>{item.cliente}</Text>
+                  <Text style={[styles.timeText, styles.reservaColHorario, { color: colors.text }]}>{item.horario}</Text>
+                  <Text style={[styles.clientNameText, styles.reservaColNombre, { color: colors.text }]} numberOfLines={1}>{item.cliente}</Text>
                   <Text style={[styles.countText, styles.reservaColCantidad]}>{item.cantidad} pers.</Text>
                 </View>
               );
@@ -323,32 +347,43 @@ export default function BackofficeDashboard() {
         {/* --- FEEDBACK RECIENTE --- */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Feedback Reciente</Text>
+            <Text style={[styles.sectionTitle, { color: colors.textMuted }]}>Feedback Reciente</Text>
             <TouchableOpacity 
               style={styles.linkTextContainer}
               onPress={() => router.push('/backoffice/feedback')}
             >
-              <Text style={styles.linkText}>Ver todos</Text>
-              <Ionicons name="arrow-forward" size={14} color={COLORS.textMuted} />
+              <Text style={[styles.linkText, { color: colors.textMuted }]}>Ver todos</Text>
+              <Ionicons name="arrow-forward" size={14} color={isDarkMode ? colors.textMuted : COLORS.textMuted} />
             </TouchableOpacity>
           </View>
 
-          <View style={styles.card}>
+          <View style={[
+            styles.card,
+            {
+              backgroundColor: colors.card,
+              borderColor: isDarkMode ? colors.border : "transparent",
+              borderWidth: isDarkMode ? 1 : 0,
+            }
+          ]}>
             {feedback.map((item, index) => {
               const isLast = index === feedback.length - 1;
+              const itemBorderColor = isDarkMode ? colors.border : '#F2F2F2';
               return (
                 <View 
                   key={item.id} 
-                  style={isLast ? styles.feedbackItemNoBorder : styles.feedbackItem}
+                  style={[
+                    isLast ? styles.feedbackItemNoBorder : styles.feedbackItem,
+                    !isLast && { borderBottomColor: itemBorderColor }
+                  ]}
                 >
                   <View style={styles.feedbackHeader}>
-                    <Text style={styles.feedbackClientName}>{item.cliente}</Text>
+                    <Text style={[styles.feedbackClientName, { color: colors.text }]}>{item.cliente}</Text>
                     <View style={styles.ratingContainer}>
-                      <Text style={styles.ratingText}>{item.calificacion}</Text>
+                      <Text style={[styles.ratingText, { color: colors.textMuted }]}>{item.calificacion}</Text>
                       <Ionicons name="star" size={14} color={COLORS.primary} />
                     </View>
                   </View>
-                  <Text style={styles.feedbackComment}>{item.comentario}</Text>
+                  <Text style={[styles.feedbackComment, { color: isDarkMode ? colors.textMuted : COLORS.textSecondary }]}>{item.comentario}</Text>
                 </View>
               );
             })}
@@ -360,7 +395,7 @@ export default function BackofficeDashboard() {
       {/* --- BOTTOM NAVIGATION BAR --- */}
       <View style={styles.bottomNav}>
         <TouchableOpacity style={styles.navItem} activeOpacity={0.7}>
-          <Ionicons name="home" size={26} color="white" />
+          <Ionicons name="home" size={26} color={COLORS.primary} />
         </TouchableOpacity>
 
         <TouchableOpacity 

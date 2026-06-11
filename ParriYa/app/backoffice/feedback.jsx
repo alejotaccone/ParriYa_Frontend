@@ -5,10 +5,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { styles } from '../../components/Backoffice/backoffice.styles';
 import { COLORS } from '../../constants/colors';
+import { useTheme } from '../../components/ThemeContext';
 import api from '../../services/api';
 
 export default function BackofficeFeedback() {
   const router = useRouter();
+  const { colors, isDarkMode } = useTheme();
   const [feedbacks, setFeedbacks] = useState([]);
 
   // Carga feedbacks desde el backend
@@ -120,8 +122,8 @@ export default function BackofficeFeedback() {
   };
 
   return (
-    <View style={styles.mainContainer}>
-      <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
+    <View style={[styles.mainContainer, { backgroundColor: colors.background }]}>
+      <StatusBar translucent backgroundColor="transparent" barStyle={isDarkMode ? "light-content" : "dark-content"} />
 
       {/* --- HEADER ORANGE CON BOTÓN VOLVER --- */}
       <View style={styles.header}>
@@ -137,9 +139,9 @@ export default function BackofficeFeedback() {
       </View>
 
       {/* --- RECIENTES BANNER --- */}
-      <View style={styles.recientesBanner}>
-        <Text style={styles.recientesText}>Recientes</Text>
-        <Text style={styles.ultimos7DiasText}>(Ultimos 90 dias)</Text>
+      <View style={[styles.recientesBanner, { backgroundColor: isDarkMode ? colors.card : '#EEEEEE' }]}>
+        <Text style={[styles.recientesText, { color: colors.text }]}>Recientes</Text>
+        <Text style={[styles.ultimos7DiasText, { color: colors.textMuted }]}>(Ultimos 90 dias)</Text>
       </View>
 
       {/* --- LISTADO DE DETALLE DE FEEDBACK --- */}
@@ -150,22 +152,29 @@ export default function BackofficeFeedback() {
         {feedbacks.map((item) => (
           <View 
             key={item.id} 
-            style={styles.feedbackDetailCard}
+            style={[
+              styles.feedbackDetailCard,
+              {
+                backgroundColor: colors.card,
+                borderColor: isDarkMode ? colors.border : 'transparent',
+                borderWidth: isDarkMode ? 1 : 0,
+              }
+            ]}
           >
             {/* Header: Cliente y Estrellas */}
             <View style={styles.feedbackHeaderRow}>
-              <Text style={styles.feedbackClientNameText}>{item.cliente}</Text>
+              <Text style={[styles.feedbackClientNameText, { color: colors.text }]}>{item.cliente}</Text>
               {renderStars(item.calificacion)}
             </View>
 
             {/* Metadatos: Fecha y Nro de Pedido */}
             <View style={styles.feedbackMetaRow}>
-              <Text style={styles.feedbackDateText}>{item.fecha}</Text>
-              <Text style={styles.feedbackOrderText}>Pedido #{item.pedido_id}</Text>
+              <Text style={[styles.feedbackDateText, { color: colors.textMuted }]}>{item.fecha}</Text>
+              <Text style={[styles.feedbackOrderText, { color: colors.textMuted }]}>Pedido #{item.pedido_id}</Text>
             </View>
 
             {/* Comentario descriptivo */}
-            <Text style={styles.feedbackCommentText}>
+            <Text style={[styles.feedbackCommentText, { color: colors.text }]}>
               {item.comentario}
             </Text>
 
@@ -180,7 +189,7 @@ export default function BackofficeFeedback() {
           activeOpacity={0.7}
           onPress={() => router.replace('/backoffice')}
         >
-          <Ionicons name="home" size={26} color="white" />
+          <Ionicons name="home" size={26} color={COLORS.primary} />
         </TouchableOpacity>
 
         <TouchableOpacity 

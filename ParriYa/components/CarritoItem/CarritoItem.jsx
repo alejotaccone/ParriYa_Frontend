@@ -1,12 +1,15 @@
-import React, { useState, useEffect } from "react"; // <-- IMPORTANTE: Sumamos useState y useEffect
+import React, { useState, useEffect } from "react";
 import { View, Text, Image, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { styles } from "./CarritoItem.styles";
+import { useTheme } from "../ThemeContext";
+import { COLORS } from "../../constants/colors";
 
 const CarritoItem = ({ item, onRemove, onIncrement, onDecrement }) => {
   const cantidad = item.cantidad ?? 1;
   const imageSource = item.img_url || item.image;
   const description = item.descripcion || item.desc || '';
+  const { colors, isDarkMode } = useTheme();
 
   // 1. Estado local para controlar si se muestra el tacho lateral
   const [showDelete, setShowDelete] = useState(false);
@@ -31,8 +34,16 @@ const CarritoItem = ({ item, onRemove, onIncrement, onDecrement }) => {
 
   return (
     <View style={styles.rowContainer}>
-      {/* Tarjeta Principal del Producto (Le sumamos un estilo condicional si está el tacho activo) */}
-      <View style={[styles.cardContainer, showDelete && styles.cardContainerWithDelete]}>
+      {/* Tarjeta Principal del Producto */}
+      <View style={[
+        styles.cardContainer,
+        {
+          backgroundColor: colors.card,
+          borderColor: isDarkMode ? colors.border : "transparent",
+          borderWidth: isDarkMode ? 1 : 0,
+        },
+        showDelete && styles.cardContainerWithDelete
+      ]}>
         <View style={styles.imageContainer}>
           <Image
             source={imageSource}
@@ -45,18 +56,23 @@ const CarritoItem = ({ item, onRemove, onIncrement, onDecrement }) => {
           <Text style={styles.price}>
             ${(item.precio * cantidad).toLocaleString("es-AR")}
           </Text>
-          <Text style={styles.name}>{item.nombre}</Text>
-          <Text style={styles.description}>{description}</Text>
+          <Text style={[styles.name, { color: colors.text }]}>
+            {item.nombre}
+          </Text>
+          <Text style={[styles.description, { color: colors.textMuted }]}>
+            {description}
+          </Text>
         </View>
 
         {/* Contador */}
-        <View style={styles.counterContainer}>
-          {/* Cambiamos el onPress para usar nuestra nueva función intermedia */}
+        <View style={[styles.counterContainer, { backgroundColor: colors.box }]}>
           <TouchableOpacity onPress={handleDecrement} style={styles.counterButton}>
             <Text style={styles.counterButtonText}>−</Text>
           </TouchableOpacity>
 
-          <Text style={styles.counterValue}>{cantidad}</Text>
+          <Text style={[styles.counterValue, { color: colors.text }]}>
+            {cantidad}
+          </Text>
 
           <TouchableOpacity onPress={onIncrement} style={styles.counterButton}>
             <Text style={styles.counterButtonText}>+</Text>

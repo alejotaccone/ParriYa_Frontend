@@ -5,6 +5,8 @@ import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from '../components/Auth/auth.styles'; // Ajustá esta ruta
 import api from '../services/api';
+import { useTheme } from '../components/ThemeContext';
+import { COLORS } from '../constants/colors';
 
 export default function CambiarContrasenaScreen() {
   const router = useRouter();
@@ -13,6 +15,7 @@ export default function CambiarContrasenaScreen() {
   const [confirmarPasswordNuevo, setConfirmarPasswordNuevo] = useState('');
   const [loading, setLoading] = useState(false);
   const [rol, setRol] = useState(null);
+  const { colors, isDarkMode } = useTheme();
 
   useEffect(() => {
     async function loadRole() {
@@ -84,7 +87,7 @@ export default function CambiarContrasenaScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={styles.headerBackground}>
         <TouchableOpacity style={styles.backButtonHeader} onPress={handleBack}>
           <Ionicons name="arrow-back" size={28} color="white" />
@@ -92,12 +95,25 @@ export default function CambiarContrasenaScreen() {
         <Ionicons name="lock-closed" size={150} color="black" style={styles.lockIconBackground} />
       </View>
 
-      <View style={styles.contentCard}>
+      <View style={[
+        styles.contentCard, 
+        { 
+          backgroundColor: colors.card, 
+          borderTopColor: isDarkMode ? colors.border : 'transparent', 
+          borderTopWidth: isDarkMode ? 1 : 0 
+        }
+      ]}>
         <View style={styles.inputWrapper}>
-          <Text style={styles.inputLabel}>Contraseña Actual</Text>
-          <View style={styles.inputContainer}>
+          <Text style={[
+            styles.inputLabel, 
+            { 
+              backgroundColor: colors.card, 
+              color: colors.textMuted 
+            }
+          ]}>Contraseña Actual</Text>
+          <View style={[styles.inputContainer, { borderColor: colors.border }]}>
             <TextInput 
-              style={styles.textInput} 
+              style={[styles.textInput, { color: colors.text }]} 
               secureTextEntry 
               placeholder="Contraseña actual"
               placeholderTextColor="#8E8E93"
@@ -108,10 +124,16 @@ export default function CambiarContrasenaScreen() {
         </View>
 
         <View style={styles.inputWrapper}>
-          <Text style={styles.inputLabel}>Nueva Contraseña</Text>
-          <View style={styles.inputContainer}>
+          <Text style={[
+            styles.inputLabel, 
+            { 
+              backgroundColor: colors.card, 
+              color: colors.textMuted 
+            }
+          ]}>Nueva Contraseña</Text>
+          <View style={[styles.inputContainer, { borderColor: colors.border }]}>
             <TextInput 
-              style={styles.textInput} 
+              style={[styles.textInput, { color: colors.text }]} 
               secureTextEntry 
               placeholder="Nueva contraseña"
               placeholderTextColor="#8E8E93"
@@ -122,10 +144,16 @@ export default function CambiarContrasenaScreen() {
         </View>
 
         <View style={styles.inputWrapper}>
-          <Text style={styles.inputLabel}>Confirmar Nueva Contraseña</Text>
-          <View style={styles.inputContainer}>
+          <Text style={[
+            styles.inputLabel, 
+            { 
+              backgroundColor: colors.card, 
+              color: colors.textMuted 
+            }
+          ]}>Confirmar Nueva Contraseña</Text>
+          <View style={[styles.inputContainer, { borderColor: colors.border }]}>
             <TextInput 
-              style={styles.textInput} 
+              style={[styles.textInput, { color: colors.text }]} 
               secureTextEntry 
               placeholder="Repetir nueva contraseña"
               placeholderTextColor="#8E8E93"
@@ -135,7 +163,7 @@ export default function CambiarContrasenaScreen() {
           </View>
         </View>
 
-        <View style={styles.divider} />
+        <View style={[styles.divider, { backgroundColor: colors.divider }]} />
 
         <TouchableOpacity 
           style={styles.confirmButton}

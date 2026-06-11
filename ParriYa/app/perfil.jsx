@@ -12,37 +12,18 @@ import { useRouter } from "expo-router";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from "@expo/vector-icons";
 import { styles } from "../components/Perfil/perfil.styles";
+import { COLORS } from "../constants/colors";
+import { useTheme } from "../components/ThemeContext";
 
 export default function PerfilScreen() {
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const { isDarkMode, toggleTheme, colors } = useTheme();
   const [usuario, setUsuario] = useState({
     username: '',
     email: '',
     telefono: '',
   });
-
-  useEffect(() => {
-    async function loadTheme() {
-      try {
-        const theme = await AsyncStorage.getItem('theme');
-        setIsDarkMode(theme === 'dark');
-      } catch (e) {
-        // ignore
-      }
-    }
-    loadTheme();
-  }, []);
-
-  const handleThemeChange = async (value) => {
-    setIsDarkMode(value);
-    try {
-      await AsyncStorage.setItem('theme', value ? 'dark' : 'light');
-    } catch (e) {
-      // ignore
-    }
-  };
 
   useEffect(() => {
     async function loadUser() {
@@ -67,7 +48,7 @@ export default function PerfilScreen() {
   }, [router]);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
@@ -76,7 +57,7 @@ export default function PerfilScreen() {
         <View style={styles.headerBackground}>
           <View style={styles.headerIconsRow}>
             
-            {/* Flecha de volver CORREGIDA */}
+            {/* Flecha de volver */}
             <TouchableOpacity onPress={() => router.replace('/(tabs)')}>
               <Ionicons name="arrow-back" size={24} color="white" />
             </TouchableOpacity>
@@ -98,14 +79,21 @@ export default function PerfilScreen() {
           </View>
         </View>
 
-        {/*Tarjeta Blanca superpuesta */}
-        <View style={styles.contentCard}>
+        {/* Tarjeta superpuesta */}
+        <View style={[
+          styles.contentCard, 
+          { 
+            backgroundColor: colors.card,
+            borderColor: isDarkMode ? colors.border : "transparent",
+            borderWidth: isDarkMode ? 1 : 0,
+          }
+        ]}>
           {/* Campo: Nombre */}
           <View style={styles.inputWrapper}>
-            <Text style={styles.inputLabel}>Nombre</Text>
-            <View style={styles.inputContainer}>
+            <Text style={[styles.inputLabel, { backgroundColor: colors.card, color: colors.textMuted }]}>Nombre</Text>
+            <View style={[styles.inputContainer, { backgroundColor: colors.card, borderColor: colors.border }]}>
               <TextInput
-                style={styles.textInput}
+                style={[styles.textInput, { color: colors.text }]}
                 value={usuario.username}
                 editable={false}
               />
@@ -114,10 +102,10 @@ export default function PerfilScreen() {
 
           {/* Campo: Email */}
           <View style={styles.inputWrapper}>
-            <Text style={styles.inputLabel}>Email</Text>
-            <View style={styles.inputContainer}>
+            <Text style={[styles.inputLabel, { backgroundColor: colors.card, color: colors.textMuted }]}>Email</Text>
+            <View style={[styles.inputContainer, { backgroundColor: colors.card, borderColor: colors.border }]}>
               <TextInput
-                style={styles.textInput}
+                style={[styles.textInput, { color: colors.text }]}
                 value={usuario.email}
                 editable={false}
               />
@@ -126,18 +114,17 @@ export default function PerfilScreen() {
 
           {/* Campo: Teléfono */}
           <View style={styles.inputWrapper}>
-            <Text style={styles.inputLabel}>Telefono</Text>
-            <View style={styles.inputContainer}>
+            <Text style={[styles.inputLabel, { backgroundColor: colors.card, color: colors.textMuted }]}>Telefono</Text>
+            <View style={[styles.inputContainer, { backgroundColor: colors.card, borderColor: colors.border }]}>
               <TextInput
-                style={styles.textInput}
+                style={[styles.textInput, { color: colors.text }]}
                 value={usuario.telefono}
                 editable={false}
               />
             </View>
           </View>
 
-          <View style={styles.divider} />
-
+          <View style={[styles.divider, { backgroundColor: colors.divider }]} />
 
           {/* Enlaces Secundarios */}
           <TouchableOpacity 
@@ -145,8 +132,8 @@ export default function PerfilScreen() {
             activeOpacity={0.7}
             onPress={() => router.push('/cambiar_contrasena')}
           >
-            <Text style={styles.menuRowText}>Cambiar contraseña</Text>
-            <Ionicons name="chevron-forward" size={18} color="#8E8E93" />
+            <Text style={[styles.menuRowText, { color: colors.textMuted }]}>Cambiar contraseña</Text>
+            <Ionicons name="chevron-forward" size={18} color={isDarkMode ? colors.text : "#8E8E93"} />
           </TouchableOpacity>
 
           <TouchableOpacity 
@@ -154,8 +141,8 @@ export default function PerfilScreen() {
             activeOpacity={0.7}
             onPress={() => router.push('/historial')} 
           >
-            <Text style={styles.menuRowText}>Historial de compras</Text>
-            <Ionicons name="chevron-forward" size={18} color="#8E8E93" />
+            <Text style={[styles.menuRowText, { color: colors.textMuted }]}>Historial de compras</Text>
+            <Ionicons name="chevron-forward" size={18} color={isDarkMode ? colors.text : "#8E8E93"} />
           </TouchableOpacity>
 
           {/* Botón Cerrar Sesión (Naranja) */}
@@ -190,15 +177,15 @@ export default function PerfilScreen() {
       )}
 
       {menuOpen && (
-        <View style={styles.dropdownContainer}>
-          <View style={styles.dropdownRow}>
-            <Text style={styles.dropdownText}>Modo Noche</Text>
+        <View style={[styles.dropdownContainer, { backgroundColor: colors.card, borderColor: colors.border, borderWidth: 1 }]}>
+          <View style={[styles.dropdownRow, { backgroundColor: colors.dropdownRow }]}>
+            <Text style={[styles.dropdownText, { color: colors.text }]}>Modo Noche</Text>
             <Switch
+              key={isDarkMode ? "switch-active" : "switch-inactive"}
               value={isDarkMode}
-              onValueChange={handleThemeChange}
-              trackColor={{ false: "#D1D1D6", true: "#E76F41" }}
-              thumbColor="#ffffff"
-              activeThumbColor="#ffffff"
+              onValueChange={toggleTheme}
+              trackColor={{ false: "#D1D1D6", true: COLORS.primary }}
+              thumbColor={isDarkMode ? COLORS.primary : "#ffffff"}
             />
           </View>
         </View>

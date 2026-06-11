@@ -5,10 +5,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { styles } from '../../components/Backoffice/backoffice.styles';
 import { COLORS } from '../../constants/colors';
+import { useTheme } from '../../components/ThemeContext';
 import api, { resolveProductImg, resolveCategoryImg } from '../../services/api';
 
 export default function BackofficeProductos() {
   const router = useRouter();
+  const { colors, isDarkMode } = useTheme();
   const [products, setProducts] = useState([]);
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState('Todo');
   const [categoriesList, setCategoriesList] = useState([]);
@@ -285,8 +287,8 @@ export default function BackofficeProductos() {
 
 
   return (
-    <View style={styles.mainContainer}>
-      <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
+    <View style={[styles.mainContainer, { backgroundColor: colors.background }]}>
+      <StatusBar translucent backgroundColor="transparent" barStyle={isDarkMode ? "light-content" : "dark-content"} />
 
       <View style={styles.header}>
         <View style={styles.backHeaderRow}>
@@ -319,13 +321,17 @@ export default function BackofficeProductos() {
             activeOpacity={0.8}
             style={[
               styles.categoryFilterCard,
-              selectedCategoryFilter === 'Todo' ? styles.categoryFilterCardActive : styles.categoryFilterCardInactive,
+              selectedCategoryFilter === 'Todo' 
+                ? styles.categoryFilterCardActive 
+                : [styles.categoryFilterCardInactive, { backgroundColor: colors.card, borderColor: isDarkMode ? colors.border : 'transparent', borderWidth: isDarkMode ? 1 : 0 }],
             ]}
             onPress={() => setSelectedCategoryFilter('Todo')}
           >
             <Text
               style={
-                selectedCategoryFilter === 'Todo' ? styles.categoryFilterTextActive : styles.categoryFilterTextInactive
+                selectedCategoryFilter === 'Todo' 
+                  ? styles.categoryFilterTextActive 
+                  : [styles.categoryFilterTextInactive, { color: colors.text }]
               }
             >
               Todo
@@ -340,13 +346,17 @@ export default function BackofficeProductos() {
                 activeOpacity={0.8}
                 style={[
                   styles.categoryFilterCard,
-                  isActive ? styles.categoryFilterCardActive : styles.categoryFilterCardInactive,
+                  isActive 
+                    ? styles.categoryFilterCardActive 
+                    : [styles.categoryFilterCardInactive, { backgroundColor: colors.card, borderColor: isDarkMode ? colors.border : 'transparent', borderWidth: isDarkMode ? 1 : 0 }],
                 ]}
                 onPress={() => setSelectedCategoryFilter(cat.nombre)}
               >
                 <Text
                   style={
-                    isActive ? styles.categoryFilterTextActive : styles.categoryFilterTextInactive
+                    isActive 
+                      ? styles.categoryFilterTextActive 
+                      : [styles.categoryFilterTextInactive, { color: colors.text }]
                   }
                 >
                   {cat.nombre}
@@ -363,7 +373,7 @@ export default function BackofficeProductos() {
         contentContainerStyle={{ paddingBottom: 20 }}
       >
         {productosFiltrados.length === 0 ? (
-          <Text style={{ textAlign: 'center', color: '#8E8E93', marginVertical: 30 }}>
+          <Text style={{ textAlign: 'center', color: colors.textMuted, marginVertical: 30 }}>
             No hay productos registrados en esta categoría.
           </Text>
         ) : (
@@ -374,12 +384,19 @@ export default function BackofficeProductos() {
             return (
               <TouchableOpacity 
                 key={item.id} 
-                style={styles.productCard}
+                style={[
+                  styles.productCard,
+                  {
+                    backgroundColor: colors.card,
+                    borderColor: isDarkMode ? colors.border : 'transparent',
+                    borderWidth: isDarkMode ? 1 : 0,
+                  }
+                ]}
                 activeOpacity={0.9}
                 onLongPress={() => handleDeleteProduct(item.id, item.nombre)}
               >
                 {/* Imagen del producto */}
-                <View style={styles.productCardImageContainer}>
+                <View style={[styles.productCardImageContainer, { backgroundColor: isDarkMode ? colors.box : '#F5F5F5' }]}>
                   <Image
                     source={isLocalAsset ? item.img_url : { uri: item.img_url }}
                     style={styles.productCardImage}
@@ -389,9 +406,9 @@ export default function BackofficeProductos() {
 
                 {/* Contenido descriptivo */}
                 <View style={styles.productCardContent}>
-                  <Text style={styles.productCardName}>{item.nombre}</Text>
+                  <Text style={[styles.productCardName, { color: colors.text }]}>{item.nombre}</Text>
                   <Text style={styles.productCardCategory}>{catName}</Text>
-                  <Text style={styles.productCardDescription} numberOfLines={2}>
+                  <Text style={[styles.productCardDescription, { color: colors.textMuted }]} numberOfLines={2}>
                     {item.descripcion}
                   </Text>
                 </View>
@@ -419,25 +436,35 @@ export default function BackofficeProductos() {
         onRequestClose={() => setModalVisible(false)}
       >
         <View style={styles.modalOverlay}>
-          <View style={[styles.modalCard, { width: '92%', maxWidth: 450, maxHeight: '90%' }]}>
+          <View style={[
+            styles.modalCard,
+            {
+              width: '92%',
+              maxWidth: 450,
+              maxHeight: '90%',
+              backgroundColor: colors.card,
+              borderColor: isDarkMode ? colors.border : 'transparent',
+              borderWidth: isDarkMode ? 1 : 0
+            }
+          ]}>
             
             {/* Header del Modal */}
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>
+              <Text style={[styles.modalTitle, { color: colors.text }]}>
                 {editingProduct ? 'Editar producto' : 'Crear producto'}
               </Text>
               <TouchableOpacity 
                 style={styles.modalCloseButton}
                 onPress={() => setModalVisible(false)}
               >
-                <Ionicons name="close" size={24} color={COLORS.textMain} />
+                <Ionicons name="close" size={24} color={colors.text} />
               </TouchableOpacity>
             </View>
 
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 10 }}>
               
               {/* Box de Previsualización Dinámica por URL de Imagen */}
-              <View style={styles.modalImagePlaceholder}>
+              <View style={[styles.modalImagePlaceholder, { backgroundColor: isDarkMode ? colors.box : '#F5F5F5', borderColor: isDarkMode ? colors.border : '#E5E5EA' }]}>
                 {imgUrlInput.trim() ? (
                   <Image 
                     source={{ uri: imgUrlInput.trim() }}
@@ -451,20 +478,20 @@ export default function BackofficeProductos() {
                     resizeMode="cover"
                   />
                 ) : (
-                  <View style={styles.modalImagePlaceholderBox}>
+                  <View style={[styles.modalImagePlaceholderBox, { backgroundColor: isDarkMode ? colors.box : '#F5F5F5' }]}>
                     <Ionicons name="image-outline" size={40} color="#C5C5C9" />
-                    <Text style={styles.modalImageText}>Cambiar imagen</Text>
+                    <Text style={[styles.modalImageText, { color: colors.textMuted }]}>Cambiar imagen</Text>
                   </View>
                 )}
               </View>
 
               {/* Input: Nombre del Producto */}
               <View style={styles.addModalInputWrapper}>
-                <Text style={styles.addModalInputLabel}>Nombre</Text>
+                <Text style={[styles.addModalInputLabel, { color: colors.textMuted }]}>Nombre</Text>
                 <TextInput
-                  style={styles.addModalTextInput}
+                  style={[styles.addModalTextInput, { backgroundColor: isDarkMode ? colors.box : 'transparent', borderColor: isDarkMode ? colors.border : COLORS.borderMedium, color: colors.text }]}
                   placeholder="Ej: Lomo a la parrilla"
-                  placeholderTextColor="#8E8E93"
+                  placeholderTextColor={isDarkMode ? colors.textMuted : "#8E8E93"}
                   value={nombreInput}
                   onChangeText={setNombreInput}
                 />
@@ -472,11 +499,11 @@ export default function BackofficeProductos() {
 
               {/* Input: Descripción */}
               <View style={styles.addModalInputWrapper}>
-                <Text style={styles.addModalInputLabel}>Descripción</Text>
+                <Text style={[styles.addModalInputLabel, { color: colors.textMuted }]}>Descripción</Text>
                 <TextInput
-                  style={[styles.addModalTextInput, { height: 80, textAlignVertical: 'top' }]}
+                  style={[styles.addModalTextInput, { height: 80, textAlignVertical: 'top', backgroundColor: isDarkMode ? colors.box : 'transparent', borderColor: isDarkMode ? colors.border : COLORS.borderMedium, color: colors.text }]}
                   placeholder="Corte premium de lomo, tierno y jugoso..."
-                  placeholderTextColor="#8E8E93"
+                  placeholderTextColor={isDarkMode ? colors.textMuted : "#8E8E93"}
                   multiline={true}
                   numberOfLines={4}
                   value={descripcionInput}
@@ -486,11 +513,11 @@ export default function BackofficeProductos() {
 
               {/* Input: URL de Imagen */}
               <View style={styles.addModalInputWrapper}>
-                <Text style={styles.addModalInputLabel}>URL de la Imagen (Web)</Text>
+                <Text style={[styles.addModalInputLabel, { color: colors.textMuted }]}>URL de la Imagen (Web)</Text>
                 <TextInput
-                  style={styles.addModalTextInput}
+                  style={[styles.addModalTextInput, { backgroundColor: isDarkMode ? colors.box : 'transparent', borderColor: isDarkMode ? colors.border : COLORS.borderMedium, color: colors.text }]}
                   placeholder="https://example.com/imagen.png"
-                  placeholderTextColor="#8E8E93"
+                  placeholderTextColor={isDarkMode ? colors.textMuted : "#8E8E93"}
                   autoCapitalize="none"
                   value={imgUrlInput}
                   onChangeText={setImgUrlInput}
@@ -499,11 +526,11 @@ export default function BackofficeProductos() {
 
               {/* Input: Precio */}
               <View style={styles.addModalInputWrapper}>
-                <Text style={styles.addModalInputLabel}>Precio ($)</Text>
+                <Text style={[styles.addModalInputLabel, { color: colors.textMuted }]}>Precio ($)</Text>
                 <TextInput
-                  style={styles.addModalTextInput}
+                  style={[styles.addModalTextInput, { backgroundColor: isDarkMode ? colors.box : 'transparent', borderColor: isDarkMode ? colors.border : COLORS.borderMedium, color: colors.text }]}
                   placeholder="20000"
-                  placeholderTextColor="#8E8E93"
+                  placeholderTextColor={isDarkMode ? colors.textMuted : "#8E8E93"}
                   keyboardType="numeric"
                   value={precioInput}
                   onChangeText={setPrecioInput}
@@ -512,11 +539,11 @@ export default function BackofficeProductos() {
 
               {/* Input: Stock de BDD */}
               <View style={styles.addModalInputWrapper}>
-                <Text style={styles.addModalInputLabel}>Stock en Inventario</Text>
+                <Text style={[styles.addModalInputLabel, { color: colors.textMuted }]}>Stock en Inventario</Text>
                 <TextInput
-                  style={styles.addModalTextInput}
+                  style={[styles.addModalTextInput, { backgroundColor: isDarkMode ? colors.box : 'transparent', borderColor: isDarkMode ? colors.border : COLORS.borderMedium, color: colors.text }]}
                   placeholder="10"
-                  placeholderTextColor="#8E8E93"
+                  placeholderTextColor={isDarkMode ? colors.textMuted : "#8E8E93"}
                   keyboardType="numeric"
                   value={stockInput}
                   onChangeText={setStockInput}
@@ -525,7 +552,7 @@ export default function BackofficeProductos() {
 
               {/* Selector de Categorías */}
               <View style={styles.addModalInputWrapper}>
-                <Text style={styles.addModalInputLabel}>Categoría</Text>
+                <Text style={[styles.addModalInputLabel, { color: colors.textMuted }]}>Categoría</Text>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 5 }}>
                   {categoriesList.map((cat) => {
                     const isSelected = cat.id === selectedCategoryOptionId;
@@ -535,11 +562,18 @@ export default function BackofficeProductos() {
                         style={[
                           styles.statusOptionButton,
                           { marginHorizontal: 4, marginVertical: 0, paddingVertical: 8, paddingHorizontal: 12 },
-                          isSelected ? styles.statusBtnActivePreparando : styles.statusBtnInactive
+                          isSelected 
+                            ? styles.statusBtnActivePreparando 
+                            : [styles.statusBtnInactive, isDarkMode && { borderColor: colors.border }]
                         ]}
                         onPress={() => setSelectedCategoryOptionId(cat.id)}
                       >
-                        <Text style={[styles.statusBtnText, isSelected && styles.statusBtnTextActivePreparando, { marginLeft: 0 }]}>
+                        <Text style={[
+                          styles.statusBtnText, 
+                          isDarkMode && { color: colors.textMuted },
+                          isSelected && styles.statusBtnTextActivePreparando, 
+                          { marginLeft: 0 }
+                        ]}>
                           {cat.nombre}
                         </Text>
                       </TouchableOpacity>
@@ -589,7 +623,7 @@ export default function BackofficeProductos() {
           activeOpacity={0.7}
           onPress={handleOpenCreateModal}
         >
-          <Ionicons name="add" size={32} color="white" />
+          <Ionicons name="add" size={32} color={COLORS.primary} />
         </TouchableOpacity>
 
         <TouchableOpacity 

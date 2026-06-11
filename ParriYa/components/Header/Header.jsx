@@ -1,13 +1,15 @@
-import React, { useState } from "react";
+import React from "react";
 import { View, Text, Image, TextInput, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useSearch } from "../SearchContext";
+import { useTheme } from "../ThemeContext";
 import { styles } from "./Header.styles";
 
 const Header = () => {
   const router = useRouter();
   const { busquedaGlobal, setBusquedaGlobal } = useSearch();
+  const { colors, isDarkMode } = useTheme();
 
   const handleBuscador = () => {
     if (busquedaGlobal.trim()) {
@@ -43,17 +45,26 @@ const Header = () => {
       </View>
 
       <View style={styles.bottomRow}>
-        <View style={styles.searchBar}>
+        <View
+          style={[
+            styles.searchBar,
+            {
+              backgroundColor: colors.card,
+              borderColor: isDarkMode ? colors.border : "transparent",
+              borderWidth: isDarkMode ? 1 : 0,
+            },
+          ]}
+        >
           <Ionicons
             name="search"
             size={20}
-            color="gray"
+            color={isDarkMode ? colors.textMuted : "gray"}
             style={styles.searchIcon}
           />
           <TextInput
             placeholder="Buscar productos"
-            style={styles.searchInput}
-            placeholderTextColor="gray"
+            style={[styles.searchInput, { color: colors.text }]}
+            placeholderTextColor={isDarkMode ? colors.textMuted : "gray"}
             value={busquedaGlobal}
             onChangeText={setBusquedaGlobal}
             onFocus={handleFocusBuscador}
@@ -62,7 +73,14 @@ const Header = () => {
           />
         </View>
         <TouchableOpacity
-          style={styles.favoritesButton}
+          style={[
+            styles.favoritesButton,
+            {
+              backgroundColor: colors.card,
+              borderColor: isDarkMode ? colors.border : "transparent",
+              borderWidth: isDarkMode ? 1 : 0,
+            },
+          ]}
           onPress={() => router.push('/favoritos')}
         >
           <Ionicons name="heart-outline" size={24} color="red" />

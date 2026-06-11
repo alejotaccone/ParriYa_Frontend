@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -14,9 +13,9 @@ import {
 } from '@expo-google-fonts/epilogue';
 import { Lobster_400Regular } from '@expo-google-fonts/lobster';
 
-import { useColorScheme } from '../hooks/use-color-scheme';
 import { CartProvider } from '../components/CartContext';
 import { SearchProvider } from '../components/SearchContext';
+import { ThemeProvider as AppThemeProvider, useTheme as useAppTheme } from '../components/ThemeContext';
 
 // Previene que el Splash Screen se oculte automáticamente
 SplashScreen.preventAutoHideAsync();
@@ -91,8 +90,8 @@ function RootLayoutNav() {
   );
 }
 
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
+function InnerRootLayout() {
+  const { isDarkMode } = useAppTheme();
   const [fontsLoaded, fontError] = useFonts({
     Epilogue_400Regular,
     Epilogue_500Medium,
@@ -103,24 +102,30 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (fontsLoaded || fontError) {
-      // Oculta el Splash Screen cuando las fuentes terminen de cargar (o falle la carga)
       SplashScreen.hideAsync();
     }
   }, [fontsLoaded, fontError]);
 
-  // Si las fuentes no han cargado y no hay error, mantenemos la pantalla del splash
   if (!fontsLoaded && !fontError) {
     return null;
   }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <ThemeProvider value={isDarkMode ? DarkTheme : DefaultTheme}>
       <CartProvider>
         <SearchProvider>
           <RootLayoutNav />
         </SearchProvider>
       </CartProvider>
-      <StatusBar style="auto" />
+      <StatusBar style={isDarkMode ? "light" : "dark"} />
     </ThemeProvider>
+  );
+}
+
+export default function RootLayout() {
+  return (
+    <AppThemeProvider>
+      <InnerRootLayout />
+    </AppThemeProvider>
   );
 }

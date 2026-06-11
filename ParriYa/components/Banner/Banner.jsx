@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { styles } from './Banner.styles';
+import { useTheme } from '../ThemeContext';
+import { COLORS } from '../../constants/colors';
 
 const OFERTAS = [
   {
@@ -33,6 +35,7 @@ const OFERTAS = [
 const Banner = () => {
   const [ofertaActual, setOfertaActual] = useState(0);
   const oferta = OFERTAS[ofertaActual];
+  const { colors, isDarkMode } = useTheme();
 
   const handleAnterior = () => {
     setOfertaActual((prev) => (prev === 0 ? OFERTAS.length - 1 : prev - 1));
@@ -66,12 +69,40 @@ const Banner = () => {
       </View>
 
       {/* Flechas de navegación del carrusel */}
-      <TouchableOpacity style={styles.arrowLeft} onPress={handleAnterior}>
-        <Ionicons name="chevron-back" size={18} color="#C84B22" />
+      <TouchableOpacity
+        style={[
+          styles.arrowLeft,
+          {
+            backgroundColor: colors.card,
+            borderColor: isDarkMode ? colors.border : 'transparent',
+            borderWidth: isDarkMode ? 1 : 0,
+          },
+        ]}
+        onPress={handleAnterior}
+      >
+        <Ionicons
+          name="chevron-back"
+          size={18}
+          color={isDarkMode ? COLORS.primary : '#C84B22'}
+        />
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.arrowRight} onPress={handleSiguiente}>
-        <Ionicons name="chevron-forward" size={18} color="#C84B22" />
+      <TouchableOpacity
+        style={[
+          styles.arrowRight,
+          {
+            backgroundColor: colors.card,
+            borderColor: isDarkMode ? colors.border : 'transparent',
+            borderWidth: isDarkMode ? 1 : 0,
+          },
+        ]}
+        onPress={handleSiguiente}
+      >
+        <Ionicons
+          name="chevron-forward"
+          size={18}
+          color={isDarkMode ? COLORS.primary : '#C84B22'}
+        />
       </TouchableOpacity>
 
       {/* Puntitos de paginación inferiores dinámicos */}

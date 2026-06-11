@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, StatusBar, Alert, Platform } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, StatusBar, Alert, Platform, Switch, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { styles } from '../../components/Perfil/perfil.styles';
+import { useTheme } from '../../components/ThemeContext';
+import { COLORS } from '../../constants/colors';
 
 export default function AdminPerfilScreen() {
   const router = useRouter();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const { isDarkMode, toggleTheme, colors } = useTheme();
   const [usuario, setUsuario] = useState({
     username: '',
     email: '',
@@ -64,8 +68,8 @@ export default function AdminPerfilScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <StatusBar translucent backgroundColor="transparent" barStyle={isDarkMode ? "light-content" : "dark-content"} />
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
@@ -79,7 +83,7 @@ export default function AdminPerfilScreen() {
             </TouchableOpacity>
 
             {/* Tuerca de configuración */}
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => setMenuOpen(!menuOpen)}>
               <Ionicons name="settings-sharp" size={24} color="white" />
             </TouchableOpacity>
           </View>
@@ -96,13 +100,20 @@ export default function AdminPerfilScreen() {
         </View>
 
         {/* Tarjeta Blanca superpuesta */}
-        <View style={styles.contentCard}>
+        <View style={[
+          styles.contentCard, 
+          { 
+            backgroundColor: colors.card,
+            borderColor: isDarkMode ? colors.border : "transparent",
+            borderWidth: isDarkMode ? 1 : 0,
+          }
+        ]}>
           {/* Campo: Nombre */}
           <View style={styles.inputWrapper}>
-            <Text style={styles.inputLabel}>Nombre</Text>
-            <View style={styles.inputContainer}>
+            <Text style={[styles.inputLabel, { backgroundColor: colors.card, color: colors.textMuted }]}>Nombre</Text>
+            <View style={[styles.inputContainer, { backgroundColor: colors.card, borderColor: colors.border }]}>
               <TextInput
-                style={styles.textInput}
+                style={[styles.textInput, { color: colors.text }]}
                 value={usuario.username}
                 editable={false}
               />
@@ -111,10 +122,10 @@ export default function AdminPerfilScreen() {
 
           {/* Campo: Email */}
           <View style={styles.inputWrapper}>
-            <Text style={styles.inputLabel}>Email</Text>
-            <View style={styles.inputContainer}>
+            <Text style={[styles.inputLabel, { backgroundColor: colors.card, color: colors.textMuted }]}>Email</Text>
+            <View style={[styles.inputContainer, { backgroundColor: colors.card, borderColor: colors.border }]}>
               <TextInput
-                style={styles.textInput}
+                style={[styles.textInput, { color: colors.text }]}
                 value={usuario.email}
                 editable={false}
               />
@@ -123,17 +134,17 @@ export default function AdminPerfilScreen() {
 
           {/* Campo: Teléfono */}
           <View style={styles.inputWrapper}>
-            <Text style={styles.inputLabel}>Telefono</Text>
-            <View style={styles.inputContainer}>
+            <Text style={[styles.inputLabel, { backgroundColor: colors.card, color: colors.textMuted }]}>Telefono</Text>
+            <View style={[styles.inputContainer, { backgroundColor: colors.card, borderColor: colors.border }]}>
               <TextInput
-                style={styles.textInput}
+                style={[styles.textInput, { color: colors.text }]}
                 value={usuario.telefono}
                 editable={false}
               />
             </View>
           </View>
 
-          <View style={styles.divider} />
+          <View style={[styles.divider, { backgroundColor: colors.divider }]} />
 
           {/* Enlaces Secundarios */}
           <TouchableOpacity 
@@ -141,8 +152,8 @@ export default function AdminPerfilScreen() {
             activeOpacity={0.7}
             onPress={() => router.push('/cambiar_contrasena')}
           >
-            <Text style={styles.menuRowText}>Cambiar contraseña</Text>
-            <Ionicons name="chevron-forward" size={18} color="#8E8E93" />
+            <Text style={[styles.menuRowText, { color: colors.textMuted }]}>Cambiar contraseña</Text>
+            <Ionicons name="chevron-forward" size={18} color={isDarkMode ? colors.text : "#8E8E93"} />
           </TouchableOpacity>
 
           {/* Botón Cerrar Sesión "Log out" */}
@@ -161,6 +172,29 @@ export default function AdminPerfilScreen() {
           </TouchableOpacity>
         </View>
       </ScrollView>
+
+      {menuOpen && (
+        <TouchableOpacity
+          style={StyleSheet.absoluteFillObject}
+          activeOpacity={1}
+          onPress={() => setMenuOpen(false)}
+        />
+      )}
+
+      {menuOpen && (
+        <View style={[styles.dropdownContainer, { backgroundColor: colors.card, borderColor: colors.border, borderWidth: 1 }]}>
+          <View style={[styles.dropdownRow, { backgroundColor: colors.dropdownRow }]}>
+            <Text style={[styles.dropdownText, { color: colors.text }]}>Modo Noche</Text>
+            <Switch
+              key={isDarkMode ? "switch-active" : "switch-inactive"}
+              value={isDarkMode}
+              onValueChange={toggleTheme}
+              trackColor={{ false: "#D1D1D6", true: COLORS.primary }}
+              thumbColor={isDarkMode ? COLORS.primary : "#ffffff"}
+            />
+          </View>
+        </View>
+      )}
     </View>
   );
 }

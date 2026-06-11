@@ -6,6 +6,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useCart } from '../components/CartContext';
 import { styles } from '../components/Pago/pago.styles';
 import api, { resolveProductImg } from '../services/api';
+import { useTheme } from '../components/ThemeContext';
+import { COLORS } from '../constants/colors';
 
 export default function PagoScreen() {
   const router = useRouter();
@@ -14,6 +16,7 @@ export default function PagoScreen() {
   const [guardarDatos, setGuardarDatos] = useState(true);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [sugerencias, setSugerencias] = useState([]);
+  const { colors, isDarkMode } = useTheme();
 
   useEffect(() => {
     async function loadSugerencias() {
@@ -78,7 +81,7 @@ export default function PagoScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       
       {/* El ScrollView ahora es el contenedor principal blanco */}
       <ScrollView 
@@ -88,31 +91,31 @@ export default function PagoScreen() {
         
         {/* Botón Volver arriba de todo */}
         <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={26} color="#4B2610" />
+          <Ionicons name="arrow-back" size={26} color={isDarkMode ? "white" : "#4B2610"} />
         </TouchableOpacity>
 
         {/* Sección Resumen */}
-        <Text style={styles.sectionTitle}>Resumen</Text>
+        <Text style={[styles.sectionTitle, { color: isDarkMode ? '#ffffff' : COLORS.secondary }]}>Resumen</Text>
         {cartItems.length === 0 ? (
-          <Text style={styles.resumenText}>Tu carrito está vacío.</Text>
+          <Text style={[styles.resumenText, { color: colors.textMuted }]}>Tu carrito está vacío.</Text>
         ) : (
           cartItems.map(item => (
             <View key={item.id} style={styles.resumenRow}>
-              <Text style={styles.resumenText}>{item.nombre}</Text>
+              <Text style={[styles.resumenText, { color: colors.text }]}>{item.nombre}</Text>
               <View style={styles.resumenRight}>
-                <Text style={styles.resumenQty}>x{item.cantidad}</Text>
-                <Text style={styles.resumenPrice}>${(item.precio * item.cantidad).toLocaleString('es-AR')}</Text>
+                <Text style={[styles.resumenQty, { color: colors.textMuted }]}>x{item.cantidad}</Text>
+                <Text style={[styles.resumenPrice, { color: colors.text }]}>${(item.precio * item.cantidad).toLocaleString('es-AR')}</Text>
               </View>
             </View>
           ))
         )}
         <View style={[styles.resumenRow, { marginTop: 20 }]}> 
-          <Text style={styles.resumenText}>Tarifa de servicio</Text>
-          <Text style={styles.resumenPrice}>${tarifaServicio.toLocaleString('es-AR')}</Text>
+          <Text style={[styles.resumenText, { color: colors.textMuted }]}>Tarifa de servicio</Text>
+          <Text style={[styles.resumenPrice, { color: colors.text }]}>${tarifaServicio.toLocaleString('es-AR')}</Text>
         </View>
 
         {/* Sección Métodos de Pago */}
-        <Text style={[styles.sectionTitle, { marginTop: 25 }]}>Metodos de pago</Text>
+        <Text style={[styles.sectionTitle, { marginTop: 25, color: isDarkMode ? '#ffffff' : COLORS.secondary }]}>Metodos de pago</Text>
         
         {/* Opción Efectivo */}
         <TouchableOpacity 
@@ -138,7 +141,7 @@ export default function PagoScreen() {
           onPress={() => setMetodoPago('mercado_pago')}
         >
           <View style={styles.paymentLeft}>
-            <View style={styles.cardIconWrapper}>
+            <View style={[styles.cardIconWrapper, { backgroundColor: isDarkMode ? '#303030' : COLORS.backgroundLight }]}>
                <Ionicons name="card" size={24} color="#FF5A2D" /> 
             </View>
             <View>
@@ -164,21 +167,28 @@ export default function PagoScreen() {
             size={22} 
             color={guardarDatos ? "#E76F41" : "#8E8E93"} 
           />
-          <Text style={styles.checkboxText}>Guardar datos para futuras compras</Text>
+          <Text style={[styles.checkboxText, { color: colors.text }]}>Guardar datos para futuras compras</Text>
         </TouchableOpacity>
 
         {/* Sección ¿Te olvidaste algo? */}
-        <Text style={styles.sectionTitle}>¿Te olvidaste algo?</Text>
+        <Text style={[styles.sectionTitle, { color: isDarkMode ? '#ffffff' : COLORS.secondary }]}>¿Te olvidaste algo?</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.suggestionsContainer}>
           {sugerencias.map((item) => (
             <TouchableOpacity
               key={item.id}
-              style={styles.suggestionCard}
+              style={[
+                styles.suggestionCard, 
+                { 
+                  backgroundColor: colors.card, 
+                  borderColor: isDarkMode ? colors.border : COLORS.borderLight,
+                  borderWidth: 1
+                }
+              ]}
               activeOpacity={0.8}
               onPress={() => router.push({ pathname: '/detalle', params: { idProducto: item.id } })}
             >
               <Image source={item.image} style={styles.suggestionImage} resizeMode="contain" />
-              <Text style={styles.suggestionName} numberOfLines={1}>{item.nombre}</Text>
+              <Text style={[styles.suggestionName, { color: colors.textMuted }]} numberOfLines={1}>{item.nombre}</Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
@@ -186,10 +196,10 @@ export default function PagoScreen() {
       </ScrollView>
 
       {/* Footer de Pago Fijo Abajo */}
-      <View style={styles.footer}>
+      <View style={[styles.footer, { backgroundColor: colors.card, borderTopColor: colors.border }]}>
         <View>
-          <Text style={styles.footerLabel}>Total</Text>
-          <Text style={styles.footerTotal}>
+          <Text style={[styles.footerLabel, { color: colors.textMuted }]}>Total</Text>
+          <Text style={[styles.footerTotal, { color: colors.text }]}>
             <Text style={styles.currencySymbol}>$ </Text>{total.toLocaleString('es-AR')}
           </Text>
         </View>
@@ -205,12 +215,12 @@ export default function PagoScreen() {
         onRequestClose={() => setShowConfirmation(false)}
       >
         <View style={styles.modalOverlay}>
-          <View style={styles.modalCard}>
+          <View style={[styles.modalCard, { backgroundColor: colors.card, borderColor: isDarkMode ? colors.border : 'transparent', borderWidth: isDarkMode ? 1 : 0 }]}>
             <View style={styles.modalIconWrapper}>
               <Ionicons name="checkmark" size={36} color="white" />
             </View>
             <Text style={styles.modalTitle}>Pedido confirmado!</Text>
-            <Text style={styles.modalSubtitle}>
+            <Text style={[styles.modalSubtitle, { color: colors.textMuted }]}>
               Tu pago fue aprobado. El recibo de compra será enviado a tu email.
             </Text>
             <TouchableOpacity
