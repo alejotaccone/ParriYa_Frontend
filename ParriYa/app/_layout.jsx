@@ -12,6 +12,7 @@ import {
   Epilogue_600SemiBold,
   Epilogue_700Bold 
 } from '@expo-google-fonts/epilogue';
+import { Lobster_400Regular } from '@expo-google-fonts/lobster';
 
 import { useColorScheme } from '../hooks/use-color-scheme';
 import { CartProvider } from '../components/CartContext';
@@ -97,8 +98,8 @@ export default function RootLayout() {
     Epilogue_500Medium,
     Epilogue_600SemiBold,
     Epilogue_700Bold,
+    Lobster_400Regular,
   });
-
 
   useEffect(() => {
     if (fontsLoaded || fontError) {

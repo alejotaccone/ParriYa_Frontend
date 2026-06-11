@@ -5,6 +5,8 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
+  Switch,
+  StyleSheet,
 } from "react-native";
 import { useRouter } from "expo-router";
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -13,11 +15,34 @@ import { styles } from "../components/Perfil/perfil.styles";
 
 export default function PerfilScreen() {
   const router = useRouter();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const [usuario, setUsuario] = useState({
     username: '',
     email: '',
     telefono: '',
   });
+
+  useEffect(() => {
+    async function loadTheme() {
+      try {
+        const theme = await AsyncStorage.getItem('theme');
+        setIsDarkMode(theme === 'dark');
+      } catch (e) {
+        // ignore
+      }
+    }
+    loadTheme();
+  }, []);
+
+  const handleThemeChange = async (value) => {
+    setIsDarkMode(value);
+    try {
+      await AsyncStorage.setItem('theme', value ? 'dark' : 'light');
+    } catch (e) {
+      // ignore
+    }
+  };
 
   useEffect(() => {
     async function loadUser() {
@@ -57,7 +82,7 @@ export default function PerfilScreen() {
             </TouchableOpacity>
 
             {/* Tuerca de configuración */}
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => setMenuOpen(!menuOpen)}>
               <Ionicons name="settings-sharp" size={24} color="white" />
             </TouchableOpacity>
           </View>
@@ -155,6 +180,29 @@ export default function PerfilScreen() {
           </TouchableOpacity>
         </View>
       </ScrollView>
+
+      {menuOpen && (
+        <TouchableOpacity
+          style={StyleSheet.absoluteFillObject}
+          activeOpacity={1}
+          onPress={() => setMenuOpen(false)}
+        />
+      )}
+
+      {menuOpen && (
+        <View style={styles.dropdownContainer}>
+          <View style={styles.dropdownRow}>
+            <Text style={styles.dropdownText}>Modo Noche</Text>
+            <Switch
+              value={isDarkMode}
+              onValueChange={handleThemeChange}
+              trackColor={{ false: "#D1D1D6", true: "#E76F41" }}
+              thumbColor="#ffffff"
+              activeThumbColor="#ffffff"
+            />
+          </View>
+        </View>
+      )}
     </View>
   );
 }

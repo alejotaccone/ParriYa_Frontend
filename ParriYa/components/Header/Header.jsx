@@ -30,7 +30,7 @@ const Header = () => {
       <View style={styles.topRow}>
         <View style={styles.textContainer}>
           <Text style={styles.titleText}>Parri-Ya!</Text>
-          <Text style={styles.addressText}>Habana 3540</Text>
+          <Text style={styles.addressText}>Urquiza 1005, Quilmes</Text>
         </View>
 
         <View style={styles.logoAndCartContainer}>

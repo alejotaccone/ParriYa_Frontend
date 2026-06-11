@@ -1,5 +1,5 @@
 export const FONTS = {
-  h1: 32,         // Título gigante (Ej: "Parri-Ya!" en el Header)
+  h1: 38,         // Título gigante (Ej: "Parri-Ya!" en el Header)
   h2: 26,         // Títulos muy grandes (Ej: El Total a pagar abajo de todo)
   h3: 22,         // Títulos de Header de pantalla (Ej: "Tu carrito", "Pago", "Historial")
   h4: 18,         // Títulos de secciones adentro de las pantallas y textos de botones naranjas
@@ -15,5 +15,6 @@ export const FONTS = {
     medium: 'Epilogue_500Medium',
     semiBold: 'Epilogue_600SemiBold',
     bold: 'Epilogue_700Bold',
+    lobster: 'Lobster_400Regular',
   }
 };

@@ -7,7 +7,7 @@ export const styles = StyleSheet.create({
   container: {
     backgroundColor: COLORS.primary,
     paddingHorizontal: 20,
-    paddingTop: 50,
+    paddingTop: 25,
     paddingBottom: 25,
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
@@ -21,10 +21,9 @@ export const styles = StyleSheet.create({
     flexDirection: "column",
   },
   titleText: {
-    fontFamily: FONTS.family.bold,
+    fontFamily: FONTS.family.lobster,
 
     fontSize: FONTS.h1, // <-- ANTES: 32
-    fontWeight: "bold",
     color: COLORS.secondary,
   },
   addressText: {
