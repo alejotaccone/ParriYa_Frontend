@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Image, Alert, Modal } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, Image, Alert, Modal, Linking, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
@@ -15,8 +15,14 @@ export default function PagoScreen() {
   const [metodoPago, setMetodoPago] = useState('mercado_pago');
   const [guardarDatos, setGuardarDatos] = useState(true);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [paymentStatus, setPaymentStatus] = useState('idle'); // 'idle' | 'processing' | 'success'
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [sugerencias, setSugerencias] = useState([]);
   const { colors, isDarkMode } = useTheme();
+
+  const tarifaServicio = 3000;
+  const subtotal = cartItems.reduce((sum, item) => sum + item.precio * item.cantidad, 0);
+  const total = subtotal > 0 ? subtotal + tarifaServicio : 0;
 
   useEffect(() => {
     async function loadSugerencias() {
@@ -37,9 +43,7 @@ export default function PagoScreen() {
     loadSugerencias();
   }, []);
 
-  const tarifaServicio = 3000;
-  const subtotal = cartItems.reduce((sum, item) => sum + item.precio * item.cantidad, 0);
-  const total = subtotal > 0 ? subtotal + tarifaServicio : 0;
+
 
   const handlePay = async () => {
     if (cartItems.length === 0) {
@@ -47,36 +51,82 @@ export default function PagoScreen() {
       return;
     }
 
-    try {
-      const storedUser = await AsyncStorage.getItem('activeUser');
-      if (!storedUser) {
-        Alert.alert('Debes iniciar sesión', 'Inicia sesión para guardar tu pedido.');
-        return;
-      }
+    const storedUser = await AsyncStorage.getItem('activeUser');
+    if (!storedUser) {
+      Alert.alert('Debes iniciar sesión', 'Inicia sesión para guardar tu pedido.');
+      return;
+    }
 
-      // Payload para el backend Spring Boot (PedidoRequest)
-      const requestBody = {
-        horarioRetiro: "20:00:00",
-        total: total,
-        detalles: cartItems.map((item) => ({
-          productoId: parseInt(item.id, 10),
-          cantidad: item.cantidad,
-          precioUnitario: item.precio
-        })),
-        pagos: [
+    if (metodoPago === 'efectivo') {
+      Alert.alert(
+        'Confirmar Pedido',
+        '¿Deseas confirmar la compra para retirar y pagar en efectivo?',
+        [
+          { text: 'Cancelar', style: 'cancel' },
           {
-            metodo: metodoPago === 'efectivo' ? 'EFECTIVO' : 'MERCADO_PAGO',
-            monto: total
+            text: 'Confirmar',
+            onPress: async () => {
+              try {
+                // Payload para el backend Spring Boot (PedidoRequest)
+                const requestBody = {
+                  horarioRetiro: "20:00:00",
+                  total: total,
+                  detalles: cartItems.map((item) => ({
+                    productoId: parseInt(item.id, 10),
+                    cantidad: item.cantidad,
+                    precioUnitario: item.precio
+                  })),
+                  pagos: [
+                    {
+                      metodo: 'EFECTIVO',
+                      monto: total
+                    }
+                  ]
+                };
+
+                await api.post('/pedidos', requestBody);
+                clearCart();
+                router.replace('/exito');
+              } catch (error) {
+                console.error('Error guardando pedido en efectivo en backend:', error.response?.data || error.message);
+                Alert.alert('Error', 'No se pudo registrar tu pedido en el servidor. Intenta de nuevo.');
+              }
+            }
           }
         ]
-      };
+      );
+    } else if (metodoPago === 'mercado_pago') {
+      try {
+        // Hacemos el POST al backend para generar la preferencia de Mercado Pago
+        const response = await api.post('/api/pagos/crear-preferencia', {
+          monto: total,
+          titulo: 'Pedido ParriYa!'
+        });
 
-      await api.post('/pedidos', requestBody);
-      clearCart();
-      setShowConfirmation(true);
-    } catch (error) {
-      console.error('Error guardando pedido en backend:', error.response?.data || error.message);
-      Alert.alert('Error', 'No se pudo procesar el pedido con el servidor. Intenta de nuevo.');
+        const initPoint = response.data.init_point;
+
+        if (initPoint) {
+          const canOpen = await Linking.canOpenURL(initPoint);
+          if (canOpen) {
+            // Redirección nativa externa a Mercado Pago
+            await Linking.openURL(initPoint);
+
+            // Mostramos el flujo de espera intermedio (pop-up) sin registrar pedido ni limpiar carrito aún
+            setPaymentStatus('processing');
+            setShowConfirmation(true);
+          } else {
+            Alert.alert(
+              'Error de Redirección',
+              'No se pudo abrir la pasarela de Mercado Pago. Verifica si tienes un navegador instalado.'
+            );
+          }
+        } else {
+          Alert.alert('Error', 'No se recibió la URL de pago desde el servidor.');
+        }
+      } catch (error) {
+        console.error('Error generando preferencia de Mercado Pago:', error.response?.data || error.message);
+        Alert.alert('Error', 'Ocurrió un error al intentar iniciar el pago con Mercado Pago.');
+      }
     }
   };
 
@@ -119,40 +169,76 @@ export default function PagoScreen() {
         
         {/* Opción Efectivo */}
         <TouchableOpacity 
-          style={styles.paymentMethodEfectivo} 
+          style={[
+            styles.paymentMethodEfectivo, 
+            metodoPago === 'efectivo' 
+              ? { borderWidth: 2, borderColor: '#FFFFFF' } 
+              : { backgroundColor: colors.box, borderWidth: 1, borderColor: colors.border }
+          ]} 
           activeOpacity={0.8}
           onPress={() => setMetodoPago('efectivo')}
         >
           <View style={styles.paymentLeft}>
-            <Ionicons name="cash-outline" size={28} color="white" />
-            <Text style={styles.paymentText}>Efectivo</Text>
+            <Ionicons 
+              name="cash-outline" 
+              size={28} 
+              color={metodoPago === 'efectivo' ? "white" : COLORS.efectivo} 
+            />
+            <Text style={[
+              styles.paymentText, 
+              { color: metodoPago === 'efectivo' ? "white" : colors.text }
+            ]}>
+              Efectivo
+            </Text>
           </View>
           <Ionicons 
             name={metodoPago === 'efectivo' ? "radio-button-on" : "radio-button-off"} 
             size={24} 
-            color="white" 
+            color={metodoPago === 'efectivo' ? "white" : colors.textMuted} 
           />
         </TouchableOpacity>
 
         {/* Opción Tarjeta Mercado Pago */}
         <TouchableOpacity 
-          style={styles.paymentMethodTarjeta} 
+          style={[
+            styles.paymentMethodTarjeta, 
+            metodoPago === 'mercado_pago' 
+              ? { borderWidth: 2, borderColor: '#FFFFFF' } 
+              : { backgroundColor: colors.box, borderWidth: 1, borderColor: colors.border }
+          ]} 
           activeOpacity={0.8}
           onPress={() => setMetodoPago('mercado_pago')}
         >
           <View style={styles.paymentLeft}>
-            <View style={[styles.cardIconWrapper, { backgroundColor: isDarkMode ? '#303030' : COLORS.backgroundLight }]}>
-               <Ionicons name="card" size={24} color="#FF5A2D" /> 
+            <View style={[
+              styles.cardIconWrapper, 
+              { backgroundColor: metodoPago === 'mercado_pago' ? (isDarkMode ? '#303030' : COLORS.backgroundLight) : colors.card }
+            ]}>
+               <Ionicons 
+                 name="card" 
+                 size={24} 
+                 color={metodoPago === 'mercado_pago' ? "#FF5A2D" : colors.textMuted} 
+               /> 
             </View>
             <View>
-              <Text style={styles.paymentTextBold}>Tarjeta Mercado Pago</Text>
-              <Text style={styles.paymentSubtext}>**** 0505</Text>
+              <Text style={[
+                styles.paymentTextBold, 
+                { color: metodoPago === 'mercado_pago' ? "white" : colors.text }
+              ]}>
+                Tarjeta Mercado Pago
+              </Text>
+              <Text style={[
+                styles.paymentSubtext, 
+                { color: metodoPago === 'mercado_pago' ? "white" : colors.textMuted }
+              ]}>
+                **** 0505
+              </Text>
             </View>
           </View>
           <Ionicons 
             name={metodoPago === 'mercado_pago' ? "radio-button-on" : "radio-button-off"} 
             size={24} 
-            color="white" 
+            color={metodoPago === 'mercado_pago' ? "white" : colors.textMuted} 
           />
         </TouchableOpacity>
 
@@ -212,28 +298,110 @@ export default function PagoScreen() {
         visible={showConfirmation}
         transparent
         animationType="fade"
-        onRequestClose={() => setShowConfirmation(false)}
+        onRequestClose={() => {
+          if (!isSubmitting) setShowConfirmation(false);
+        }}
       >
         <View style={styles.modalOverlay}>
           <View style={[styles.modalCard, { backgroundColor: colors.card, borderColor: isDarkMode ? colors.border : 'transparent', borderWidth: isDarkMode ? 1 : 0 }]}>
-            <View style={styles.modalIconWrapper}>
-              <Ionicons name="checkmark" size={36} color="white" />
-            </View>
-            <Text style={styles.modalTitle}>Pedido confirmado!</Text>
-            <Text style={[styles.modalSubtitle, { color: colors.textMuted }]}>
-              Tu pago fue aprobado. El recibo de compra será enviado a tu email.
-            </Text>
-            <TouchableOpacity
-              style={styles.modalButton}
-              activeOpacity={0.8}
-              onPress={() => {
-                setShowConfirmation(false);
-                clearCart();
-                router.replace('/(tabs)');
-              }}
-            >
-              <Text style={styles.modalButtonText}>Volver</Text>
-            </TouchableOpacity>
+            {paymentStatus === 'processing' ? (
+              <>
+                <View style={[styles.modalIconWrapper, { backgroundColor: 'transparent' }]}>
+                  <ActivityIndicator size="large" color={COLORS.primary} />
+                </View>
+                <Text style={[styles.modalTitle, { color: colors.text, fontSize: 18, marginBottom: 15 }]}>
+                  Procesando tu pago en Mercado Pago...
+                </Text>
+                <Text style={[styles.modalSubtitle, { color: colors.textMuted, fontSize: 14, marginBottom: 25 }]}>
+                  Una vez que hayas completado la transferencia en la aplicación de Mercado Pago, regresa aquí para finalizar tu orden.
+                </Text>
+                <TouchableOpacity
+                  style={[styles.modalButton, { width: '100%', alignItems: 'center' }]}
+                  activeOpacity={0.8}
+                  disabled={isSubmitting}
+                  onPress={async () => {
+                    setIsSubmitting(true);
+                    try {
+                      const storedUser = await AsyncStorage.getItem('activeUser');
+                      if (!storedUser) {
+                        Alert.alert('Error', 'No se encontró una sesión activa.');
+                        setIsSubmitting(false);
+                        return;
+                      }
+
+                      const requestBody = {
+                        horarioRetiro: "20:00:00",
+                        total: total,
+                        detalles: cartItems.map((item) => ({
+                          productoId: parseInt(item.id, 10),
+                          cantidad: item.cantidad,
+                          precioUnitario: item.precio
+                        })),
+                        pagos: [
+                          {
+                            metodo: 'MERCADO_PAGO',
+                            monto: total
+                          }
+                        ]
+                      };
+
+                      await api.post('/pedidos', requestBody);
+                      clearCart();
+                      setShowConfirmation(false);
+                      setPaymentStatus('idle');
+                      router.replace('/exito');
+                    } catch (error) {
+                      console.error('Error registrando pedido:', error.response?.data || error.message);
+                      Alert.alert(
+                        'Error', 
+                        'No se pudo registrar tu pedido. Por favor, verifica tu conexión e intenta nuevamente.'
+                      );
+                    } finally {
+                      setIsSubmitting(false);
+                    }
+                  }}
+                >
+                  {isSubmitting ? (
+                    <ActivityIndicator size="small" color="white" />
+                  ) : (
+                    <Text style={styles.modalButtonText}>Ya pagué</Text>
+                  )}
+                </TouchableOpacity>
+                {!isSubmitting && (
+                  <TouchableOpacity
+                    style={[styles.modalButton, { backgroundColor: 'transparent', marginTop: 12, borderWidth: 1, borderColor: colors.border, width: '100%', alignItems: 'center' }]}
+                    activeOpacity={0.8}
+                    onPress={() => {
+                      setShowConfirmation(false);
+                      setPaymentStatus('idle');
+                    }}
+                  >
+                    <Text style={[styles.modalButtonText, { color: colors.text }]}>Volver</Text>
+                  </TouchableOpacity>
+                )}
+              </>
+            ) : (
+              <>
+                <View style={styles.modalIconWrapper}>
+                  <Ionicons name="checkmark" size={36} color="white" />
+                </View>
+                <Text style={styles.modalTitle}>Pedido confirmado!</Text>
+                <Text style={[styles.modalSubtitle, { color: colors.textMuted }]}>
+                  Tu pago fue aprobado. El recibo de compra será enviado a tu email.
+                </Text>
+                <TouchableOpacity
+                  style={styles.modalButton}
+                  activeOpacity={0.8}
+                  onPress={() => {
+                    setShowConfirmation(false);
+                    setPaymentStatus('idle');
+                    router.replace('/(tabs)');
+                  }}
+                >
+                  <Text style={styles.modalButtonText}>Volver al Inicio</Text>
+                </TouchableOpacity>
+              </>
+            )}
           </View>
         </View>
       </Modal>
