@@ -3,7 +3,7 @@ import { View, Text, FlatList } from 'react-native';
 import Header from '../../components/Header/Header';
 import ProductoCard from '../../components/ProductoCard/ProductoCard';
 import { useCart } from '../../components/CartContext';
-import { styles } from './favoritos.styles';
+import { styles } from '../../components/styles/favoritos.styles';
 import { useTheme } from '../../components/ThemeContext';
 import { COLORS } from '../../constants/colors';
 

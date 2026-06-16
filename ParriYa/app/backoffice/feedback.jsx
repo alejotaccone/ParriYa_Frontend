@@ -57,11 +57,11 @@ export default function BackofficeFeedback() {
           name={isFilled ? "star" : "star-outline"}
           size={16}
           color={COLORS.primary}
-          style={{ marginRight: 2 }}
+          style={styles.feedbackStarIcon}
         />
       );
     }
-    return <View style={{ flexDirection: 'row' }}>{stars}</View>;
+    return <View style={styles.feedbackStarsRow}>{stars}</View>;
   };
 
   // Función para desloguear
@@ -139,7 +139,7 @@ export default function BackofficeFeedback() {
       </View>
 
       {/* --- RECIENTES BANNER --- */}
-      <View style={[styles.recientesBanner, { backgroundColor: isDarkMode ? colors.card : '#EEEEEE' }]}>
+      <View style={[styles.recientesBanner, { backgroundColor: isDarkMode ? colors.card : COLORS.borderMedium }]}>
         <Text style={[styles.recientesText, { color: colors.text }]}>Recientes</Text>
         <Text style={[styles.ultimos7DiasText, { color: colors.textMuted }]}>(Ultimos 90 dias)</Text>
       </View>
@@ -147,7 +147,7 @@ export default function BackofficeFeedback() {
       {/* --- LISTADO DE DETALLE DE FEEDBACK --- */}
       <ScrollView 
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 20 }}
+        contentContainerStyle={styles.scrollContent}
       >
         {feedbacks.map((item) => (
           <View 

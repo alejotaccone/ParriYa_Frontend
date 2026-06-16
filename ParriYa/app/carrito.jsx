@@ -117,7 +117,7 @@ export default function CarritoScreen() {
               />
             ))
           ) : (
-            <Text style={{ textAlign: "center", color: colors.textMuted, marginVertical: 30 }}>
+            <Text style={[styles.emptyCartText, { color: colors.textMuted }]}>
               Tu carrito está vacío. ¡Agregá algo rico!
             </Text>
           )}
