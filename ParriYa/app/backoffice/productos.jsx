@@ -8,6 +8,57 @@ import { COLORS } from '../../constants/colors';
 import { useTheme } from '../../components/ThemeContext';
 import api, { resolveProductImg, resolveCategoryImg } from '../../services/api';
 
+
+function showConfirmDialog(title, message, onConfirm) {
+  if (Platform.OS === 'web') {
+    if (window.confirm(`${title}\n\n${message}`)) {
+      onConfirm();
+    }
+  } else {
+    Alert.alert(title, message, [
+      { text: 'Cancelar', style: 'cancel' },
+      { text: 'Confirmar', style: 'destructive', onPress: onConfirm },
+    ]);
+  }
+}
+
+
+async function performDeleteApi(productId, nombre, onSuccess) {
+  try {
+    await api.delete(`/productos/${productId}`);
+    const msg = `Se eliminó "${nombre}" del catálogo.`;
+    if (Platform.OS === 'web') {
+      window.alert(msg);
+    } else {
+      Alert.alert('Eliminado', msg);
+    }
+    onSuccess();
+  } catch (err) {
+    console.error('Error al eliminar producto:', err.message);
+    const errMsg = 'No se pudo eliminar el producto del servidor.';
+    if (Platform.OS === 'web') {
+      window.alert(errMsg);
+    } else {
+      Alert.alert('Error', errMsg);
+    }
+  }
+}
+
+
+function getCategoryCardStyle(isActive, colors, isDarkMode) {
+  if (isActive) return [styles.categoryFilterCard, styles.categoryFilterCardActive];
+  return [
+    styles.categoryFilterCard,
+    styles.categoryFilterCardInactive,
+    { backgroundColor: colors.card, borderColor: isDarkMode ? colors.border : 'transparent', borderWidth: isDarkMode ? 1 : 0 },
+  ];
+}
+
+function getCategoryTextStyle(isActive, colors) {
+  if (isActive) return styles.categoryFilterTextActive;
+  return [styles.categoryFilterTextInactive, { color: colors.text }];
+}
+
 export default function BackofficeProductos() {
   const router = useRouter();
   const { colors, isDarkMode } = useTheme();
@@ -82,16 +133,14 @@ export default function BackofficeProductos() {
     loadProducts();
   }, []);
 
-  // Filtra los productos de acuerdo a la categoría seleccionada
+
   const productosFiltrados = products.filter((p) => {
     if (selectedCategoryFilter === 'Todo') return true;
-    
-    // Obtenemos el nombre de la categoria correspondiente a p.categoria_id
     const cat = categoriesList.find((c) => c.id === p.categoria_id);
     return cat && cat.nombre === selectedCategoryFilter;
   });
 
-  // Abre el modal para Crear un producto
+
   const handleOpenCreateModal = () => {
     setEditingProduct(null);
     setNombreInput('');
@@ -103,26 +152,23 @@ export default function BackofficeProductos() {
     setModalVisible(true);
   };
 
-  // Abre el modal para Editar un producto
+
   const handleOpenEditModal = (product) => {
     setEditingProduct(product);
     setNombreInput(product.nombre);
     setDescripcionInput(product.descripcion);
     setPrecioInput(product.precio.toString());
-    
-    // Si la imagen es una URL de la web (string), la asignamos al input, sino la dejamos vacía
-    if (typeof product.img_url === 'string' && (product.img_url.startsWith('http://') || product.img_url.startsWith('https://'))) {
-      setImgUrlInput(product.img_url);
-    } else {
-      setImgUrlInput('');
-    }
-    
+
+    const isWebUrl = typeof product.img_url === 'string' &&
+      (product.img_url.startsWith('http://') || product.img_url.startsWith('https://'));
+    setImgUrlInput(isWebUrl ? product.img_url : '');
+
     setSelectedCategoryOptionId(product.categoria_id || '1');
     setStockInput((product.stock || 10).toString());
     setModalVisible(true);
   };
 
-  // Guarda los cambios del producto (Crear / Editar) en la BDD a través de Axios
+
   const handleSaveProduct = async () => {
     if (!nombreInput || !descripcionInput || !precioInput) {
       Alert.alert('Campos incompletos', 'Por favor completa nombre, descripción y precio.');
@@ -130,7 +176,6 @@ export default function BackofficeProductos() {
     }
 
     const precioNum = parseFloat(precioInput);
-    const stockNum = parseInt(stockInput, 10);
     if (isNaN(precioNum) || precioNum <= 0) {
       Alert.alert('Precio inválido', 'El precio debe ser un número positivo.');
       return;
@@ -138,11 +183,10 @@ export default function BackofficeProductos() {
 
     try {
       const fallbackLogoUrl = 'https://raw.githubusercontent.com/alejotaccone/ParriYa_Frontend/main/assets/images/Logo.png';
-      let finalImg = imgUrlInput.trim() || fallbackLogoUrl;
+      const stockNum = parseInt(stockInput, 10);
 
-      if (editingProduct && !imgUrlInput.trim() && typeof editingProduct.img_url !== 'string') {
-        finalImg = fallbackLogoUrl;
-      }
+      const usesFallback = editingProduct && !imgUrlInput.trim() && typeof editingProduct.img_url !== 'string';
+      const finalImg = usesFallback ? fallbackLogoUrl : (imgUrlInput.trim() || fallbackLogoUrl);
 
       const body = {
         nombre: nombreInput,
@@ -169,122 +213,41 @@ export default function BackofficeProductos() {
     }
   };
 
-  // Función para eliminar producto desde el modal
+
   const handleDelete = () => {
     if (!editingProduct) return;
-
-    const performDelete = async () => {
-      try {
-        await api.delete(`/productos/${editingProduct.id}`);
-        if (Platform.OS === 'web') {
-          window.alert(`Se eliminó "${editingProduct.nombre}" del catálogo.`);
-        } else {
-          Alert.alert('Eliminado', `Se eliminó "${editingProduct.nombre}" del catálogo.`);
-        }
+    showConfirmDialog(
+      'Eliminar producto',
+      '¿Estás seguro de que querés eliminar este producto? Esta acción no se puede deshacer.',
+      () => performDeleteApi(editingProduct.id, editingProduct.nombre, async () => {
         setModalVisible(false);
         await loadProducts();
-      } catch (err) {
-        console.error('Error al eliminar producto:', err.message);
-        if (Platform.OS === 'web') {
-          window.alert('No se pudo eliminar el producto del servidor.');
-        } else {
-          Alert.alert('Error', 'No se pudo eliminar el producto del servidor.');
-        }
-      }
-    };
-
-    if (Platform.OS === 'web') {
-      const confirmed = window.confirm('¿Estás seguro de que querés eliminar este producto? Esta acción no se puede deshacer.');
-      if (confirmed) {
-        performDelete();
-      }
-    } else {
-      Alert.alert(
-        'Eliminar producto',
-        '¿Estás seguro de que querés eliminar este producto? Esta acción no se puede deshacer.',
-        [
-          { text: 'Cancelar', style: 'cancel' },
-          {
-            text: 'Eliminar',
-            style: 'destructive',
-            onPress: performDelete,
-          },
-        ]
-      );
-    }
+      })
+    );
   };
 
-  // Función para gestionar y eliminar productos
+
   const handleDeleteProduct = (productId, nombre) => {
-    const performDelete = async () => {
-      try {
-        await api.delete(`/productos/${productId}`);
-        if (Platform.OS === 'web') {
-          window.alert(`Se eliminó "${nombre}" del catálogo.`);
-        } else {
-          Alert.alert('Eliminado', `Se eliminó "${nombre}" del catálogo.`);
-        }
-        await loadProducts();
-      } catch (err) {
-        console.error('Error al eliminar producto:', err.message);
-        if (Platform.OS === 'web') {
-          window.alert('No se pudo eliminar el producto del servidor.');
-        } else {
-          Alert.alert('Error', 'No se pudo eliminar el producto del servidor.');
-        }
-      }
-    };
-
-    if (Platform.OS === 'web') {
-      const confirmed = window.confirm(`¿Estás seguro de que quieres eliminar "${nombre}" del catálogo de la base de datos?`);
-      if (confirmed) {
-        performDelete();
-      }
-    } else {
-      Alert.alert(
-        'Eliminar Producto',
-        `¿Estás seguro de que quieres eliminar "${nombre}" del catálogo de la base de datos?`,
-        [
-          { text: 'Cancelar', style: 'cancel' },
-          {
-            text: 'Eliminar',
-            style: 'destructive',
-            onPress: performDelete,
-          },
-        ]
-      );
-    }
+    showConfirmDialog(
+      'Eliminar Producto',
+      `¿Estás seguro de que quieres eliminar "${nombre}" del catálogo de la base de datos?`,
+      () => performDeleteApi(productId, nombre, loadProducts)
+    );
   };
 
-  // Cierre de Sesión
+
   const handleLogout = () => {
     const doLogout = async () => {
       await AsyncStorage.removeItem('activeUser');
       await AsyncStorage.removeItem('authToken');
       router.replace('/login');
     };
-
-    if (Platform.OS === 'web') {
-      const confirmed = window.confirm('¿Estás seguro de que quieres salir del panel de administración?');
-      if (confirmed) {
-        doLogout();
-      }
-    } else {
-      Alert.alert(
-        'Cerrar Sesión',
-        '¿Estás seguro de que quieres salir del panel de administración?',
-        [
-          { text: 'Cancelar', style: 'cancel' },
-          {
-            text: 'Salir',
-            style: 'destructive',
-            onPress: doLogout,
-          },
-        ]
-      );
-    }
+    showConfirmDialog(
+      'Cerrar Sesión',
+      '¿Estás seguro de que quieres salir del panel de administración?',
+      doLogout
+    );
   };
-
 
   return (
     <View style={[styles.mainContainer, { backgroundColor: colors.background }]}>
@@ -311,54 +274,35 @@ export default function BackofficeProductos() {
         </View>
       </View>
 
+      {/* --- FILTRO DE CATEGORÍAS --- */}
       <View>
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.categoryScroll}
         >
+          {/* Tarjeta "Todo" */}
           <TouchableOpacity
             activeOpacity={0.8}
-            style={[
-              styles.categoryFilterCard,
-              selectedCategoryFilter === 'Todo' 
-                ? styles.categoryFilterCardActive 
-                : [styles.categoryFilterCardInactive, { backgroundColor: colors.card, borderColor: isDarkMode ? colors.border : 'transparent', borderWidth: isDarkMode ? 1 : 0 }],
-            ]}
+            style={getCategoryCardStyle(selectedCategoryFilter === 'Todo', colors, isDarkMode)}
             onPress={() => setSelectedCategoryFilter('Todo')}
           >
-            <Text
-              style={
-                selectedCategoryFilter === 'Todo' 
-                  ? styles.categoryFilterTextActive 
-                  : [styles.categoryFilterTextInactive, { color: colors.text }]
-              }
-            >
+            <Text style={getCategoryTextStyle(selectedCategoryFilter === 'Todo', colors)}>
               Todo
             </Text>
           </TouchableOpacity>
 
+          {/* Tarjetas por categoría */}
           {categoriesList.map((cat) => {
             const isActive = cat.nombre === selectedCategoryFilter;
             return (
               <TouchableOpacity
                 key={cat.id}
                 activeOpacity={0.8}
-                style={[
-                  styles.categoryFilterCard,
-                  isActive 
-                    ? styles.categoryFilterCardActive 
-                    : [styles.categoryFilterCardInactive, { backgroundColor: colors.card, borderColor: isDarkMode ? colors.border : 'transparent', borderWidth: isDarkMode ? 1 : 0 }],
-                ]}
+                style={getCategoryCardStyle(isActive, colors, isDarkMode)}
                 onPress={() => setSelectedCategoryFilter(cat.nombre)}
               >
-                <Text
-                  style={
-                    isActive 
-                      ? styles.categoryFilterTextActive 
-                      : [styles.categoryFilterTextInactive, { color: colors.text }]
-                  }
-                >
+                <Text style={getCategoryTextStyle(isActive, colors)}>
                   {cat.nombre}
                 </Text>
               </TouchableOpacity>
@@ -379,7 +323,7 @@ export default function BackofficeProductos() {
         ) : (
           productosFiltrados.map((item) => {
             const catName = categoriesList.find((c) => c.id === item.categoria_id)?.nombre || 'Categoría';
-            const isLocalAsset = typeof item.img_url !== 'string';
+      const imgSource = typeof item.img_url !== 'string' ? item.img_url : { uri: item.img_url };
 
             return (
               <TouchableOpacity 
@@ -398,7 +342,7 @@ export default function BackofficeProductos() {
                 {/* Imagen del producto */}
                 <View style={[styles.productCardImageContainer, { backgroundColor: isDarkMode ? colors.box : '#F5F5F5' }]}>
                   <Image
-                    source={isLocalAsset ? item.img_url : { uri: item.img_url }}
+                    source={imgSource}
                     style={styles.productCardImage}
                     resizeMode="cover"
                   />
@@ -462,28 +406,14 @@ export default function BackofficeProductos() {
             </View>
 
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.productModalScrollContent}>
-              
-              {/* Box de Previsualización Dinámica por URL de Imagen */}
-              <View style={[styles.modalImagePlaceholder, { backgroundColor: isDarkMode ? colors.box : '#F5F5F5', borderColor: isDarkMode ? colors.border : '#E5E5EA' }]}>
-                {imgUrlInput.trim() ? (
-                  <Image 
-                    source={{ uri: imgUrlInput.trim() }}
-                    style={styles.modalImagePreview}
-                    resizeMode="cover"
-                  />
-                ) : editingProduct && typeof editingProduct.img_url !== 'string' ? (
-                  <Image 
-                    source={editingProduct.img_url}
-                    style={styles.modalImagePreview}
-                    resizeMode="cover"
-                  />
-                ) : (
-                  <View style={[styles.modalImagePlaceholderBox, { backgroundColor: isDarkMode ? colors.box : '#F5F5F5' }]}>
-                    <Ionicons name="image-outline" size={40} color="#C5C5C9" />
-                    <Text style={[styles.modalImageText, { color: colors.textMuted }]}>Cambiar imagen</Text>
-                  </View>
-                )}
-              </View>
+
+              <ModalImagePreview
+                imgUrlInput={imgUrlInput}
+                editingProduct={editingProduct}
+                isDarkMode={isDarkMode}
+                colors={colors}
+                stylesCont={styles}
+              />
 
               {/* Input: Nombre del Producto */}
               <View style={styles.addModalInputWrapper}>
@@ -633,6 +563,50 @@ export default function BackofficeProductos() {
         >
           <Ionicons name="person" size={26} color="white" />
         </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
+
+
+function ModalImagePreview({ imgUrlInput, editingProduct, isDarkMode, colors, stylesCont }) {
+  const containerStyle = [
+    stylesCont.modalImagePlaceholder,
+    { backgroundColor: isDarkMode ? colors.box : '#F5F5F5', borderColor: isDarkMode ? colors.border : '#E5E5EA' }
+  ];
+
+  // Caso 1: hay una URL nueva escrita en el input
+  if (imgUrlInput.trim()) {
+    return (
+      <View style={containerStyle}>
+        <Image 
+          source={{ uri: imgUrlInput.trim() }}
+          style={stylesCont.modalImagePreview}
+          resizeMode="cover"
+        />
+      </View>
+    );
+  }
+
+  // Caso 2: editando un producto con imagen local (asset requerido)
+  if (editingProduct && typeof editingProduct.img_url !== 'string') {
+    return (
+      <View style={containerStyle}>
+        <Image 
+          source={editingProduct.img_url}
+          style={stylesCont.modalImagePreview}
+          resizeMode="cover"
+        />
+      </View>
+    );
+  }
+
+  // Caso 3: placeholder vacío
+  return (
+    <View style={containerStyle}>
+      <View style={[stylesCont.modalImagePlaceholderBox, { backgroundColor: isDarkMode ? colors.box : '#F5F5F5' }]}>
+        <Ionicons name="image-outline" size={40} color="#C5C5C9" />
+        <Text style={[stylesCont.modalImageText, { color: colors.textMuted }]}>Cambiar imagen</Text>
       </View>
     </View>
   );

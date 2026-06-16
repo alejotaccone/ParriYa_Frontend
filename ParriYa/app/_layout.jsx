@@ -32,35 +32,49 @@ function RootLayoutNav() {
     async function checkUser() {
       try {
         const u = await AsyncStorage.getItem('activeUser');
-        const userObj = u ? JSON.parse(u) : null;
-
-        const segs = segments;
-        const inBackoffice = segs[0] === 'backoffice';
-        const inTabs = segs[0] === '(tabs)';
-        const isAuthRoute = ['login', 'registro', 'ingresar_mail', 'verificacion', 'nueva_contrasena'].includes(segs[0] || '');
-
-        const isCommonRoute = ['cambiar_contrasena', 'verificacion', 'nueva_contrasena'].includes(segs[0] || '');
-
-        if (userObj) {
-          if (userObj.rol === 'admin') {
-            if (!inBackoffice && !isCommonRoute) {
-              router.replace('/backoffice');
-            }
-          } else {
-            if (inBackoffice || isAuthRoute) {
-              router.replace('/(tabs)');
-            }
-          }
-        } else {
-          const isPublic = segs.length === 0 || segs[0] === 'index' || isAuthRoute;
-          if (!isPublic) {
-            router.replace('/login');
-          }
+        if (!u) {
+          redirectToLogin();
+          return;
         }
+
+        const userObj = JSON.parse(u);
+        const currentRoute = segments[0] || '';
+
+        if (userObj.rol === 'admin') {
+          handleAdminRedirect(currentRoute);
+          return;
+        }
+
+        handleUserRedirect(currentRoute);
       } catch (e) {
         // ignore
       }
     }
+
+    function redirectToLogin() {
+      const currentRoute = segments[0] || '';
+      const isPublic = ['', 'index', 'login', 'registro', 'ingresar_mail', 'verificacion', 'nueva_contrasena'].includes(currentRoute);
+      if (!isPublic) {
+        router.replace('/login');
+      }
+    }
+
+    function handleAdminRedirect(currentRoute) {
+      const inBackoffice = currentRoute === 'backoffice';
+      const isCommonRoute = ['cambiar_contrasena', 'verificacion', 'nueva_contrasena'].includes(currentRoute);
+      if (!inBackoffice && !isCommonRoute) {
+        router.replace('/backoffice');
+      }
+    }
+
+    function handleUserRedirect(currentRoute) {
+      const inBackoffice = currentRoute === 'backoffice';
+      const isAuthRoute = ['login', 'registro', 'ingresar_mail', 'verificacion', 'nueva_contrasena'].includes(currentRoute);
+      if (inBackoffice || isAuthRoute) {
+        router.replace('/(tabs)');
+      }
+    }
+
     checkUser();
   }, [segments, router]);
 

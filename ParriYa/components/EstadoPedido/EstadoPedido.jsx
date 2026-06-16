@@ -31,12 +31,39 @@ const STATE_MAPPING = {
   },
 };
 
+
+function getStepFromOrderState(orderState) {
+  if (orderState === 'pendiente' || orderState === 'recibido') return 1;
+  if (orderState === 'preparando' || orderState === 'en preparación' || orderState === 'en preparacion') return 2;
+  if (orderState === 'listo' || orderState === 'listo para retirar') return 3;
+  // Estado no reconocido → por defecto mostramos "Preparando"
+  return 2;
+}
+
+
+async function markOrderAsClosed(orderId) {
+  const raw = await AsyncStorage.getItem('closedFeedbacks');
+  const ids = raw ? JSON.parse(raw) : [];
+  if (!ids.includes(orderId)) {
+    ids.push(orderId);
+    await AsyncStorage.setItem('closedFeedbacks', JSON.stringify(ids));
+  }
+}
+
+
+function parseApiError(error, fallback = 'No se pudo enviar la reseña. Intenta de nuevo.') {
+  if (!error.response?.data) return fallback;
+  if (typeof error.response.data === 'string') return error.response.data;
+  return error.response.data.error || error.response.data.message || fallback;
+}
+
+
 const EstadoPedido = () => {
   const [currentStep, setCurrentStep] = useState(null);
   const [estimatedTime, setEstimatedTime] = useState('');
   const [loading, setLoading] = useState(true);
   const { colors, isDarkMode } = useTheme();
-  
+
   // Estados para reseña / feedback
   const [latestOrder, setLatestOrder] = useState(null);
   const [activeUser, setActiveUser] = useState(null);
@@ -56,12 +83,12 @@ const EstadoPedido = () => {
   // Genera un horario estimado dinámico basado en la hora actual si no viene guardado
   const generateDynamicTime = () => {
     try {
-      const now = new Date();
+      const now   = new Date();
       const start = new Date(now.getTime() + 15 * 60 * 1000); // +15 mins
-      const end = new Date(now.getTime() + 45 * 60 * 1000);   // +45 mins
+      const end   = new Date(now.getTime() + 45 * 60 * 1000); // +45 mins
 
       const formatTime = (date) => {
-        const hours = date.getHours().toString().padStart(2, '0');
+        const hours   = date.getHours().toString().padStart(2, '0');
         const minutes = date.getMinutes().toString().padStart(2, '0');
         return `${hours}:${minutes}`;
       };
@@ -71,6 +98,7 @@ const EstadoPedido = () => {
       return '12:45 - 13:15';
     }
   };
+
 
   const fetchLatestOrder = async () => {
     try {
@@ -82,63 +110,48 @@ const EstadoPedido = () => {
       }
 
       const userStr = await AsyncStorage.getItem('activeUser');
-      if (userStr) {
-        setActiveUser(JSON.parse(userStr));
-      }
+      if (userStr) setActiveUser(JSON.parse(userStr));
 
       const response = await api.get('/pedidos/mis-pedidos');
-      const orders = response.data;
+      const orders   = response.data;
 
-      if (orders && orders.length > 0) {
-        const latest = orders[0];
-        setLatestOrder(latest);
-        const orderState = latest.estado ? latest.estado.toLowerCase() : '';
+      if (!orders || orders.length === 0) {
+        setCurrentStep(null);
+        setLatestOrder(null);
+        return;
+      }
 
-        // Ocultamos si el pedido está cancelado
-        if (orderState === 'cancelado') {
+      const latest     = orders[0];
+      const orderState = latest.estado ? latest.estado.toLowerCase() : '';
+      setLatestOrder(latest);
+
+      // Early return: pedido cancelado
+      if (orderState === 'cancelado') {
+        setCurrentStep(null);
+        return;
+      }
+
+      // Early return: pedido entregado/finalizado
+      if (orderState === 'entregado' || orderState === 'finalizado') {
+        if (latest.tieneFeedback) {
           setCurrentStep(null);
           return;
         }
-
-        // Si el pedido está entregado o finalizado, verificamos si el usuario ya cerró o calificó la orden
-        if (orderState === 'entregado' || orderState === 'finalizado') {
-          if (latest.tieneFeedback) {
-            setCurrentStep(null);
-            return;
-          }
-
-          const closedFeedbacks = await AsyncStorage.getItem('closedFeedbacks');
-          const closedIds = closedFeedbacks ? JSON.parse(closedFeedbacks) : [];
-          if (closedIds.includes(latest.id)) {
-            setCurrentStep(null);
-            return;
-          }
-          setCurrentStep(4);
+        const raw       = await AsyncStorage.getItem('closedFeedbacks');
+        const closedIds = raw ? JSON.parse(raw) : [];
+        if (closedIds.includes(latest.id)) {
+          setCurrentStep(null);
           return;
         }
-
-        // Si el pedido tiene un horario de retiro guardado lo usamos, si no generamos uno estimado
-        if (latest.horarioRetiro || latest.horario_retiro) {
-          const fullTime = latest.horarioRetiro || latest.horario_retiro;
-          setEstimatedTime(String(fullTime).substring(0, 5));
-        } else {
-          setEstimatedTime(generateDynamicTime());
-        }
-
-        if (orderState === 'pendiente' || orderState === 'recibido') {
-          setCurrentStep(1);
-        } else if (orderState === 'preparando' || orderState === 'en preparación' || orderState === 'en preparacion') {
-          setCurrentStep(2);
-        } else if (orderState === 'listo' || orderState === 'listo para retirar') {
-          setCurrentStep(3);
-        } else {
-          // Si es un estado no reconocido, por defecto mostramos la preparación
-          setCurrentStep(2);
-        }
-      } else {
-        setCurrentStep(null);
-        setLatestOrder(null);
+        setCurrentStep(4);
+        return;
       }
+
+      // Horario estimado
+      const fullTime = latest.horarioRetiro || latest.horario_retiro;
+      setEstimatedTime(fullTime ? String(fullTime).substring(0, 5) : generateDynamicTime());
+
+      setCurrentStep(getStepFromOrderState(orderState));
     } catch (error) {
       console.error('Error al cargar el estado del pedido:', error);
       setCurrentStep(null);
@@ -151,29 +164,22 @@ const EstadoPedido = () => {
   useFocusEffect(
     useCallback(() => {
       fetchLatestOrder();
-      
-      const interval = setInterval(() => {
-        fetchLatestOrder();
-      }, 10000);
-
+      const interval = setInterval(fetchLatestOrder, 10000);
       return () => clearInterval(interval);
     }, [])
   );
 
+
   const handleDismiss = async () => {
     if (!latestOrder) return;
     try {
-      const closedFeedbacks = await AsyncStorage.getItem('closedFeedbacks');
-      const closedIds = closedFeedbacks ? JSON.parse(closedFeedbacks) : [];
-      if (!closedIds.includes(latestOrder.id)) {
-        closedIds.push(latestOrder.id);
-        await AsyncStorage.setItem('closedFeedbacks', JSON.stringify(closedIds));
-      }
+      await markOrderAsClosed(latestOrder.id);
       setCurrentStep(null);
     } catch (e) {
       console.error('Error al ocultar aviso de entrega:', e);
     }
   };
+
 
   const handleSubmitFeedback = async () => {
     if (!comentario.trim()) {
@@ -184,48 +190,30 @@ const EstadoPedido = () => {
     setSubmittingFeedback(true);
     try {
       const requestBody = {
-        pedidoId: latestOrder.id,
-        comentario: comentario.trim(),
-        calificacion: parseFloat(calificacion)
+        pedidoId:    latestOrder.id,
+        comentario:  comentario.trim(),
+        calificacion: parseFloat(calificacion),
       };
 
       await api.post('/feedback', requestBody);
 
-      // Guardamos el pedido en closedFeedbacks para que ya no vuelva a aparecer el banner
-      const closedFeedbacks = await AsyncStorage.getItem('closedFeedbacks');
-      const closedIds = closedFeedbacks ? JSON.parse(closedFeedbacks) : [];
-      if (!closedIds.includes(latestOrder.id)) {
-        closedIds.push(latestOrder.id);
-        await AsyncStorage.setItem('closedFeedbacks', JSON.stringify(closedIds));
-      }
+      await markOrderAsClosed(latestOrder.id);
 
       showAlert('¡Muchas gracias!', 'Tu reseña ha sido enviada con éxito.');
       setShowFeedbackModal(false);
       setComentario('');
       setCalificacion(5);
-      setCurrentStep(null); // Ocultar barra del home
+      setCurrentStep(null);
     } catch (error) {
       console.error('Error al enviar reseña:', error);
-      
-      let errorMsg = 'No se pudo enviar la reseña. Intenta de nuevo.';
-      if (error.response?.data) {
-        if (typeof error.response.data === 'string') {
-          errorMsg = error.response.data;
-        } else {
-          errorMsg = error.response.data.error || error.response.data.message || errorMsg;
-        }
-      }
 
-      // Si el backend indica que ya existe una reseña, guardamos en closedFeedbacks para ocultar el banner
+      const errorMsg = parseApiError(error);
+
+      // Si el backend indica que ya existe una reseña, cerramos el banner igualmente
       if (errorMsg.includes('Ya existe una reseña') || errorMsg.includes('feedback')) {
         try {
-          const closedFeedbacks = await AsyncStorage.getItem('closedFeedbacks');
-          const closedIds = closedFeedbacks ? JSON.parse(closedFeedbacks) : [];
-          if (!closedIds.includes(latestOrder.id)) {
-            closedIds.push(latestOrder.id);
-            await AsyncStorage.setItem('closedFeedbacks', JSON.stringify(closedIds));
-          }
-          setCurrentStep(null); // Ocultar banner
+          await markOrderAsClosed(latestOrder.id);
+          setCurrentStep(null);
         } catch (e) {
           console.error(e);
         }
@@ -238,9 +226,7 @@ const EstadoPedido = () => {
   };
 
   // Si está cargando o no hay pedidos activos, no renderizamos nada
-  if (loading || currentStep === null) {
-    return null;
-  }
+  if (loading || currentStep === null) return null;
 
   const activeState = STATE_MAPPING[currentStep] || STATE_MAPPING[2];
 
@@ -252,13 +238,9 @@ const EstadoPedido = () => {
         <Text style={styles.restaurantText}>Parrilla &quot;Los Pibes&quot;</Text>
         
         {currentStep !== 4 ? (
-          <Text style={styles.estimatedTimeText}>
-            Horario estimado: {estimatedTime}
-          </Text>
+          <Text style={styles.estimatedTimeText}>Horario estimado: {estimatedTime}</Text>
         ) : (
-          <Text style={styles.estimatedTimeText}>
-            ¡Entregado!
-          </Text>
+          <Text style={styles.estimatedTimeText}>¡Entregado!</Text>
         )}
 
         <View style={styles.progressBarContainer}>
@@ -276,9 +258,7 @@ const EstadoPedido = () => {
           })}
         </View>
 
-        <Text style={styles.descriptionText}>
-          {activeState.description}
-        </Text>
+        <Text style={styles.descriptionText}>{activeState.description}</Text>
 
         {currentStep === 4 && (
           <View style={styles.buttonRow}>

@@ -8,17 +8,79 @@ import { COLORS } from '../../constants/colors';
 import { useTheme } from '../../components/ThemeContext';
 import api from '../../services/api';
 
+
+function normalizeStatus(estado = '') {
+  const s = estado.toLowerCase();
+  if (s === 'pendiente' || s === 'recibido') return 'recibido';
+  if (s === 'preparando' || s === 'en preparación' || s === 'en preparacion') return 'preparando';
+  if (s === 'listo' || s === 'listo para retirar') return 'listo';
+  if (s === 'finalizado' || s === 'entregado') return 'finalizado';
+  return 'recibido';
+}
+
+
+const STATUS_BUTTONS = [
+  {
+    key: 'recibido',
+    label: 'Recibido (Pendiente)',
+    value: 'Pendiente',
+    icon: 'checkmark-circle',
+    iconSize: 20,
+    activeStyle: 'statusBtnActiveRecibido',
+    activeTextStyle: 'statusBtnTextActiveRecibido',
+    activeColor: '#555555',
+  },
+  {
+    key: 'preparando',
+    label: 'Preparando (En cocina)',
+    value: 'Preparando',
+    icon: 'play-circle',
+    iconSize: 20,
+    activeStyle: 'statusBtnActivePreparando',
+    activeTextStyle: 'statusBtnTextActivePreparando',
+    activeColor: '#E76F41',
+  },
+  {
+    key: 'listo',
+    label: 'Listo para retirar',
+    value: 'Listo',
+    icon: 'restaurant',
+    iconSize: 18,
+    activeStyle: 'statusBtnActiveListo',
+    activeTextStyle: 'statusBtnTextActiveListo',
+    activeColor: '#00A89F',
+  },
+  {
+    key: 'finalizado',
+    label: 'Finalizado (Entregado)',
+    value: 'Finalizado',
+    icon: 'ribbon',
+    iconSize: 20,
+    activeStyle: 'statusBtnActiveFinalizado',
+    activeTextStyle: 'statusBtnTextActiveFinalizado',
+    activeColor: '#3D8C1A',
+  },
+];
+
+
+const BADGE_STYLE_MAP = {
+  finalizado: { badge: 'statusBadgeFinalizado', text: 'statusBadgeTextFinalizado' },
+  listo:      { badge: 'statusBadgeListo',      text: 'statusBadgeTextListo'      },
+  preparando: { badge: 'statusBadgePreparando', text: 'statusBadgeTextPreparando' },
+  recibido:   { badge: 'statusBadgeRecibido',   text: 'statusBadgeTextRecibido'   },
+};
+
 export default function BackofficePedidos() {
   const router = useRouter();
   const { colors, isDarkMode } = useTheme();
   const [orders, setOrders] = useState([]);
   
-  // Estados para controlar la ventana emergente de edición
+
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
 
-  // Carga los pedidos reales del Backend
+
   const loadOrders = async () => {
     try {
       const activeUserJson = await AsyncStorage.getItem('activeUser');
@@ -56,36 +118,31 @@ export default function BackofficePedidos() {
   useEffect(() => {
     loadOrders();
 
-    // Refresco automático cada 10 segundos
-    const interval = setInterval(() => {
-      loadOrders();
-    }, 10000);
 
+    const interval = setInterval(loadOrders, 10000);
     return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      loadOrders();
-    });
+    const unsubscribe = navigation.addListener('focus', loadOrders);
     return unsubscribe;
   }, [navigation]);
 
-  // Función para abrir el modal personalizado
+
   const handleOpenStatusModal = (order) => {
     setSelectedOrder(order);
     setSelectedStatus(order.estado);
     setModalVisible(true);
   };
 
-  // Función que persiste el nuevo estado en el Backend
+
   const handleConfirmStatus = async () => {
     if (!selectedOrder) return;
     
     try {
       await api.put(`/pedidos/${selectedOrder.rawId}/estado?nuevoEstado=${selectedStatus}`);
       setModalVisible(false);
-      loadOrders(); // Recargar datos
+      loadOrders();
       Alert.alert('Estado actualizado', `Se cambió el estado del pedido #${selectedOrder.id} a "${selectedStatus}".`);
     } catch (error) {
       console.error('Error al actualizar estado en el backend:', error.response?.data || error.message);
@@ -93,7 +150,7 @@ export default function BackofficePedidos() {
     }
   };
 
-  // Función para desloguear
+
   const handleLogout = () => {
     Alert.alert(
       'Cerrar Sesión',
@@ -112,7 +169,7 @@ export default function BackofficePedidos() {
     );
   };
 
-  // Función interactiva (+) para simular operaciones
+
   const handleQuickAction = () => {
     Alert.alert(
       'Acciones del Administrador',
@@ -214,7 +271,8 @@ export default function BackofficePedidos() {
         contentContainerStyle={styles.scrollContent}
       >
         {orders.map((order, orderIndex) => {
-          const status = order.estado ? order.estado.toLowerCase() : '';
+          const statusKey = normalizeStatus(order.estado);
+          const badgeStyles = BADGE_STYLE_MAP[statusKey];
           
           return (
             <TouchableOpacity 
@@ -236,23 +294,8 @@ export default function BackofficePedidos() {
                 <Text style={[styles.orderIdText, { color: colors.text }]}>Nro pedido: {order.id}</Text>
                 
                 {/* Badge Visual del Estado de Preparación */}
-                <View
-                  style={[
-                    styles.statusBadge,
-                    status === 'finalizado' || status === 'entregado' ? styles.statusBadgeFinalizado :
-                    status === 'listo' || status === 'listo para retirar' ? styles.statusBadgeListo :
-                    status === 'preparando' || status === 'en preparación' || status === 'en preparacion' ? styles.statusBadgePreparando :
-                    styles.statusBadgeRecibido
-                  ]}
-                >
-                  <Text
-                    style={
-                      status === 'finalizado' || status === 'entregado' ? styles.statusBadgeTextFinalizado :
-                      status === 'listo' || status === 'listo para retirar' ? styles.statusBadgeTextListo :
-                      status === 'preparando' || status === 'en preparación' || status === 'en preparacion' ? styles.statusBadgeTextPreparando :
-                      styles.statusBadgeTextRecibido
-                    }
-                  >
+                <View style={[styles.statusBadge, styles[badgeStyles.badge]]}>
+                  <Text style={styles[badgeStyles.text]}>
                     {order.estado}
                   </Text>
                 </View>
@@ -337,109 +380,37 @@ export default function BackofficePedidos() {
             {/* Opciones de Selección de Estado */}
             <Text style={[styles.statusOptionsTitle, { color: colors.text }]}>Actualizar Estado</Text>
 
-            {/* 1. Estado: Recibido */}
-            <TouchableOpacity
-              style={[
-                styles.statusOptionButton,
-                selectedStatus === 'Pendiente' || selectedStatus === 'Recibido' 
-                  ? styles.statusBtnActiveRecibido 
-                  : [styles.statusBtnInactive, isDarkMode && { borderColor: colors.border }]
-              ]}
-              onPress={() => setSelectedStatus('Pendiente')}
-            >
-              <Ionicons 
-                name="checkmark-circle" 
-                size={20} 
-                color={selectedStatus === 'Pendiente' || selectedStatus === 'Recibido' ? '#555555' : (isDarkMode ? colors.border : '#E5E5EA')} 
-              />
-              <Text 
-                style={[
-                  styles.statusBtnText,
-                  isDarkMode && { color: colors.textMuted },
-                  (selectedStatus === 'Pendiente' || selectedStatus === 'Recibido') && styles.statusBtnTextActiveRecibido
-                ]}
-              >
-                Recibido (Pendiente)
-              </Text>
-            </TouchableOpacity>
-
-            {/* 2. Estado: Preparando */}
-            <TouchableOpacity
-              style={[
-                styles.statusOptionButton,
-                selectedStatus === 'Preparando' || selectedStatus === 'En preparación' || selectedStatus === 'En preparacion'
-                  ? styles.statusBtnActivePreparando 
-                  : [styles.statusBtnInactive, isDarkMode && { borderColor: colors.border }]
-              ]}
-              onPress={() => setSelectedStatus('Preparando')}
-            >
-              <Ionicons 
-                name="play-circle" 
-                size={20} 
-                color={selectedStatus === 'Preparando' || selectedStatus === 'En preparación' || selectedStatus === 'En preparacion' ? '#E76F41' : (isDarkMode ? colors.border : '#E5E5EA')} 
-              />
-              <Text 
-                style={[
-                  styles.statusBtnText,
-                  isDarkMode && { color: colors.textMuted },
-                  (selectedStatus === 'Preparando' || selectedStatus === 'En preparación' || selectedStatus === 'En preparacion') && styles.statusBtnTextActivePreparando
-                ]}
-              >
-                Preparando (En cocina)
-              </Text>
-            </TouchableOpacity>
-
-            {/* 3. Estado: Listo */}
-            <TouchableOpacity
-              style={[
-                styles.statusOptionButton,
-                selectedStatus === 'Listo' || selectedStatus === 'Listo para retirar'
-                  ? styles.statusBtnActiveListo 
-                  : [styles.statusBtnInactive, isDarkMode && { borderColor: colors.border }]
-              ]}
-              onPress={() => setSelectedStatus('Listo')}
-            >
-              <Ionicons 
-                name="restaurant" 
-                size={18} 
-                color={selectedStatus === 'Listo' || selectedStatus === 'Listo para retirar' ? '#00A89F' : (isDarkMode ? colors.border : '#E5E5EA')} 
-              />
-              <Text 
-                style={[
-                  styles.statusBtnText,
-                  isDarkMode && { color: colors.textMuted },
-                  (selectedStatus === 'Listo' || selectedStatus === 'Listo para retirar') && styles.statusBtnTextActiveListo
-                ]}
-              >
-                Listo para retirar
-              </Text>
-            </TouchableOpacity>
-
-            {/* 4. Estado: Finalizado */}
-            <TouchableOpacity
-              style={[
-                styles.statusOptionButton,
-                selectedStatus === 'Finalizado' || selectedStatus === 'Entregado'
-                  ? styles.statusBtnActiveFinalizado 
-                  : [styles.statusBtnInactive, isDarkMode && { borderColor: colors.border }]
-              ]}
-              onPress={() => setSelectedStatus('Finalizado')}
-            >
-              <Ionicons 
-                name="ribbon" 
-                size={20} 
-                color={selectedStatus === 'Finalizado' || selectedStatus === 'Entregado' ? '#3D8C1A' : (isDarkMode ? colors.border : '#E5E5EA')} 
-              />
-              <Text 
-                style={[
-                  styles.statusBtnText,
-                  isDarkMode && { color: colors.textMuted },
-                  (selectedStatus === 'Finalizado' || selectedStatus === 'Entregado') && styles.statusBtnTextActiveFinalizado
-                ]}
-              >
-                Finalizado (Entregado)
-              </Text>
-            </TouchableOpacity>
+            {/* Renderizado iterativo de botones de estado */}
+            {STATUS_BUTTONS.map((btn) => {
+              const isActive = normalizeStatus(selectedStatus) === btn.key;
+              return (
+                <TouchableOpacity
+                  key={btn.key}
+                  style={[
+                    styles.statusOptionButton,
+                    isActive
+                      ? styles[btn.activeStyle]
+                      : [styles.statusBtnInactive, isDarkMode && { borderColor: colors.border }],
+                  ]}
+                  onPress={() => setSelectedStatus(btn.value)}
+                >
+                  <Ionicons
+                    name={btn.icon}
+                    size={btn.iconSize}
+                    color={isActive ? btn.activeColor : (isDarkMode ? colors.border : '#E5E5EA')}
+                  />
+                  <Text
+                    style={[
+                      styles.statusBtnText,
+                      isDarkMode && { color: colors.textMuted },
+                      isActive && styles[btn.activeTextStyle],
+                    ]}
+                  >
+                    {btn.label}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
 
             {/* Botón de Confirmación final */}
             <TouchableOpacity

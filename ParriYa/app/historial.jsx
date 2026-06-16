@@ -8,6 +8,18 @@ import api from '../services/api';
 import { useTheme } from '../components/ThemeContext';
 import { COLORS } from '../constants/colors';
 
+
+function formatPedido(p) {
+  return {
+    id: p.id,
+    fecha_pedido: p.fechaPedido
+      ? new Date(p.fechaPedido).toLocaleDateString('es-AR')
+      : 'Reciente',
+    total: p.total,
+    cantidad_productos: (p.detalles || []).reduce((sum, det) => sum + det.cantidad, 0),
+  };
+}
+
 export default function HistorialScreen() {
   const router = useRouter();
   const [pedidos, setPedidos] = useState([]);
@@ -25,12 +37,7 @@ export default function HistorialScreen() {
 
         const response = await api.get('/pedidos/mis-pedidos');
         if (response.data && response.data.length > 0) {
-          const formatted = response.data.map(p => ({
-            id: p.id,
-            fecha_pedido: p.fechaPedido ? new Date(p.fechaPedido).toLocaleDateString('es-AR') : 'Reciente',
-            total: p.total,
-            cantidad_productos: (p.detalles || []).reduce((sum, det) => sum + det.cantidad, 0),
-          }));
+          const formatted = response.data.map(formatPedido);
           setPedidos(formatted);
         } else {
           setPedidos([]);

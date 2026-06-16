@@ -9,6 +9,20 @@ import api, { resolveProductImg } from '../services/api';
 import { useTheme } from '../components/ThemeContext';
 import { COLORS } from '../constants/colors';
 
+
+function buildOrderBody(cartItems, total, metodo) {
+  return {
+    horarioRetiro: '20:00:00',
+    total,
+    detalles: cartItems.map((item) => ({
+      productoId: parseInt(item.id, 10),
+      cantidad: item.cantidad,
+      precioUnitario: item.precio,
+    })),
+    pagos: [{ metodo, monto: total }],
+  };
+}
+
 export default function PagoScreen() {
   const router = useRouter();
   const { cartItems, clearCart } = useCart();
@@ -44,6 +58,79 @@ export default function PagoScreen() {
   }, []);
 
 
+  const processCashPayment = async () => {
+    try {
+      const requestBody = buildOrderBody(cartItems, total, 'EFECTIVO');
+      await api.post('/pedidos', requestBody);
+      clearCart();
+      router.replace('/exito');
+    } catch (error) {
+      console.error('Error guardando pedido en efectivo en backend:', error.response?.data || error.message);
+      Alert.alert('Error', 'No se pudo registrar tu pedido en el servidor. Intenta de nuevo.');
+    }
+  };
+
+
+  const initiateMercadoPago = async () => {
+    try {
+      const response = await api.post('/api/pagos/crear-preferencia', {
+        monto: total,
+        titulo: 'Pedido ParriYa!',
+      });
+
+      const initPoint = response.data.init_point;
+
+      if (!initPoint) {
+        Alert.alert('Error', 'No se recibió la URL de pago desde el servidor.');
+        return;
+      }
+
+      const canOpen = await Linking.canOpenURL(initPoint);
+      if (!canOpen) {
+        Alert.alert(
+          'Error de Redirección',
+          'No se pudo abrir la pasarela de Mercado Pago. Verifica si tienes un navegador instalado.'
+        );
+        return;
+      }
+
+      await Linking.openURL(initPoint);
+
+      setPaymentStatus('processing');
+      setShowConfirmation(true);
+    } catch (error) {
+      console.error('Error generando preferencia de Mercado Pago:', error.response?.data || error.message);
+      Alert.alert('Error', 'Ocurrió un error al intentar iniciar el pago con Mercado Pago.');
+    }
+  };
+
+
+  const handleConfirmMercadoPagoPayment = async () => {
+    setIsSubmitting(true);
+    try {
+      const storedUser = await AsyncStorage.getItem('activeUser');
+      if (!storedUser) {
+        Alert.alert('Error', 'No se encontró una sesión activa.');
+        return;
+      }
+
+      const requestBody = buildOrderBody(cartItems, total, 'MERCADO_PAGO');
+      await api.post('/pedidos', requestBody);
+      clearCart();
+      setShowConfirmation(false);
+      setPaymentStatus('idle');
+      router.replace('/exito');
+    } catch (error) {
+      console.error('Error registrando pedido:', error.response?.data || error.message);
+      Alert.alert(
+        'Error',
+        'No se pudo registrar tu pedido. Por favor, verifica tu conexión e intenta nuevamente.'
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
 
   const handlePay = async () => {
     if (cartItems.length === 0) {
@@ -63,70 +150,11 @@ export default function PagoScreen() {
         '¿Deseas confirmar la compra para retirar y pagar en efectivo?',
         [
           { text: 'Cancelar', style: 'cancel' },
-          {
-            text: 'Confirmar',
-            onPress: async () => {
-              try {
-                // Payload para el backend Spring Boot (PedidoRequest)
-                const requestBody = {
-                  horarioRetiro: "20:00:00",
-                  total: total,
-                  detalles: cartItems.map((item) => ({
-                    productoId: parseInt(item.id, 10),
-                    cantidad: item.cantidad,
-                    precioUnitario: item.precio
-                  })),
-                  pagos: [
-                    {
-                      metodo: 'EFECTIVO',
-                      monto: total
-                    }
-                  ]
-                };
-
-                await api.post('/pedidos', requestBody);
-                clearCart();
-                router.replace('/exito');
-              } catch (error) {
-                console.error('Error guardando pedido en efectivo en backend:', error.response?.data || error.message);
-                Alert.alert('Error', 'No se pudo registrar tu pedido en el servidor. Intenta de nuevo.');
-              }
-            }
-          }
+          { text: 'Confirmar', onPress: processCashPayment },
         ]
       );
     } else if (metodoPago === 'mercado_pago') {
-      try {
-        // Hacemos el POST al backend para generar la preferencia de Mercado Pago
-        const response = await api.post('/api/pagos/crear-preferencia', {
-          monto: total,
-          titulo: 'Pedido ParriYa!'
-        });
-
-        const initPoint = response.data.init_point;
-
-        if (initPoint) {
-          const canOpen = await Linking.canOpenURL(initPoint);
-          if (canOpen) {
-            // Redirección nativa externa a Mercado Pago
-            await Linking.openURL(initPoint);
-
-            // Mostramos el flujo de espera intermedio (pop-up) sin registrar pedido ni limpiar carrito aún
-            setPaymentStatus('processing');
-            setShowConfirmation(true);
-          } else {
-            Alert.alert(
-              'Error de Redirección',
-              'No se pudo abrir la pasarela de Mercado Pago. Verifica si tienes un navegador instalado.'
-            );
-          }
-        } else {
-          Alert.alert('Error', 'No se recibió la URL de pago desde el servidor.');
-        }
-      } catch (error) {
-        console.error('Error generando preferencia de Mercado Pago:', error.response?.data || error.message);
-        Alert.alert('Error', 'Ocurrió un error al intentar iniciar el pago con Mercado Pago.');
-      }
+      await initiateMercadoPago();
     }
   };
 
@@ -294,6 +322,7 @@ export default function PagoScreen() {
         </TouchableOpacity>
       </View>
 
+      {/* Modal de Confirmación de Mercado Pago */}
       <Modal
         visible={showConfirmation}
         transparent
@@ -315,51 +344,12 @@ export default function PagoScreen() {
                 <Text style={[styles.modalSubtitle, { color: colors.textMuted, fontSize: 14, marginBottom: 25 }]}>
                   Una vez que hayas completado la transferencia en la aplicación de Mercado Pago, regresa aquí para finalizar tu orden.
                 </Text>
+
                 <TouchableOpacity
                   style={[styles.modalButton, { width: '100%', alignItems: 'center' }]}
                   activeOpacity={0.8}
                   disabled={isSubmitting}
-                  onPress={async () => {
-                    setIsSubmitting(true);
-                    try {
-                      const storedUser = await AsyncStorage.getItem('activeUser');
-                      if (!storedUser) {
-                        Alert.alert('Error', 'No se encontró una sesión activa.');
-                        setIsSubmitting(false);
-                        return;
-                      }
-
-                      const requestBody = {
-                        horarioRetiro: "20:00:00",
-                        total: total,
-                        detalles: cartItems.map((item) => ({
-                          productoId: parseInt(item.id, 10),
-                          cantidad: item.cantidad,
-                          precioUnitario: item.precio
-                        })),
-                        pagos: [
-                          {
-                            metodo: 'MERCADO_PAGO',
-                            monto: total
-                          }
-                        ]
-                      };
-
-                      await api.post('/pedidos', requestBody);
-                      clearCart();
-                      setShowConfirmation(false);
-                      setPaymentStatus('idle');
-                      router.replace('/exito');
-                    } catch (error) {
-                      console.error('Error registrando pedido:', error.response?.data || error.message);
-                      Alert.alert(
-                        'Error', 
-                        'No se pudo registrar tu pedido. Por favor, verifica tu conexión e intenta nuevamente.'
-                      );
-                    } finally {
-                      setIsSubmitting(false);
-                    }
-                  }}
+                  onPress={handleConfirmMercadoPagoPayment}
                 >
                   {isSubmitting ? (
                     <ActivityIndicator size="small" color="white" />
@@ -367,6 +357,7 @@ export default function PagoScreen() {
                     <Text style={styles.modalButtonText}>Ya pagué</Text>
                   )}
                 </TouchableOpacity>
+
                 {!isSubmitting && (
                   <TouchableOpacity
                     style={[styles.modalButton, { backgroundColor: 'transparent', marginTop: 12, borderWidth: 1, borderColor: colors.border, width: '100%', alignItems: 'center' }]}
