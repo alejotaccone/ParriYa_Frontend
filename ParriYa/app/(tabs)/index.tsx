@@ -12,8 +12,8 @@ export default function HomeScreen() {
   const { colors } = useTheme();
 
   const handleWhatsAppRedirect = async () => {
-    const phoneNumber = '5491161327799';
-    const message = '¡Hola Parrilla Los Pibes! Me gustaría realizar una reserva.';
+    const phoneNumber = '5491123273588';
+    const message = '¡Hola Parrilla Los Pibes! Me gustaría realizar una reserva para las XX:XXhs.';
     const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
 
     try {
