@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, Image, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import PropTypes from 'prop-types';
 import { styles } from "./CarritoItem.styles";
 import { useTheme } from "../ThemeContext";
 import { COLORS } from "../../constants/colors";
@@ -92,6 +93,22 @@ const CarritoItem = ({ item, onRemove, onIncrement, onDecrement }) => {
       )}
     </View>
   );
+};
+
+CarritoItem.propTypes = {
+  item: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    nombre: PropTypes.string.isRequired,
+    precio: PropTypes.number.isRequired,
+    cantidad: PropTypes.number,
+    img_url: PropTypes.any,
+    image: PropTypes.any,
+    descripcion: PropTypes.string,
+    desc: PropTypes.string,
+  }).isRequired,
+  onRemove: PropTypes.func.isRequired,
+  onIncrement: PropTypes.func.isRequired,
+  onDecrement: PropTypes.func.isRequired,
 };
 
 export default CarritoItem;

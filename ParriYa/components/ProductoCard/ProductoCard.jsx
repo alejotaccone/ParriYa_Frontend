@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View, Text, Image, TouchableOpacity, Modal } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import PropTypes from 'prop-types';
 import { styles } from "./ProductoCard.styles";
 import { useCart } from "../CartContext";
 import { useTheme } from "../ThemeContext";
@@ -23,6 +24,11 @@ const ProductoCard = ({
   const { colors, isDarkMode } = useTheme();
 
   const isFavorito = item.fav;
+
+  let heartColor = isDarkMode ? "white" : "black";
+  if (isFavorito) {
+    heartColor = "red";
+  }
 
   const handleToggleFavorite = (e) => {
     e.stopPropagation();
@@ -77,7 +83,7 @@ const ProductoCard = ({
         {/* Corazón superior derecho (solo en tarjetas de categoría) */}
         {!esFormatoHome && mostrarFavorito && (
           <TouchableOpacity style={styles.heartOverlay} onPress={handleToggleFavorite}>
-            <Ionicons name={isFavorito ? "heart" : "heart-outline"} size={20} color={isFavorito ? "red" : (isDarkMode ? "white" : "black")} />
+            <Ionicons name={isFavorito ? "heart" : "heart-outline"} size={20} color={heartColor} />
           </TouchableOpacity>
         )}
 
@@ -140,6 +146,23 @@ const ProductoCard = ({
       </TouchableOpacity>
     </View>
   );
+};
+
+ProductoCard.propTypes = {
+  item: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    nombre: PropTypes.string.isRequired,
+    descripcion: PropTypes.string,
+    desc: PropTypes.string,
+    precio: PropTypes.number,
+    img_url: PropTypes.any,
+    image: PropTypes.any,
+    fav: PropTypes.bool,
+  }).isRequired,
+  mostrarFavorito: PropTypes.bool,
+  esFormatoHome: PropTypes.bool,
+  onAdd: PropTypes.func,
+  onToggleFavorite: PropTypes.func,
 };
 
 export default ProductoCard;

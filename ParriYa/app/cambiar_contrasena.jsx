@@ -35,12 +35,10 @@ export default function CambiarContrasenaScreen() {
   const handleBack = () => {
     if (router.canGoBack()) {
       router.back();
+    } else if (rol === 'admin') {
+      router.replace('/backoffice/perfil');
     } else {
-      if (rol === 'admin') {
-        router.replace('/backoffice/perfil');
-      } else {
-        router.replace('/perfil');
-      }
+      router.replace('/perfil');
     }
   };
 

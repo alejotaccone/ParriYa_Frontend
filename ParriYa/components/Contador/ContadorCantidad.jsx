@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import PropTypes from 'prop-types';
 import { COLORS } from "../../constants/colors";
 import { styles } from "./ContadorCantidad.styles";
 import { useTheme } from "../ThemeContext";
@@ -21,6 +22,12 @@ const ContadorCantidad = ({ cantidad, onIncrement, onDecrement }) => {
       </TouchableOpacity>
     </View>
   );
+};
+
+ContadorCantidad.propTypes = {
+  cantidad: PropTypes.number.isRequired,
+  onIncrement: PropTypes.func.isRequired,
+  onDecrement: PropTypes.func.isRequired,
 };
 
 export default ContadorCantidad;

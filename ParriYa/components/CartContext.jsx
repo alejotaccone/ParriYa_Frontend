@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import React, { createContext, useContext, useEffect, useMemo, useState, useCallback } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import PropTypes from 'prop-types';
 
 const CartContext = createContext(null);
 const STORAGE_KEY = 'shoppingCart';
@@ -49,7 +50,7 @@ export function CartProvider({ children }) {
     saveFavorites();
   }, [favoriteItems]);
 
-  const addToCart = (product, cantidad = 1) => {
+  const addToCart = useCallback((product, cantidad = 1) => {
     setCartItems((prev) => {
       const existing = prev.find((item) => item.id === product.id);
       if (existing) {
@@ -61,13 +62,13 @@ export function CartProvider({ children }) {
       }
       return [...prev, { ...product, cantidad }];
     });
-  };
+  }, []);
 
-  const removeFromCart = (id) => {
+  const removeFromCart = useCallback((id) => {
     setCartItems((prev) => prev.filter((item) => item.id !== id));
-  };
+  }, []);
 
-  const updateQuantity = (id, cantidad) => {
+  const updateQuantity = useCallback((id, cantidad) => {
     setCartItems((prev) =>
       prev
         .map((item) =>
@@ -77,11 +78,11 @@ export function CartProvider({ children }) {
         )
         .filter((item) => item.cantidad > 0)
     );
-  };
+  }, []);
 
-  const clearCart = () => setCartItems([]);
+  const clearCart = useCallback(() => setCartItems([]), []);
 
-  const toggleFavorite = (product) => {
+  const toggleFavorite = useCallback((product) => {
     setFavoriteItems((prev) => {
       const alreadyFavorite = prev.some((item) => item.id === product.id);
       if (alreadyFavorite) {
@@ -98,9 +99,9 @@ export function CartProvider({ children }) {
         },
       ];
     });
-  };
+  }, []);
 
-  const isFavorite = (id) => favoriteItems.some((item) => item.id === id);
+  const isFavorite = useCallback((id) => favoriteItems.some((item) => item.id === id), [favoriteItems]);
 
   const itemCount = useMemo(
     () => cartItems.reduce((sum, item) => sum + item.cantidad, 0),
@@ -112,25 +113,29 @@ export function CartProvider({ children }) {
     [cartItems]
   );
 
+  const providerValue = useMemo(() => ({
+    cartItems,
+    favoriteItems,
+    itemCount,
+    cartTotal,
+    addToCart,
+    removeFromCart,
+    updateQuantity,
+    clearCart,
+    toggleFavorite,
+    isFavorite,
+  }), [cartItems, favoriteItems, itemCount, cartTotal, addToCart, removeFromCart, updateQuantity, clearCart, toggleFavorite, isFavorite]);
+
   return (
-    <CartContext.Provider
-      value={{
-        cartItems,
-        favoriteItems,
-        itemCount,
-        cartTotal,
-        addToCart,
-        removeFromCart,
-        updateQuantity,
-        clearCart,
-        toggleFavorite,
-        isFavorite,
-      }}
-    >
+    <CartContext.Provider value={providerValue}>
       {children}
     </CartContext.Provider>
   );
 }
+
+CartProvider.propTypes = {
+  children: PropTypes.node.isRequired,
+};
 
 export function useCart() {
   const context = useContext(CartContext);

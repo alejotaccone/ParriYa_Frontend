@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, ScrollView, Image, Alert, Modal, Linking,
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
+import PropTypes from 'prop-types';
 import { useCart } from '../components/CartContext';
 import { styles } from '../components/Pago/pago.styles';
 import api, { resolveProductImg } from '../services/api';
@@ -15,7 +16,7 @@ function buildOrderBody(cartItems, total, metodo) {
     horarioRetiro: '20:00:00',
     total,
     detalles: cartItems.map((item) => ({
-      productoId: parseInt(item.id, 10),
+      productoId: Number.parseInt(item.id, 10),
       cantidad: item.cantidad,
       precioUnitario: item.precio,
     })),
@@ -239,10 +240,32 @@ function PaymentConfirmationModal({
   );
 }
 
+PaymentConfirmationModal.propTypes = {
+  visible: PropTypes.bool.isRequired,
+  paymentStatus: PropTypes.string.isRequired,
+  isSubmitting: PropTypes.bool.isRequired,
+  colors: PropTypes.shape({
+    card: PropTypes.string.isRequired,
+    border: PropTypes.string.isRequired,
+    text: PropTypes.string.isRequired,
+    textMuted: PropTypes.string.isRequired,
+  }).isRequired,
+  isDarkMode: PropTypes.bool.isRequired,
+  onConfirm: PropTypes.func.isRequired,
+  onDismiss: PropTypes.func.isRequired,
+  onGoBack: PropTypes.func.isRequired,
+  onGoHome: PropTypes.func.isRequired,
+};
+
 // ─── Sub-componente: Métodos de Pago ─────────────────────────────
 function PaymentMethodSelector({ metodoPago, onSelect, colors, isDarkMode }) {
   const isEfectivo = metodoPago === 'efectivo';
   const isMp       = metodoPago === 'mercado_pago';
+
+  let cardIconBg = colors.card;
+  if (isMp) {
+    cardIconBg = isDarkMode ? '#303030' : COLORS.backgroundLight;
+  }
 
   return (
     <>
@@ -280,7 +303,7 @@ function PaymentMethodSelector({ metodoPago, onSelect, colors, isDarkMode }) {
         onPress={() => onSelect('mercado_pago')}
       >
         <View style={styles.paymentLeft}>
-          <View style={[styles.cardIconWrapper, { backgroundColor: isMp ? (isDarkMode ? '#303030' : COLORS.backgroundLight) : colors.card }]}>
+          <View style={[styles.cardIconWrapper, { backgroundColor: cardIconBg }]}>
             <Ionicons name="card" size={24} color={isMp ? '#FF5A2D' : colors.textMuted} />
           </View>
           <View>
@@ -301,6 +324,19 @@ function PaymentMethodSelector({ metodoPago, onSelect, colors, isDarkMode }) {
     </>
   );
 }
+
+PaymentMethodSelector.propTypes = {
+  metodoPago: PropTypes.string.isRequired,
+  onSelect: PropTypes.func.isRequired,
+  colors: PropTypes.shape({
+    card: PropTypes.string.isRequired,
+    box: PropTypes.string.isRequired,
+    border: PropTypes.string.isRequired,
+    text: PropTypes.string.isRequired,
+    textMuted: PropTypes.string.isRequired,
+  }).isRequired,
+  isDarkMode: PropTypes.bool.isRequired,
+};
 
 // ─── Componente Principal ─────────────────────────────────────────
 export default function PagoScreen() {

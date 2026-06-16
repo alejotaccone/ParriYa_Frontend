@@ -107,9 +107,9 @@ const Banner = () => {
 
       {/* Puntitos de paginación inferiores dinámicos */}
       <View style={styles.dotsContainer}>
-        {OFERTAS.map((_, index) => (
+        {OFERTAS.map((item, index) => (
           <TouchableOpacity
-            key={index}
+            key={item.id}
             onPress={() => setOfertaActual(index)}
             style={[
               styles.dot,

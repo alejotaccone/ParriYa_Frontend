@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import PropTypes from 'prop-types';
 import { COLORS } from "../constants/colors";
 
 const ThemeContext = createContext();
@@ -21,7 +22,7 @@ export const ThemeProvider = ({ children }) => {
     loadTheme();
   }, []);
 
-  const toggleTheme = async () => {
+  const toggleTheme = useCallback(async () => {
     try {
       const nextValue = !isDarkMode;
       setIsDarkMode(nextValue);
@@ -29,9 +30,9 @@ export const ThemeProvider = ({ children }) => {
     } catch (e) {
       // ignore
     }
-  };
+  }, [isDarkMode]);
 
-  const colors = {
+  const colors = useMemo(() => ({
     background: isDarkMode ? COLORS.backgroundDark : COLORS.backgroundLight,
     card: isDarkMode ? COLORS.cardDark : COLORS.cardLight,
     box: isDarkMode ? COLORS.boxDark : COLORS.boxLight,
@@ -40,13 +41,19 @@ export const ThemeProvider = ({ children }) => {
     border: isDarkMode ? COLORS.borderDarkMode : COLORS.borderLightMode,
     divider: isDarkMode ? COLORS.dividerDarkMode : COLORS.dividerLightMode,
     dropdownRow: isDarkMode ? "#444444" : "#F2F2F7",
-  };
+  }), [isDarkMode]);
+
+  const providerValue = useMemo(() => ({ isDarkMode, toggleTheme, colors }), [isDarkMode, toggleTheme, colors]);
 
   return (
-    <ThemeContext.Provider value={{ isDarkMode, toggleTheme, colors }}>
+    <ThemeContext.Provider value={providerValue}>
       {children}
     </ThemeContext.Provider>
   );
+};
+
+ThemeProvider.propTypes = {
+  children: PropTypes.node.isRequired,
 };
 
 export const useTheme = () => useContext(ThemeContext);

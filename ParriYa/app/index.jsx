@@ -16,8 +16,7 @@ export default function Index() {
         const activeUser = await AsyncStorage.getItem('activeUser');
         if (activeUser) {
           const userObj = JSON.parse(activeUser);
-          // Si el usuario es administrador, lo mandamos al backoffice
-          if (userObj && userObj.rol === 'admin') {
+          if (userObj?.rol === 'admin') {
             targetRoute = '/backoffice';
           } else {
             targetRoute = '/(tabs)';

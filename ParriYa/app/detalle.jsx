@@ -44,8 +44,11 @@ export default function DetalleScreen() {
     }
   }, [idProducto]);
 
-  const precioTotal = (producto?.precio || 0) * cantidad;
   const favorito = producto ? isFavorite(producto.id) : false;
+  let heartColor = isDarkMode ? "white" : "black";
+  if (favorito) {
+    heartColor = "#E76F41";
+  }
 
   useEffect(() => {
     if (!showFavoriteModal) return;
@@ -116,7 +119,7 @@ export default function DetalleScreen() {
             <Ionicons
               name={favorito ? "heart" : "heart-outline"}
               size={24}
-              color={favorito ? "#E76F41" : (isDarkMode ? "white" : "black")}
+              color={heartColor}
             />
           </TouchableOpacity>
           <Image

@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, FlatList, TouchableOpacity } from 'react-native';
+import PropTypes from 'prop-types';
 import { styles } from './FiltrosCategoria.styles';
 import { useTheme } from '../ThemeContext';
 import { COLORS } from '../../constants/colors';
@@ -9,6 +10,11 @@ const FiltrosCategoria = ({ filtros, filtroActivo, setFiltroActivo }) => {
   
   const renderFiltro = ({ item }) => {
     const isActive = filtroActivo === item;
+    let textColor = isDarkMode ? "#ffffff" : COLORS.textMain;
+    if (isActive) {
+      textColor = COLORS.backgroundLight;
+    }
+
     return (
       <TouchableOpacity 
         style={[
@@ -28,9 +34,7 @@ const FiltrosCategoria = ({ filtros, filtroActivo, setFiltroActivo }) => {
           styles.chipText, 
           isActive && styles.chipTextActive,
           {
-            color: isActive 
-              ? COLORS.backgroundLight 
-              : (isDarkMode ? "#ffffff" : COLORS.textMain)
+            color: textColor
           }
         ]}>
           {item}
@@ -51,6 +55,12 @@ const FiltrosCategoria = ({ filtros, filtroActivo, setFiltroActivo }) => {
       />
     </View>
   );
+};
+
+FiltrosCategoria.propTypes = {
+  filtros: PropTypes.arrayOf(PropTypes.string).isRequired,
+  filtroActivo: PropTypes.string.isRequired,
+  setFiltroActivo: PropTypes.func.isRequired,
 };
 
 export default FiltrosCategoria;

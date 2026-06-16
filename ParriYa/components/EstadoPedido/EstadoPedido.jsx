@@ -66,7 +66,6 @@ const EstadoPedido = () => {
 
   // Estados para reseña / feedback
   const [latestOrder, setLatestOrder] = useState(null);
-  const [activeUser, setActiveUser] = useState(null);
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [calificacion, setCalificacion] = useState(5);
   const [comentario, setComentario] = useState('');
@@ -108,9 +107,6 @@ const EstadoPedido = () => {
         setLatestOrder(null);
         return;
       }
-
-      const userStr = await AsyncStorage.getItem('activeUser');
-      if (userStr) setActiveUser(JSON.parse(userStr));
 
       const response = await api.get('/pedidos/mis-pedidos');
       const orders   = response.data;
@@ -192,7 +188,7 @@ const EstadoPedido = () => {
       const requestBody = {
         pedidoId:    latestOrder.id,
         comentario:  comentario.trim(),
-        calificacion: parseFloat(calificacion),
+        calificacion: Number.parseFloat(calificacion),
       };
 
       await api.post('/feedback', requestBody);

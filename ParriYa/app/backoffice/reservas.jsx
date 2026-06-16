@@ -3,6 +3,7 @@ import { View, Text, ScrollView, TouchableOpacity, Alert, StatusBar, Modal, Text
 import { useRouter, useNavigation } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
+import PropTypes from 'prop-types';
 import { styles } from '../../components/Backoffice/backoffice.styles';
 import { COLORS } from '../../constants/colors';
 import { useTheme } from '../../components/ThemeContext';
@@ -141,6 +142,27 @@ function ShiftTable({ title, reservas, colors, isDarkMode, onPressRow }) {
   );
 }
 
+ShiftTable.propTypes = {
+  title: PropTypes.string.isRequired,
+  reservas: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      horario: PropTypes.string.isRequired,
+      cliente: PropTypes.string.isRequired,
+      estado: PropTypes.string.isRequired,
+      cantidad: PropTypes.number.isRequired,
+    })
+  ).isRequired,
+  colors: PropTypes.shape({
+    card: PropTypes.string.isRequired,
+    border: PropTypes.string.isRequired,
+    textMuted: PropTypes.string.isRequired,
+    text: PropTypes.string.isRequired,
+  }).isRequired,
+  isDarkMode: PropTypes.bool.isRequired,
+  onPressRow: PropTypes.func.isRequired,
+};
+
 
 export default function BackofficeReservas() {
   const router = useRouter();
@@ -217,14 +239,16 @@ export default function BackofficeReservas() {
 
     try {
       const newEstado = selectedRes.estado === 'Confirmada' ? 'CANCELADA' : 'CONFIRMADA';
+      let formattedTime = '12:00:00';
+      if (selectedRes.horario.includes(':')) {
+        formattedTime = selectedRes.horario.length === 5 ? `${selectedRes.horario}:00` : selectedRes.horario;
+      }
       const body = {
         nombreCliente:      selectedRes.cliente,
         telefonoCliente:    selectedRes.telefono || '',
         cantidadDePersonas: selectedRes.cantidad,
         fechaDeReserva:     formatToBackendDate(selectedRes.fecha),
-        horarioDeReserva:   selectedRes.horario.includes(':')
-          ? (selectedRes.horario.length === 5 ? `${selectedRes.horario}:00` : selectedRes.horario)
-          : '12:00:00',
+        horarioDeReserva:   formattedTime,
         ubicacion: selectedRes.ubicacion || 'ADENTRO',
         estado:    newEstado,
       };
@@ -235,9 +259,13 @@ export default function BackofficeReservas() {
     } catch (err) {
       console.error('Error al actualizar reserva:', err.message);
       // Fallback local
-      const updated = reservations.map((r) =>
-        r.id === reservaId ? { ...r, estado: r.estado === 'Confirmada' ? 'Cancelada' : 'Confirmada' } : r
-      );
+      const updated = reservations.map((r) => {
+        if (r.id === reservaId) {
+          const newEst = r.estado === 'Confirmada' ? 'Cancelada' : 'Confirmada';
+          return { ...r, estado: newEst };
+        }
+        return r;
+      });
       await AsyncStorage.setItem('reservas', JSON.stringify(updated));
       setReservations(updated);
     }
@@ -284,16 +312,17 @@ export default function BackofficeReservas() {
       return;
     }
 
-    const cantidadNum = parseInt(cantidadInput, 10);
-    if (isNaN(cantidadNum) || cantidadNum <= 0) {
+    const cantidadNum = Number.parseInt(cantidadInput, 10);
+    if (Number.isNaN(cantidadNum) || cantidadNum <= 0) {
       Alert.alert('Cantidad inválida', 'La cantidad de personas debe ser un número.');
       return;
     }
 
     try {
-      const formattedTime = horarioInput.includes(':')
-        ? (horarioInput.length === 5 ? `${horarioInput}:00` : horarioInput)
-        : '20:00:00';
+      let formattedTime = '20:00:00';
+      if (horarioInput.includes(':')) {
+        formattedTime = horarioInput.length === 5 ? `${horarioInput}:00` : horarioInput;
+      }
 
       const body = {
         nombreCliente:      clienteInput,
@@ -339,102 +368,6 @@ export default function BackofficeReservas() {
       console.error(e);
       Alert.alert('Error', 'No se pudo registrar la reserva.');
     }
-  };
-
-
-  const handleLogout = () => {
-    Alert.alert(
-      'Cerrar Sesión',
-      '¿Estás seguro de que quieres salir del panel de administración?',
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        {
-          text: 'Salir',
-          style: 'destructive',
-          onPress: async () => {
-            await AsyncStorage.removeItem('activeUser');
-            await AsyncStorage.removeItem('authToken');
-            router.replace('/login');
-          },
-        },
-      ]
-    );
-  };
-
-
-  const handleQuickAction = () => {
-    Alert.alert(
-      'Acciones del Administrador',
-      'Simula operaciones para poblar la base de datos:',
-      [
-        {
-          text: 'Simular nuevo Pedido',
-          onPress: async () => {
-            try {
-              const currentOrdersJson = await AsyncStorage.getItem('orders');
-              const currentOrders = currentOrdersJson ? JSON.parse(currentOrdersJson) : [];
-              const nextId = currentOrders.reduce((max, o) => Math.max(max, o.id), 0) + 1;
-              const simulatedOrder = {
-                id: nextId,
-                usuario: 'Enzo Mussi',
-                fecha_pedido: '02/06/2026',
-                estado: 'Preparando',
-                metodo_pago: 'Mercado Pago',
-                total: 25000,
-                tarifa_servicio: 3000,
-                subtotal: 22000,
-                cantidad_productos: 2,
-                items: [{ producto_nombre: 'Lomo vacuno', cantidad: 1, subtotal: 20000 }],
-              };
-              await AsyncStorage.setItem('orders', JSON.stringify([simulatedOrder, ...currentOrders]));
-              Alert.alert('Simulación exitosa', 'Pedido simulado guardado.');
-            } catch (e) {
-              console.error(e);
-            }
-          },
-        },
-        {
-          text: 'Simular nueva Reserva',
-          onPress: async () => {
-            try {
-              const body = {
-                nombreCliente:      'Claudia Paz',
-                telefonoCliente:    '',
-                cantidadDePersonas: 4,
-                fechaDeReserva:     formatToBackendDate(selectedFecha),
-                horarioDeReserva:   '21:30:00',
-                ubicacion:          'ADENTRO',
-                estado:             'CONFIRMADA',
-              };
-              await api.post('/reservas', body);
-              await loadReservations();
-              Alert.alert('Simulación exitosa', 'Reserva simulada guardada en backend.');
-            } catch (e) {
-              console.warn('Error al simular en backend, simulando localmente:', e.message);
-              const newRes = {
-                id:        Date.now().toString(),
-                fecha:     selectedFecha,
-                nombreDia: currentDiaObj.fullText,
-                diaSemana: currentDiaObj.nombre,
-                nroDia:    currentDiaObj.nro,
-                turno:     'Noche',
-                cliente:   'Claudia Paz',
-                horario:   '21:30',
-                cantidad:  4,
-                estado:    'Confirmada',
-                telefono:  '',
-                ubicacion: 'ADENTRO',
-              };
-              const updated = [...reservations, newRes];
-              await AsyncStorage.setItem('reservas', JSON.stringify(updated));
-              setReservations(updated);
-              Alert.alert('Simulación exitosa', 'Reserva simulada guardada localmente.');
-            }
-          },
-        },
-        { text: 'Cancelar', style: 'cancel' },
-      ]
-    );
   };
 
 

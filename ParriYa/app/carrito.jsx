@@ -19,7 +19,7 @@ import { COLORS } from "../constants/colors";
 
 export default function CarritoScreen() {
   const router = useRouter();
-  const { cartItems, removeFromCart, updateQuantity, addToCart } = useCart();
+  const { cartItems, removeFromCart, updateQuantity } = useCart();
   const [sugerencias, setSugerencias] = useState([]);
   const { colors, isDarkMode } = useTheme();
 
