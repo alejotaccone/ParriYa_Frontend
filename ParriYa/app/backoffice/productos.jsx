@@ -8,7 +8,6 @@ import { COLORS } from '../../constants/colors';
 import { useTheme } from '../../components/ThemeContext';
 import api, { resolveProductImg, resolveCategoryImg } from '../../services/api';
 
-
 function showConfirmDialog(title, message, onConfirm) {
   if (Platform.OS === 'web') {
     if (window.confirm(`${title}\n\n${message}`)) {
@@ -21,7 +20,6 @@ function showConfirmDialog(title, message, onConfirm) {
     ]);
   }
 }
-
 
 async function performDeleteApi(productId, nombre, onSuccess) {
   try {
@@ -44,7 +42,6 @@ async function performDeleteApi(productId, nombre, onSuccess) {
   }
 }
 
-
 function getCategoryCardStyle(isActive, colors, isDarkMode) {
   if (isActive) return [styles.categoryFilterCard, styles.categoryFilterCardActive];
   return [
@@ -57,6 +54,109 @@ function getCategoryCardStyle(isActive, colors, isDarkMode) {
 function getCategoryTextStyle(isActive, colors) {
   if (isActive) return styles.categoryFilterTextActive;
   return [styles.categoryFilterTextInactive, { color: colors.text }];
+}
+
+// Estrategia 1 — isAdminUser
+async function isAdminUser() {
+  const activeUserJson = await AsyncStorage.getItem('activeUser');
+  if (!activeUserJson) return false;
+  const user = JSON.parse(activeUserJson);
+  return user.rol === 'admin';
+}
+
+// Estrategia 2 — Funciones puras de mapeo de respuesta de la API
+function mapCategoriesResponse(data) {
+  return data.map(c => ({
+    id: String(c.id),
+    nombre: c.nombre,
+    img_url: resolveCategoryImg(c.nombre, c.imgUrl || c.img_url),
+  }));
+}
+
+function mapProductsResponse(data) {
+  return data.map(p => ({
+    id: String(p.id),
+    nombre: p.nombre,
+    descripcion: p.descripcion,
+    precio: p.precio,
+    stock: p.stock,
+    img_url: resolveProductImg(p.nombre, p.imgUrl || p.img_url),
+    categoria_id: String(p.categoriaId !== undefined ? p.categoriaId : p.categoria_id),
+    estado: p.estado,
+  }));
+}
+
+// Estrategia 3 — ProductCardItem
+function ProductCardItem({ item, categoriesList, colors, isDarkMode, onEdit, onDelete }) {
+  const catName = categoriesList.find(c => c.id === item.categoria_id)?.nombre || 'Categoría';
+  const imgSource = typeof item.img_url !== 'string' ? item.img_url : { uri: item.img_url };
+
+  return (
+    <TouchableOpacity
+      style={[
+        styles.productCard,
+        {
+          backgroundColor: colors.card,
+          borderColor: isDarkMode ? colors.border : 'transparent',
+          borderWidth: isDarkMode ? 1 : 0,
+        }
+      ]}
+      activeOpacity={0.9}
+      onLongPress={() => onDelete(item.id, item.nombre)}
+    >
+      <View style={[styles.productCardImageContainer, { backgroundColor: isDarkMode ? colors.box : '#F5F5F5' }]}>
+        <Image source={imgSource} style={styles.productCardImage} resizeMode="cover" />
+      </View>
+
+      <View style={styles.productCardContent}>
+        <Text style={[styles.productCardName, { color: colors.text }]}>{item.nombre}</Text>
+        <Text style={styles.productCardCategory}>{catName}</Text>
+        <Text style={[styles.productCardDescription, { color: colors.textMuted }]} numberOfLines={2}>
+          {item.descripcion}
+        </Text>
+      </View>
+
+      <TouchableOpacity style={styles.productEditButton} activeOpacity={0.7} onPress={() => onEdit(item)}>
+        <Ionicons name="pencil" size={18} color="white" />
+      </TouchableOpacity>
+    </TouchableOpacity>
+  );
+}
+
+// Estrategia 4 — ModalCategorySelector
+function ModalCategorySelector({ categoriesList, selectedCategoryOptionId, onSelect, colors, isDarkMode }) {
+  return (
+    <View style={styles.addModalInputWrapper}>
+      <Text style={[styles.addModalInputLabel, { color: colors.textMuted }]}>Categoría</Text>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.productModalCategoryScroll}>
+        {categoriesList.map(cat => {
+          const isSelected = cat.id === selectedCategoryOptionId;
+          return (
+            <TouchableOpacity
+              key={cat.id}
+              style={[
+                styles.statusOptionButton,
+                { marginHorizontal: 4, marginVertical: 0, paddingVertical: 8, paddingHorizontal: 12 },
+                isSelected
+                  ? styles.statusBtnActivePreparando
+                  : [styles.statusBtnInactive, isDarkMode && { borderColor: colors.border }],
+              ]}
+              onPress={() => onSelect(cat.id)}
+            >
+              <Text style={[
+                styles.statusBtnText,
+                isDarkMode && { color: colors.textMuted },
+                isSelected && styles.statusBtnTextActivePreparando,
+                { marginLeft: 0 },
+              ]}>
+                {cat.nombre}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </ScrollView>
+    </View>
+  );
 }
 
 export default function BackofficeProductos() {
@@ -75,24 +175,14 @@ export default function BackofficeProductos() {
   const [selectedCategoryOptionId, setSelectedCategoryOptionId] = useState('1');
   const [stockInput, setStockInput] = useState('10');
 
+  // Estrategia 1: usa isAdminUser() en lugar de las 4 líneas repetidas
   const loadCategories = async () => {
     try {
-      const activeUserJson = await AsyncStorage.getItem('activeUser');
-      if (!activeUserJson) return;
-      const user = JSON.parse(activeUserJson);
-      if (user.rol !== 'admin') return;
-
+      if (!(await isAdminUser())) return;
       const response = await api.get('/categorias');
-      if (response.data && response.data.length > 0) {
-        const mapped = response.data.map(c => ({
-          id: String(c.id),
-          nombre: c.nombre,
-          img_url: resolveCategoryImg(c.nombre, c.imgUrl || c.img_url)
-        }));
-        setCategoriesList(mapped);
-      } else {
-        setCategoriesList([]);
-      }
+      setCategoriesList(
+        response.data?.length > 0 ? mapCategoriesResponse(response.data) : []
+      );
     } catch (e) {
       console.warn('Error cargando categorias backoffice:', e.message);
       setCategoriesList([]);
@@ -101,27 +191,11 @@ export default function BackofficeProductos() {
 
   const loadProducts = async () => {
     try {
-      const activeUserJson = await AsyncStorage.getItem('activeUser');
-      if (!activeUserJson) return;
-      const user = JSON.parse(activeUserJson);
-      if (user.rol !== 'admin') return;
-
+      if (!(await isAdminUser())) return;
       const response = await api.get('/productos');
-      if (response.data && response.data.length > 0) {
-        const mapped = response.data.map((p) => ({
-          id: String(p.id),
-          nombre: p.nombre,
-          descripcion: p.descripcion,
-          precio: p.precio,
-          stock: p.stock,
-          img_url: resolveProductImg(p.nombre, p.imgUrl || p.img_url),
-          categoria_id: String(p.categoriaId !== undefined ? p.categoriaId : p.categoria_id),
-          estado: p.estado,
-        }));
-        setProducts(mapped);
-      } else {
-        setProducts([]);
-      }
+      setProducts(
+        response.data?.length > 0 ? mapProductsResponse(response.data) : []
+      );
     } catch (e) {
       console.warn('Error cargando productos backoffice:', e.message);
       setProducts([]);
@@ -133,13 +207,11 @@ export default function BackofficeProductos() {
     loadProducts();
   }, []);
 
-
-  const productosFiltrados = products.filter((p) => {
+  const productosFiltrados = products.filter(p => {
     if (selectedCategoryFilter === 'Todo') return true;
-    const cat = categoriesList.find((c) => c.id === p.categoria_id);
+    const cat = categoriesList.find(c => c.id === p.categoria_id);
     return cat && cat.nombre === selectedCategoryFilter;
   });
-
 
   const handleOpenCreateModal = () => {
     setEditingProduct(null);
@@ -151,7 +223,6 @@ export default function BackofficeProductos() {
     setStockInput('10');
     setModalVisible(true);
   };
-
 
   const handleOpenEditModal = (product) => {
     setEditingProduct(product);
@@ -167,7 +238,6 @@ export default function BackofficeProductos() {
     setStockInput((product.stock || 10).toString());
     setModalVisible(true);
   };
-
 
   const handleSaveProduct = async () => {
     if (!nombreInput || !descripcionInput || !precioInput) {
@@ -194,7 +264,7 @@ export default function BackofficeProductos() {
         precio: precioNum,
         stock: isNaN(stockNum) ? 10 : stockNum,
         imgUrl: finalImg,
-        categoriaId: parseInt(selectedCategoryOptionId, 10)
+        categoriaId: parseInt(selectedCategoryOptionId, 10),
       };
 
       if (editingProduct) {
@@ -213,7 +283,6 @@ export default function BackofficeProductos() {
     }
   };
 
-
   const handleDelete = () => {
     if (!editingProduct) return;
     showConfirmDialog(
@@ -226,7 +295,6 @@ export default function BackofficeProductos() {
     );
   };
 
-
   const handleDeleteProduct = (productId, nombre) => {
     showConfirmDialog(
       'Eliminar Producto',
@@ -234,7 +302,6 @@ export default function BackofficeProductos() {
       () => performDeleteApi(productId, nombre, loadProducts)
     );
   };
-
 
   const handleLogout = () => {
     const doLogout = async () => {
@@ -255,20 +322,14 @@ export default function BackofficeProductos() {
 
       <View style={styles.header}>
         <View style={styles.backHeaderRow}>
-          <TouchableOpacity 
-            style={styles.backButton}
-            onPress={() => router.back()}
-          >
+          <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
             <Ionicons name="arrow-back" size={26} color="white" />
           </TouchableOpacity>
-          
+
           <Text style={styles.backHeaderTitle}>Productos</Text>
 
           {/* Botón superior derecho para añadir un nuevo producto */}
-          <TouchableOpacity 
-            style={styles.productHeaderAddButton}
-            onPress={handleOpenCreateModal}
-          >
+          <TouchableOpacity style={styles.productHeaderAddButton} onPress={handleOpenCreateModal}>
             <Ionicons name="add-circle" size={28} color="white" />
           </TouchableOpacity>
         </View>
@@ -293,7 +354,7 @@ export default function BackofficeProductos() {
           </TouchableOpacity>
 
           {/* Tarjetas por categoría */}
-          {categoriesList.map((cat) => {
+          {categoriesList.map(cat => {
             const isActive = cat.nombre === selectedCategoryFilter;
             return (
               <TouchableOpacity
@@ -312,7 +373,7 @@ export default function BackofficeProductos() {
       </View>
 
       {/* --- LISTADO DEL CATÁLOGO DE PRODUCTOS --- */}
-      <ScrollView 
+      <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.productScrollContent}
       >
@@ -321,54 +382,17 @@ export default function BackofficeProductos() {
             No hay productos registrados en esta categoría.
           </Text>
         ) : (
-          productosFiltrados.map((item) => {
-            const catName = categoriesList.find((c) => c.id === item.categoria_id)?.nombre || 'Categoría';
-      const imgSource = typeof item.img_url !== 'string' ? item.img_url : { uri: item.img_url };
-
-            return (
-              <TouchableOpacity 
-                key={item.id} 
-                style={[
-                  styles.productCard,
-                  {
-                    backgroundColor: colors.card,
-                    borderColor: isDarkMode ? colors.border : 'transparent',
-                    borderWidth: isDarkMode ? 1 : 0,
-                  }
-                ]}
-                activeOpacity={0.9}
-                onLongPress={() => handleDeleteProduct(item.id, item.nombre)}
-              >
-                {/* Imagen del producto */}
-                <View style={[styles.productCardImageContainer, { backgroundColor: isDarkMode ? colors.box : '#F5F5F5' }]}>
-                  <Image
-                    source={imgSource}
-                    style={styles.productCardImage}
-                    resizeMode="cover"
-                  />
-                </View>
-
-                {/* Contenido descriptivo */}
-                <View style={styles.productCardContent}>
-                  <Text style={[styles.productCardName, { color: colors.text }]}>{item.nombre}</Text>
-                  <Text style={styles.productCardCategory}>{catName}</Text>
-                  <Text style={[styles.productCardDescription, { color: colors.textMuted }]} numberOfLines={2}>
-                    {item.descripcion}
-                  </Text>
-                </View>
-
-                {/* Botón de Edición del producto */}
-                <TouchableOpacity 
-                  style={styles.productEditButton}
-                  activeOpacity={0.7}
-                  onPress={() => handleOpenEditModal(item)}
-                >
-                  <Ionicons name="pencil" size={18} color="white" />
-                </TouchableOpacity>
-
-              </TouchableOpacity>
-            );
-          })
+          productosFiltrados.map(item => (
+            <ProductCardItem
+              key={item.id}
+              item={item}
+              categoriesList={categoriesList}
+              colors={colors}
+              isDarkMode={isDarkMode}
+              onEdit={handleOpenEditModal}
+              onDelete={handleDeleteProduct}
+            />
+          ))
         )}
       </ScrollView>
 
@@ -388,19 +412,15 @@ export default function BackofficeProductos() {
               maxHeight: '90%',
               backgroundColor: colors.card,
               borderColor: isDarkMode ? colors.border : 'transparent',
-              borderWidth: isDarkMode ? 1 : 0
+              borderWidth: isDarkMode ? 1 : 0,
             }
           ]}>
-            
             {/* Header del Modal */}
             <View style={styles.modalHeader}>
               <Text style={[styles.modalTitle, { color: colors.text }]}>
                 {editingProduct ? 'Editar producto' : 'Crear producto'}
               </Text>
-              <TouchableOpacity 
-                style={styles.modalCloseButton}
-                onPress={() => setModalVisible(false)}
-              >
+              <TouchableOpacity style={styles.modalCloseButton} onPress={() => setModalVisible(false)}>
                 <Ionicons name="close" size={24} color={colors.text} />
               </TouchableOpacity>
             </View>
@@ -480,94 +500,49 @@ export default function BackofficeProductos() {
                 />
               </View>
 
-              {/* Selector de Categorías */}
-              <View style={styles.addModalInputWrapper}>
-                <Text style={[styles.addModalInputLabel, { color: colors.textMuted }]}>Categoría</Text>
-                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.productModalCategoryScroll}>
-                  {categoriesList.map((cat) => {
-                    const isSelected = cat.id === selectedCategoryOptionId;
-                    return (
-                      <TouchableOpacity
-                        key={cat.id}
-                        style={[
-                          styles.statusOptionButton,
-                          { marginHorizontal: 4, marginVertical: 0, paddingVertical: 8, paddingHorizontal: 12 },
-                          isSelected 
-                            ? styles.statusBtnActivePreparando 
-                            : [styles.statusBtnInactive, isDarkMode && { borderColor: colors.border }]
-                        ]}
-                        onPress={() => setSelectedCategoryOptionId(cat.id)}
-                      >
-                        <Text style={[
-                          styles.statusBtnText, 
-                          isDarkMode && { color: colors.textMuted },
-                          isSelected && styles.statusBtnTextActivePreparando, 
-                          { marginLeft: 0 }
-                        ]}>
-                          {cat.nombre}
-                        </Text>
-                      </TouchableOpacity>
-                    );
-                  })}
-                </ScrollView>
-              </View>
+              {/* Estrategia 4: selector de categorías extraído a sub-componente */}
+              <ModalCategorySelector
+                categoriesList={categoriesList}
+                selectedCategoryOptionId={selectedCategoryOptionId}
+                onSelect={setSelectedCategoryOptionId}
+                colors={colors}
+                isDarkMode={isDarkMode}
+              />
 
               {/* Botón de Confirmación final */}
-              <TouchableOpacity
-                style={styles.modalConfirmButton}
-                activeOpacity={0.8}
-                onPress={handleSaveProduct}
-              >
+              <TouchableOpacity style={styles.modalConfirmButton} activeOpacity={0.8} onPress={handleSaveProduct}>
                 <Text style={styles.modalConfirmButtonText}>Guardar</Text>
               </TouchableOpacity>
 
               {/* Botón para Eliminar Producto (solo al editar) */}
               {editingProduct && (
-                <TouchableOpacity
-                  style={styles.modalDeleteButton}
-                  activeOpacity={0.8}
-                  onPress={handleDelete}
-                >
+                <TouchableOpacity style={styles.modalDeleteButton} activeOpacity={0.8} onPress={handleDelete}>
                   <Text style={styles.modalDeleteButtonText}>Eliminar producto</Text>
                 </TouchableOpacity>
               )}
 
             </ScrollView>
-
           </View>
         </View>
       </Modal>
 
       {/* --- BOTTOM NAVIGATION BAR --- */}
       <View style={styles.bottomNav}>
-        <TouchableOpacity 
-          style={styles.navItem} 
-          activeOpacity={0.7}
-          onPress={() => router.replace('/backoffice')}
-        >
+        <TouchableOpacity style={styles.navItem} activeOpacity={0.7} onPress={() => router.replace('/backoffice')}>
           <Ionicons name="home" size={26} color="white" />
         </TouchableOpacity>
 
-        <TouchableOpacity 
-          style={styles.navItem} 
-          activeOpacity={0.7}
-          onPress={handleOpenCreateModal}
-        >
+        <TouchableOpacity style={styles.navItem} activeOpacity={0.7} onPress={handleOpenCreateModal}>
           <Ionicons name="add" size={32} color={COLORS.primary} />
         </TouchableOpacity>
 
-        <TouchableOpacity 
-          style={styles.navItem} 
-          activeOpacity={0.7}
-          onPress={() => router.push('/backoffice/perfil')}
-        >
+        <TouchableOpacity style={styles.navItem} activeOpacity={0.7} onPress={() => router.push('/backoffice/perfil')}>
           <Ionicons name="person" size={26} color="white" />
         </TouchableOpacity>
       </View>
     </View>
   );
 }
-
 
 function ModalImagePreview({ imgUrlInput, editingProduct, isDarkMode, colors, stylesCont }) {
   const containerStyle = [
@@ -579,7 +554,7 @@ function ModalImagePreview({ imgUrlInput, editingProduct, isDarkMode, colors, st
   if (imgUrlInput.trim()) {
     return (
       <View style={containerStyle}>
-        <Image 
+        <Image
           source={{ uri: imgUrlInput.trim() }}
           style={stylesCont.modalImagePreview}
           resizeMode="cover"
@@ -592,7 +567,7 @@ function ModalImagePreview({ imgUrlInput, editingProduct, isDarkMode, colors, st
   if (editingProduct && typeof editingProduct.img_url !== 'string') {
     return (
       <View style={containerStyle}>
-        <Image 
+        <Image
           source={editingProduct.img_url}
           style={stylesCont.modalImagePreview}
           resizeMode="cover"
