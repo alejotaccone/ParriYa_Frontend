@@ -64,63 +64,6 @@ export default function BackofficeFeedback() {
     return <View style={styles.feedbackStarsRow}>{stars}</View>;
   };
 
-  // Función para desloguear
-  const handleLogout = () => {
-    Alert.alert(
-      'Cerrar Sesión',
-      '¿Estás seguro de que quieres salir del panel de administración?',
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        {
-          text: 'Salir',
-          style: 'destructive',
-          onPress: async () => {
-            await AsyncStorage.removeItem('activeUser');
-            await AsyncStorage.removeItem('authToken');
-            router.replace('/login');
-          },
-        },
-      ]
-    );
-  };
-
-  // Botón central de simulación rápida
-  const handleQuickAction = () => {
-    Alert.alert(
-      'Acciones del Administrador',
-      'Simula operaciones para poblar la base de datos:',
-      [
-        {
-          text: 'Simular nuevo Pedido',
-          onPress: async () => {
-            try {
-              const currentOrdersJson = await AsyncStorage.getItem('orders');
-              const currentOrders = currentOrdersJson ? JSON.parse(currentOrdersJson) : [];
-              const nextId = currentOrders.reduce((max, o) => Math.max(max, o.id), 0) + 1;
-              const simulatedOrder = {
-                id: nextId,
-                usuario: 'María Belén',
-                fecha_pedido: '02/06/2026',
-                estado: 'Listo',
-                metodo_pago: 'Mercado Pago',
-                total: 18000,
-                tarifa_servicio: 3000,
-                subtotal: 15000,
-                cantidad_productos: 1,
-                items: [{ producto_nombre: 'Vacío', cantidad: 1, subtotal: 15000 }],
-              };
-              await AsyncStorage.setItem('orders', JSON.stringify([simulatedOrder, ...currentOrders]));
-              Alert.alert('Simulación exitosa', 'Pedido simulado guardado.');
-            } catch (e) {
-              console.error(e);
-            }
-          },
-        },
-        { text: 'Cancelar', style: 'cancel' },
-      ]
-    );
-  };
-
   return (
     <View style={[styles.mainContainer, { backgroundColor: colors.background }]}>
       <StatusBar translucent backgroundColor="transparent" barStyle={isDarkMode ? "light-content" : "dark-content"} />

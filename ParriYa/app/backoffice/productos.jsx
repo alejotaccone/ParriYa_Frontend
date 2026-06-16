@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { styles } from '../../components/Backoffice/backoffice.styles';
 import { useProductosStyles } from '../../components/Backoffice/productos.styles';
 import { COLORS } from '../../constants/colors';
@@ -140,22 +141,22 @@ function useProductosLogic(router) {
       Alert.alert('Campos incompletos', 'Por favor completa nombre, descripción y precio.');
       return;
     }
-    const precioNum = parseFloat(precioInput);
-    if (isNaN(precioNum) || precioNum <= 0) {
+    const precioNum = Number.parseFloat(precioInput);
+    if (Number.isNaN(precioNum) || precioNum <= 0) {
       Alert.alert('Precio inválido', 'El precio debe ser un número positivo.');
       return;
     }
     try {
       const fallback = 'https://raw.githubusercontent.com/alejotaccone/ParriYa_Frontend/main/assets/images/Logo.png';
-      const stockNum = parseInt(stockInput, 10);
+      const stockNum = Number.parseInt(stockInput, 10);
       const usesFallback = editingProduct && !imgUrlInput.trim() && typeof editingProduct.img_url !== 'string';
       const body = {
         nombre: nombreInput,
         descripcion: descripcionInput,
         precio: precioNum,
-        stock: isNaN(stockNum) ? 10 : stockNum,
+        stock: Number.isNaN(stockNum) ? 10 : stockNum,
         imgUrl: usesFallback ? fallback : (imgUrlInput.trim() || fallback),
-        categoriaId: parseInt(selectedCategoryOptionId, 10),
+        categoriaId: Number.parseInt(selectedCategoryOptionId, 10),
       };
       if (editingProduct) {
         await api.put(`/productos/${editingProduct.id}`, body);
@@ -251,6 +252,30 @@ function ProductCardItem({ item, categoriesList, dynStyles, onEdit, onDelete }) 
   );
 }
 
+ProductCardItem.propTypes = {
+  item: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    nombre: PropTypes.string.isRequired,
+    descripcion: PropTypes.string.isRequired,
+    categoria_id: PropTypes.string.isRequired,
+    img_url: PropTypes.any,
+  }).isRequired,
+  categoriesList: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      nombre: PropTypes.string.isRequired,
+    })
+  ).isRequired,
+  dynStyles: PropTypes.shape({
+    productCard: PropTypes.any,
+    productCardImageContainer: PropTypes.any,
+    productCardName: PropTypes.any,
+    productCardDescription: PropTypes.any,
+  }).isRequired,
+  onEdit: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired,
+};
+
 function ModalCategorySelector({ categoriesList, selectedCategoryOptionId, onSelect, dynStyles }) {
   return (
     <View style={styles.addModalInputWrapper}>
@@ -274,6 +299,24 @@ function ModalCategorySelector({ categoriesList, selectedCategoryOptionId, onSel
     </View>
   );
 }
+
+ModalCategorySelector.propTypes = {
+  categoriesList: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      nombre: PropTypes.string.isRequired,
+    })
+  ).isRequired,
+  selectedCategoryOptionId: PropTypes.string.isRequired,
+  onSelect: PropTypes.func.isRequired,
+  dynStyles: PropTypes.shape({
+    inputLabel: PropTypes.any,
+    catBtnSelected: PropTypes.any,
+    catBtnUnselected: PropTypes.any,
+    catBtnTextSelected: PropTypes.any,
+    catBtnTextUnselected: PropTypes.any,
+  }).isRequired,
+};
 
 function ModalImagePreview({ imgUrlInput, editingProduct, dynStyles }) {
   if (imgUrlInput.trim()) {
@@ -299,6 +342,18 @@ function ModalImagePreview({ imgUrlInput, editingProduct, dynStyles }) {
     </View>
   );
 }
+
+ModalImagePreview.propTypes = {
+  imgUrlInput: PropTypes.string.isRequired,
+  editingProduct: PropTypes.shape({
+    img_url: PropTypes.any,
+  }),
+  dynStyles: PropTypes.shape({
+    modalImageContainer: PropTypes.any,
+    modalImagePlaceholderBox: PropTypes.any,
+    modalImageText: PropTypes.any,
+  }).isRequired,
+};
 
 // ─── Componente principal ─────────────────────────────────────────
 

@@ -3,6 +3,22 @@ import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons'; 
 import { useCart } from '../../components/CartContext';
 
+interface TabBarIconProps {
+  color: string;
+}
+
+const HomeIcon = ({ color }: TabBarIconProps) => (
+  <Ionicons name="home-outline" size={28} color={color} />
+);
+
+const CartIcon = ({ color }: TabBarIconProps) => (
+  <Ionicons name="cart-outline" size={30} color={color} />
+);
+
+const PersonIcon = ({ color }: TabBarIconProps) => (
+  <Ionicons name="person-outline" size={28} color={color} />
+);
+
 export default function TabLayout() {
   const { itemCount } = useCart();
 
@@ -29,9 +45,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="home-outline" size={28} color={color} />
-          ),
+          tabBarIcon: HomeIcon,
         }}
       />
       
@@ -40,9 +54,7 @@ export default function TabLayout() {
         name="carrito_oculto"
         options={{
           href: '/carrito', 
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="cart-outline" size={30} color={color} />
-          ),
+          tabBarIcon: CartIcon,
           tabBarBadge: itemCount > 0 ? itemCount : undefined,
         }}
       />
@@ -52,9 +64,7 @@ export default function TabLayout() {
         name="perfil_oculto" 
         options={{
           href: '/perfil', 
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="person-outline" size={28} color={color} />
-          ),
+          tabBarIcon: PersonIcon,
         }}
       />
       {/* Pestaña oculta: Categorías  */}

@@ -150,98 +150,6 @@ export default function BackofficePedidos() {
     }
   };
 
-
-  const handleLogout = () => {
-    Alert.alert(
-      'Cerrar Sesión',
-      '¿Estás seguro de que quieres salir del panel de administración?',
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        {
-          text: 'Salir',
-          style: 'destructive',
-          onPress: async () => {
-            await AsyncStorage.removeItem('activeUser');
-            router.replace('/login');
-          },
-        },
-      ]
-    );
-  };
-
-
-  const handleQuickAction = () => {
-    Alert.alert(
-      'Acciones del Administrador',
-      'Simula operaciones en tiempo real para verificar el flujo de la base de datos local:',
-      [
-        {
-          text: 'Simular nuevo Pedido',
-          onPress: async () => {
-            try {
-              const currentOrdersJson = await AsyncStorage.getItem('orders');
-              const currentOrders = currentOrdersJson ? JSON.parse(currentOrdersJson) : [];
-              const nextId = currentOrders.reduce((max, o) => Math.max(max, o.id), 0) + 1;
-              
-              const simulatedOrder = {
-                id: nextId,
-                usuario: 'Enzo Mussi',
-                fecha_pedido: '02/06/2026',
-                estado: 'Preparando',
-                metodo_pago: 'Mercado Pago',
-                total: 25000,
-                tarifa_servicio: 3000,
-                subtotal: 22000,
-                cantidad_productos: 2,
-                items: [
-                  { producto_nombre: 'Lomo vacuno', cantidad: 1, subtotal: 20000 },
-                  { producto_nombre: 'Chorizo', cantidad: 1, subtotal: 5000 },
-                ],
-              };
-
-              await AsyncStorage.setItem('orders', JSON.stringify([simulatedOrder, ...currentOrders]));
-              loadOrders();
-              Alert.alert('Simulación exitosa', `Se añadió el pedido #${nextId.toString().padStart(3, '0')} con sus productos.`);
-            } catch (e) {
-              console.error(e);
-            }
-          },
-        },
-        {
-          text: 'Simular nueva Reserva',
-          onPress: async () => {
-            try {
-              const currentReservasJson = await AsyncStorage.getItem('reservas');
-              const currentReservas = currentReservasJson ? JSON.parse(currentReservasJson) : [];
-              
-              const simulatedReserva = {
-                id: Date.now().toString(),
-                cantidad: 4,
-                estado: 'Confirmada',
-                fecha: '27/04/2026',
-                horario: '21:30',
-                cliente: 'Luis Diaz',
-                turno: 'Noche',
-                nombreDia: 'Lunes 27 de abril',
-                diaSemana: 'Lunes',
-                nroDia: '27',
-              };
-
-              await AsyncStorage.setItem('reservas', JSON.stringify([simulatedReserva, ...currentReservas]));
-              Alert.alert('Simulación exitosa', `Se añadió la reserva de "${simulatedReserva.cliente}" en la base de datos.`);
-            } catch (e) {
-              console.error(e);
-            }
-          },
-        },
-        {
-          text: 'Cancelar',
-          style: 'cancel',
-        },
-      ]
-    );
-  };
-
   return (
     <View style={[styles.mainContainer, { backgroundColor: colors.background }]}>
       <StatusBar translucent backgroundColor="transparent" barStyle={isDarkMode ? "light-content" : "dark-content"} />
@@ -270,13 +178,13 @@ export default function BackofficePedidos() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        {orders.map((order, orderIndex) => {
+        {orders.map((order) => {
           const statusKey = normalizeStatus(order.estado);
           const badgeStyles = BADGE_STYLE_MAP[statusKey];
           
           return (
             <TouchableOpacity 
-              key={order.id + orderIndex} 
+              key={order.id} 
               style={[
                 styles.orderDetailCard,
                 {
@@ -309,8 +217,8 @@ export default function BackofficePedidos() {
               </Text>
 
               {/* Listado de items del pedido */}
-              {order.items.map((item, itemIndex) => (
-                <View key={itemIndex} style={styles.orderItemRow}>
+              {order.items.map((item) => (
+                <View key={item.nombre} style={styles.orderItemRow}>
                   <Text style={[styles.orderItemName, { color: colors.text }]}>{item.nombre}</Text>
                   <View style={styles.orderItemRight}>
                     <Text style={[styles.orderItemQty, { color: colors.textMuted }]}>x{item.cantidad}</Text>
@@ -368,8 +276,8 @@ export default function BackofficePedidos() {
             {/* Listado scrollable de los productos del pedido */}
             <View style={[styles.modalItemsList, { borderBottomColor: isDarkMode ? colors.border : '#F0F0F0' }]}>
               <ScrollView showsVerticalScrollIndicator={false}>
-                {selectedOrder?.items.map((item, index) => (
-                  <View key={index} style={styles.modalItemRow}>
+                {selectedOrder?.items.map((item) => (
+                  <View key={item.nombre} style={styles.modalItemRow}>
                     <Text style={[styles.modalItemText, { color: colors.textMuted }]}>{item.nombre}</Text>
                     <Text style={[styles.modalItemText, { color: colors.textMuted }]}>x{item.cantidad} - ${item.precio.toLocaleString('es-AR')}</Text>
                   </View>
@@ -383,6 +291,12 @@ export default function BackofficePedidos() {
             {/* Renderizado iterativo de botones de estado */}
             {STATUS_BUTTONS.map((btn) => {
               const isActive = normalizeStatus(selectedStatus) === btn.key;
+              let iconColor = '#E5E5EA';
+              if (isActive) {
+                iconColor = btn.activeColor;
+              } else if (isDarkMode) {
+                iconColor = colors.border;
+              }
               return (
                 <TouchableOpacity
                   key={btn.key}
@@ -397,7 +311,7 @@ export default function BackofficePedidos() {
                   <Ionicons
                     name={btn.icon}
                     size={btn.iconSize}
-                    color={isActive ? btn.activeColor : (isDarkMode ? colors.border : '#E5E5EA')}
+                    color={iconColor}
                   />
                   <Text
                     style={[
