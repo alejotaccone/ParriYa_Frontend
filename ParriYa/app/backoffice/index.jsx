@@ -8,28 +8,6 @@ import { COLORS } from '../../constants/colors';
 import { useTheme } from '../../components/ThemeContext';
 import api from '../../services/api';
 
-// --- DATOS MOCK ORIGINALES DE LA IMAGEN ---
-const PEDIDOS_MOCK_DISENO = [
-  { id: '023', cliente: 'Enzo Mussi', estado: 'Entregado', precio: 25000 },
-  { id: '022', cliente: 'Luis Diaz', estado: 'Entregado', precio: 27000 },
-  { id: '021', cliente: 'Manuel Neuer', estado: 'Entregado', precio: 30000 },
-  { id: '020', cliente: 'Luisa Jara', estado: 'Entregado', precio: 25000 },
-  { id: '019', cliente: 'Bruno Titos', estado: 'Entregado', precio: 45000 },
-];
-
-const RESERVAS_MOCK_DISENO = [
-  { id: 1, horario: '21:30', cliente: 'Enzo Mussi', cantidad: 4 },
-  { id: 2, horario: '20:30', cliente: 'Luis Diaz', cantidad: 6 },
-  { id: 3, horario: '22:30', cliente: 'Luisa Jara', cantidad: 3 },
-  { id: 4, horario: '22:30', cliente: 'Claudia Paz', cantidad: 3 },
-];
-
-const FEEDBACK_MOCK_DISENO = [
-  { id: 1, cliente: 'Enzo Mussi', comentario: 'El lomo estaba en su punto, muy tierno.', calificacion: 4.2 },
-  { id: 2, cliente: 'Luisa Jara', comentario: 'Las papas fritas muy crocantes, excelentes.', calificacion: 4.9 },
-  { id: 3, cliente: 'Enzo Mussi', comentario: 'La tira de asado es un 10.', calificacion: 4.7 },
-];
-
 export default function BackofficeDashboard() {
   const router = useRouter();
   const { colors, isDarkMode } = useTheme();

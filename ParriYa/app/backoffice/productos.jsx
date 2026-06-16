@@ -303,7 +303,7 @@ export default function BackofficeProductos() {
 
           {/* Botón superior derecho para añadir un nuevo producto */}
           <TouchableOpacity 
-            style={{ position: 'absolute', right: 20, padding: 5, zIndex: 10 }}
+            style={styles.productHeaderAddButton}
             onPress={handleOpenCreateModal}
           >
             <Ionicons name="add-circle" size={28} color="white" />
@@ -370,10 +370,10 @@ export default function BackofficeProductos() {
       {/* --- LISTADO DEL CATÁLOGO DE PRODUCTOS --- */}
       <ScrollView 
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 20 }}
+        contentContainerStyle={styles.productScrollContent}
       >
         {productosFiltrados.length === 0 ? (
-          <Text style={{ textAlign: 'center', color: colors.textMuted, marginVertical: 30 }}>
+          <Text style={[styles.productEmptyText, { color: colors.textMuted }]}>
             No hay productos registrados en esta categoría.
           </Text>
         ) : (
@@ -461,7 +461,7 @@ export default function BackofficeProductos() {
               </TouchableOpacity>
             </View>
 
-            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 10 }}>
+            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.productModalScrollContent}>
               
               {/* Box de Previsualización Dinámica por URL de Imagen */}
               <View style={[styles.modalImagePlaceholder, { backgroundColor: isDarkMode ? colors.box : '#F5F5F5', borderColor: isDarkMode ? colors.border : '#E5E5EA' }]}>
@@ -553,7 +553,7 @@ export default function BackofficeProductos() {
               {/* Selector de Categorías */}
               <View style={styles.addModalInputWrapper}>
                 <Text style={[styles.addModalInputLabel, { color: colors.textMuted }]}>Categoría</Text>
-                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 5 }}>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.productModalCategoryScroll}>
                   {categoriesList.map((cat) => {
                     const isSelected = cat.id === selectedCategoryOptionId;
                     return (

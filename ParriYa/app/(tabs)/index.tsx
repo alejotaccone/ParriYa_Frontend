@@ -5,7 +5,7 @@ import Banner from '../../components/Banner/Banner';
 import EstadoPedido from '../../components/EstadoPedido/EstadoPedido';
 import Categorias from '../../components/CategoriasInicio/Categorias';
 import MasVendidos from '../../components/MasVendidos/MasVendidos'; 
-import { styles } from './index.styles';
+import { styles } from '../../components/styles/home.styles';
 import { useTheme } from '../../components/ThemeContext';
 
 export default function HomeScreen() {

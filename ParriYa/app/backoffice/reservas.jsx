@@ -438,7 +438,7 @@ export default function BackofficeReservas() {
       {/* --- LISTADO DE TURNOS (MEDIODIA Y NOCHE) --- */}
       <ScrollView 
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 15 }}
+        contentContainerStyle={styles.reservaScrollContent}
       >
         
         {/* --- TURNO MEDIODIA --- */}
@@ -463,7 +463,7 @@ export default function BackofficeReservas() {
 
             {/* Filas */}
             {reservasMediodia.length === 0 ? (
-              <Text style={{ textAlign: 'center', color: colors.textMuted, marginVertical: 10 }}>
+              <Text style={[styles.reservaEmptyText, { color: colors.textMuted }]}>
                 No hay reservas para este turno.
               </Text>
             ) : (
@@ -516,7 +516,7 @@ export default function BackofficeReservas() {
 
             {/* Filas */}
             {reservasNoche.length === 0 ? (
-              <Text style={{ textAlign: 'center', color: colors.textMuted, marginVertical: 10 }}>
+              <Text style={[styles.reservaEmptyText, { color: colors.textMuted }]}>
                 No hay reservas para este turno.
               </Text>
             ) : (
@@ -630,7 +630,7 @@ export default function BackofficeReservas() {
             {/* Selector de Turno */}
             <View style={styles.addModalInputWrapper}>
               <Text style={[styles.addModalInputLabel, { color: colors.textMuted }]}>Turno</Text>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 5 }}>
+              <View style={styles.reservaShiftSelectorRow}>
                 <TouchableOpacity
                   style={[
                     styles.statusOptionButton,

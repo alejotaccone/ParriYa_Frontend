@@ -166,8 +166,8 @@ export default function AdminPerfilScreen() {
             <Ionicons
               name="log-out"
               size={22}
-              color="#E76F41"
-              style={{ marginLeft: 10 }}
+              color={COLORS.primary}
+              style={styles.logoutIcon}
             />
           </TouchableOpacity>
         </View>

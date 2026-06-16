@@ -161,4 +161,7 @@ export const styles = StyleSheet.create({
     color: COLORS.textMain,
     fontWeight: "600",
   },
+  logoutIcon: {
+    marginLeft: 10,
+  },
 });

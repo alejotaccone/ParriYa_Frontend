@@ -80,7 +80,7 @@ export default function DetalleScreen() {
   if (!producto) {
     return (
       <View style={[styles.container, { justifyContent: 'center', alignItems: 'center', backgroundColor: colors.background }]}>
-        <Text style={{ color: colors.textMuted, fontSize: 16 }}>Cargando detalles...</Text>
+        <Text style={[styles.loadingText, { color: colors.textMuted }]}>Cargando detalles...</Text>
       </View>
     );
   }

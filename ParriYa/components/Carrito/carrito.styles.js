@@ -186,4 +186,8 @@ export const styles = StyleSheet.create({
     fontSize: FONTS.h4, // Antes: 18
     fontWeight: "bold",
   },
+  emptyCartText: {
+    textAlign: "center",
+    marginVertical: 30,
+  },
 });

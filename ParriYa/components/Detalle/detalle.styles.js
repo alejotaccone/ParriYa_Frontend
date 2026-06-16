@@ -239,4 +239,9 @@ export const styles = StyleSheet.create({
     fontSize: FONTS.bodyLarge, // Antes: 16
     fontWeight: "400",
   },
+  loadingText: {
+    fontFamily: FONTS.family.regular,
+    fontSize: FONTS.bodyLarge,
+    fontWeight: '400',
+  },
 });

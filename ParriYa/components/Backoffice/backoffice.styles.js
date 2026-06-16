@@ -926,4 +926,38 @@ export const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
   },
+  feedbackStarIcon: {
+    marginRight: 2,
+  },
+  feedbackStarsRow: {
+    flexDirection: 'row',
+  },
+  productHeaderAddButton: {
+    position: 'absolute',
+    right: 20,
+    padding: 5,
+    zIndex: 10,
+  },
+  productEmptyText: {
+    textAlign: 'center',
+    marginVertical: 30,
+  },
+  productModalScrollContent: {
+    paddingBottom: 10,
+  },
+  productModalCategoryScroll: {
+    marginTop: 5,
+  },
+  reservaEmptyText: {
+    textAlign: 'center',
+    marginVertical: 10,
+  },
+  reservaShiftSelectorRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 5,
+  },
+  reservaScrollContent: {
+    paddingBottom: 15,
+  },
 });

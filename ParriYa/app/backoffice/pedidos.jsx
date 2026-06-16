@@ -8,60 +8,6 @@ import { COLORS } from '../../constants/colors';
 import { useTheme } from '../../components/ThemeContext';
 import api from '../../services/api';
 
-// --- MOCK DETAILS FROM THE IMAGE FOR SEEDING ---
-const PEDIDOS_DETALLE_MOCK = [
-  {
-    id: '023',
-    cliente: 'Enzo Mussi',
-    cantidad_productos: 2,
-    items: [
-      { nombre: 'Lomo vacuno', cantidad: 1, precio: 20000 },
-      { nombre: 'Chorizo', cantidad: 1, precio: 5000 },
-    ],
-    total: 25000,
-  },
-  {
-    id: '022',
-    cliente: 'Luis Diaz',
-    cantidad_productos: 2,
-    items: [
-      { nombre: 'Lomo vacuno', cantidad: 1, precio: 20000 },
-      { nombre: 'Papas fritas', cantidad: 1, precio: 7000 },
-    ],
-    total: 27000,
-  },
-  {
-    id: '021',
-    cliente: 'Manuel Neuer',
-    cantidad_productos: 2,
-    items: [
-      { nombre: 'Ribs de cerdo', cantidad: 1, precio: 20000 },
-      { nombre: 'Chorizo', cantidad: 2, precio: 10000 },
-    ],
-    total: 30000,
-  },
-  {
-    id: '020',
-    cliente: 'Luis Jara',
-    cantidad_productos: 2,
-    items: [
-      { nombre: 'Bondiola', cantidad: 1, precio: 20000 },
-      { nombre: 'Ensalada mixta', cantidad: 1, precio: 5000 },
-    ],
-    total: 25000,
-  },
-  {
-    id: '019',
-    cliente: 'Bruno Titos',
-    cantidad_productos: 2,
-    items: [
-      { nombre: 'Lomo vacuno', cantidad: 2, precio: 40000 },
-      { nombre: 'Chorizo', cantidad: 1, precio: 5000 },
-    ],
-    total: 45000,
-  },
-];
-
 export default function BackofficePedidos() {
   const router = useRouter();
   const { colors, isDarkMode } = useTheme();
@@ -257,7 +203,7 @@ export default function BackofficePedidos() {
       </View>
 
       {/* --- RECIENTES BANNER --- */}
-      <View style={[styles.recientesBanner, { backgroundColor: isDarkMode ? colors.card : '#EEEEEE' }]}>
+      <View style={[styles.recientesBanner, { backgroundColor: isDarkMode ? colors.card : COLORS.borderMedium }]}>
         <Text style={[styles.recientesText, { color: colors.text }]}>Recientes</Text>
         <Text style={[styles.ultimos7DiasText, { color: colors.textMuted }]}>(Ultimos 7 dias)</Text>
       </View>
@@ -265,7 +211,7 @@ export default function BackofficePedidos() {
       {/* --- LISTADO DE DETALLE DE PEDIDOS --- */}
       <ScrollView 
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 20 }}
+        contentContainerStyle={styles.scrollContent}
       >
         {orders.map((order, orderIndex) => {
           const status = order.estado ? order.estado.toLowerCase() : '';

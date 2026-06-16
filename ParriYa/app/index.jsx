@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { StatusBar, ImageBackground } from 'react-native';
 import { useRouter, Stack } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { styles } from './index.styles';
+import { styles } from '../components/styles/splash.styles';
 
 export default function Index() {
   const router = useRouter();
