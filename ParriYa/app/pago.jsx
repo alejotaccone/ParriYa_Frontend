@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Image, Alert, Modal, Linking, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, Image, Alert, Modal, Linking, ActivityIndicator, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
@@ -122,14 +122,21 @@ function usePagoLogic({ cartItems, total, clearCart, router }) {
       return;
     }
     if (metodoPago === 'efectivo') {
-      Alert.alert(
-        'Confirmar Pedido',
-        '¿Deseas confirmar la compra para retirar y pagar en efectivo?',
-        [
-          { text: 'Cancelar', style: 'cancel' },
-          { text: 'Confirmar', onPress: processCashPayment },
-        ]
-      );
+      if (Platform.OS === 'web') {
+        const confirm = window.confirm('¿Deseas confirmar la compra para retirar y pagar en efectivo?');
+        if (confirm) {
+          processCashPayment();
+        }
+      } else {
+        Alert.alert(
+          'Confirmar Pedido',
+          '¿Deseas confirmar la compra para retirar y pagar en efectivo?',
+          [
+            { text: 'Cancelar', style: 'cancel' },
+            { text: 'Confirmar', onPress: processCashPayment },
+          ]
+        );
+      }
     } else {
       await initiateMercadoPago();
     }

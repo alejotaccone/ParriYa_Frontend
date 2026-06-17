@@ -18,7 +18,8 @@ export const styles = StyleSheet.create({
   },
   // Estilo por defecto para la grilla (ocupa el espacio disponible)
   cardGrid: {
-    flex: 1, //[cite: 21]
+    flex: 1,
+    maxWidth: "50%",
   },
   // Estilo para la Home (ancho fijo para el carrusel horizontal)
   cardHome: {
