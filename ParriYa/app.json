@@ -7,7 +7,7 @@
     "icon": "./assets/images/LogoSquare.png",
     "scheme": "parriya",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": false,
+    "newArchEnabled": true,
     "ios": {
       "supportsTablet": true
     },
