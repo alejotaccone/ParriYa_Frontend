@@ -4,7 +4,7 @@
     "slug": "ParriYa",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/Logo.png",
+    "icon": "./assets/images/LogoSquare.png",
     "scheme": "parriya",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -14,7 +14,7 @@
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/Logo.png"
+        "foregroundImage": "./assets/images/LogoSquare.png"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
@@ -22,14 +22,14 @@
     },
     "web": {
       "output": "static",
-      "favicon": "./assets/images/Logo.png"
+      "favicon": "./assets/images/LogoSquare.png"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/Logo.png",
+          "image": "./assets/images/LogoSquare.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff",
@@ -37,7 +37,8 @@
             "backgroundColor": "#000000"
           }
         }
-      ]
+      ],
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true,
