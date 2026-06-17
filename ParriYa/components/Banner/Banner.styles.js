@@ -1,7 +1,6 @@
 import { StyleSheet } from 'react-native';
 import { COLORS } from "../../constants/colors";
 import { FONTS } from "../../constants/fonts";
-import { SIZES } from "../../constants/sizes";
 
 export const styles = StyleSheet.create({
   container: {
@@ -16,8 +15,8 @@ export const styles = StyleSheet.create({
   titleSection: {
     fontFamily: FONTS.family.semiBold,
 
-    fontSize: FONTS.small, // Antes: 14
-    color: COLORS.primaryLight, // Antes: '#FAD3C3'
+    fontSize: FONTS.h3,
+    color: COLORS.backgroundLight,
     fontWeight: '600',
     marginBottom: 5,
   },
@@ -34,13 +33,10 @@ export const styles = StyleSheet.create({
   promoText: {
     fontFamily: FONTS.family.bold,
 
-    fontSize: FONTS.h3, // Antes: 22
+    fontSize: FONTS.small,
     fontWeight: 'bold',
-    color: COLORS.backgroundLight, // Antes: 'white'
-    lineHeight: 28,
-  },
-  highlightText: {
-    color: COLORS.highlight, // Antes: '#FFE2B7'
+    color: COLORS.primaryLight,
+    lineHeight: 18,
   },
   imageContainer: {
     width: 120,
