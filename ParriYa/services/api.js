@@ -2,7 +2,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Base URL del servidor Spring Boot
-export const API_BASE_URL = 'https://rejoin-reshape-unstitch.ngrok-free.dev';
+export const API_BASE_URL = 'http://localhost:4002';
 
 const api = axios.create({
   baseURL: API_BASE_URL,

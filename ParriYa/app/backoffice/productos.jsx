@@ -57,8 +57,8 @@ function mapProductsResponse(data) {
     nombre: p.nombre,
     descripcion: p.descripcion,
     precio: p.precio,
-    stock: p.stock,
     img_url: resolveProductImg(p.nombre, p.imgUrl || p.img_url),
+    raw_img_url: p.imgUrl || p.img_url || '',
     categoria_id: String(p.categoriaId !== undefined ? p.categoriaId : p.categoria_id),
     estado: p.estado,
   }));
@@ -77,7 +77,6 @@ function useProductosLogic(router) {
   const [precioInput, setPrecioInput]                 = useState('');
   const [imgUrlInput, setImgUrlInput]                 = useState('');
   const [selectedCategoryOptionId, setSelectedCategoryOptionId] = useState('1');
-  const [stockInput, setStockInput]                   = useState('10');
 
   const loadCategories = async () => {
     try {
@@ -119,7 +118,6 @@ function useProductosLogic(router) {
     setPrecioInput('');
     setImgUrlInput('');
     setSelectedCategoryOptionId(categoriesList[0]?.id || '1');
-    setStockInput('10');
     setModalVisible(true);
   };
 
@@ -128,11 +126,11 @@ function useProductosLogic(router) {
     setNombreInput(product.nombre);
     setDescripcionInput(product.descripcion);
     setPrecioInput(product.precio.toString());
-    const isWebUrl = typeof product.img_url === 'string' &&
-      (product.img_url.startsWith('http://') || product.img_url.startsWith('https://'));
-    setImgUrlInput(isWebUrl ? product.img_url : '');
+    const rawUrl = product.raw_img_url || '';
+    const isWebUrl = typeof rawUrl === 'string' &&
+      (rawUrl.startsWith('http://') || rawUrl.startsWith('https://'));
+    setImgUrlInput(isWebUrl ? rawUrl : '');
     setSelectedCategoryOptionId(product.categoria_id || '1');
-    setStockInput((product.stock || 10).toString());
     setModalVisible(true);
   };
 
@@ -148,13 +146,11 @@ function useProductosLogic(router) {
     }
     try {
       const fallback = 'https://raw.githubusercontent.com/alejotaccone/ParriYa_Frontend/main/assets/images/Logo.png';
-      const stockNum = Number.parseInt(stockInput, 10);
       const usesFallback = editingProduct && !imgUrlInput.trim() && typeof editingProduct.img_url !== 'string';
       const body = {
         nombre: nombreInput,
         descripcion: descripcionInput,
         precio: precioNum,
-        stock: Number.isNaN(stockNum) ? 10 : stockNum,
         imgUrl: usesFallback ? fallback : (imgUrlInput.trim() || fallback),
         categoriaId: Number.parseInt(selectedCategoryOptionId, 10),
       };
@@ -216,7 +212,6 @@ function useProductosLogic(router) {
     precioInput, setPrecioInput,
     imgUrlInput, setImgUrlInput,
     selectedCategoryOptionId, setSelectedCategoryOptionId,
-    stockInput, setStockInput,
     handleOpenCreateModal,
     handleOpenEditModal,
     handleSaveProduct,
@@ -501,17 +496,7 @@ export default function BackofficeProductos() {
                 />
               </View>
 
-              <View style={styles.addModalInputWrapper}>
-                <Text style={dynStyles.inputLabel}>Stock en Inventario</Text>
-                <TextInput
-                  style={dynStyles.textInput}
-                  placeholder="10"
-                  placeholderTextColor={isDarkMode ? colors.textMuted : '#8E8E93'}
-                  keyboardType="numeric"
-                  value={logic.stockInput}
-                  onChangeText={logic.setStockInput}
-                />
-              </View>
+
 
               <ModalCategorySelector
                 categoriesList={logic.categoriesList}

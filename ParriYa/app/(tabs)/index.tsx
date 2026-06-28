@@ -17,20 +17,12 @@ export default function HomeScreen() {
     const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
 
     try {
-      const canOpen = await Linking.canOpenURL(url);
-      if (canOpen) {
-        await Linking.openURL(url);
-      } else {
-        Alert.alert(
-          'WhatsApp no disponible',
-          'No pudimos abrir la aplicación de WhatsApp. Asegúrate de tenerla instalada.'
-        );
-      }
+      await Linking.openURL(url);
     } catch (error) {
       console.error('Error abriendo WhatsApp:', error);
       Alert.alert(
-        'Error',
-        'Ocurrió un problema al intentar abrir WhatsApp.'
+        'WhatsApp no disponible',
+        'No pudimos abrir la aplicación de WhatsApp. Asegúrate de tenerla instalada.'
       );
     }
   };

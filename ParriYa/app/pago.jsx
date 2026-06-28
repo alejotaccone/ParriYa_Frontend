@@ -75,18 +75,12 @@ function usePagoLogic({ cartItems, total, clearCart, router }) {
         return;
       }
 
-      const canOpen = await Linking.canOpenURL(initPoint);
-      if (!canOpen) {
-        Alert.alert('Error de Redirección', 'No se pudo abrir la pasarela de Mercado Pago. Verifica si tienes un navegador instalado.');
-        return;
-      }
-
       await Linking.openURL(initPoint);
       setPaymentStatus('processing');
       setShowConfirmation(true);
     } catch (error) {
       console.error('Error generando preferencia de Mercado Pago:', error.response?.data || error.message);
-      Alert.alert('Error', 'Ocurrió un error al intentar iniciar el pago con Mercado Pago.');
+      Alert.alert('Error de Redirección', 'No se pudo abrir la pasarela de Mercado Pago. Asegúrate de tener un navegador instalado.');
     }
   };
 

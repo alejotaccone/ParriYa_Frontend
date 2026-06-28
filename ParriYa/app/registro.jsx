@@ -46,7 +46,7 @@ export default function RegistroScreen() {
             }
           ]}>Usuario</Text>
           <View style={[styles.inputContainer, { borderColor: colors.border }]}>
-            <TextInput style={[styles.textInput, { color: colors.text }]} placeholder="usuario.123" placeholderTextColor="#8E8E93" value={username} onChangeText={setUsername} autoCapitalize="none" />
+            <TextInput style={[styles.textInput, { color: colors.text }]} placeholder="Ingrese aquí su usuario" placeholderTextColor="#8E8E93" value={username} onChangeText={setUsername} autoCapitalize="none" />
           </View>
         </View>
 
@@ -59,7 +59,7 @@ export default function RegistroScreen() {
             }
           ]}>Contraseña</Text>
           <View style={[styles.inputContainer, { borderColor: colors.border }]}>
-            <TextInput style={[styles.textInput, { color: colors.text }]} secureTextEntry value={password} onChangeText={setPassword} />
+            <TextInput style={[styles.textInput, { color: colors.text }]} placeholder="Ingrese aquí su contraseña" placeholderTextColor="#8E8E93" secureTextEntry value={password} onChangeText={setPassword} />
           </View>
         </View>
 
@@ -72,7 +72,7 @@ export default function RegistroScreen() {
             }
           ]}>Email</Text>
           <View style={[styles.inputContainer, { borderColor: colors.border }]}>
-            <TextInput style={[styles.textInput, { color: colors.text }]} placeholder="enzoB@gmail.com" placeholderTextColor="#8E8E93" keyboardType="email-address" autoCapitalize="none" value={email} onChangeText={setEmail} />
+            <TextInput style={[styles.textInput, { color: colors.text }]} placeholder="Ingrese aquí su email" placeholderTextColor="#8E8E93" keyboardType="email-address" autoCapitalize="none" value={email} onChangeText={setEmail} />
           </View>
         </View>
 
@@ -85,7 +85,7 @@ export default function RegistroScreen() {
             }
           ]}>Telefono</Text>
           <View style={[styles.inputContainer, { borderColor: colors.border }]}>
-            <TextInput style={[styles.textInput, { color: colors.text }]} placeholder="+54 9 11 1122-3344" placeholderTextColor="#8E8E93" keyboardType="phone-pad" value={telefono} onChangeText={setTelefono} />
+            <TextInput style={[styles.textInput, { color: colors.text }]} placeholder="Ingrese aquí su teléfono" placeholderTextColor="#8E8E93" keyboardType="phone-pad" value={telefono} onChangeText={setTelefono} />
           </View>
         </View>
 

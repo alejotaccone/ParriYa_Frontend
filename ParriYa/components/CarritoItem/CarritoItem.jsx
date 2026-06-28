@@ -60,7 +60,7 @@ const CarritoItem = ({ item, onRemove, onIncrement, onDecrement }) => {
           <Text style={[styles.name, { color: colors.text }]}>
             {item.nombre}
           </Text>
-          <Text style={[styles.description, { color: colors.textMuted }]}>
+          <Text style={[styles.description, { color: colors.textMuted }]} numberOfLines={2} ellipsizeMode="tail">
             {description}
           </Text>
         </View>

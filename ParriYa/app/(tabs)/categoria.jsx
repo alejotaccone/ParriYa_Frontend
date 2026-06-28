@@ -79,9 +79,10 @@ export default function CategoriaScreen() {
         fav: isFavorite(p.id),
         image: p.img_url,
         categoria_id: p.categoria_id,
+        categoriaNombre: categorias.find((c) => c.id === p.categoria_id)?.nombre || '',
         precio: p.precio,
       })),
-    [productos, favoriteItems]
+    [productos, favoriteItems, categorias]
   );
 
   const productosFiltrados = useMemo(

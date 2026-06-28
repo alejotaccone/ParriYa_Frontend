@@ -124,16 +124,19 @@ const ProductoCard = ({
                 if (onAdd) {
                   onAdd(item);
                 } else {
-                  addToCart(
+                  const added = addToCart(
                     {
                       id: item.id,
                       nombre: item.nombre,
                       descripcion: item.descripcion || item.desc,
                       precio: item.precio || 0,
                       img_url: item.img_url || item.image,
+                      categoria_id: item.categoria_id,
+                      categoriaNombre: item.categoriaNombre,
                     },
                     1
                   );
+                  if (!added) return;
                 }
                 setCartMessage(`Se ha agregado "${item.nombre}" x1`);
                 setShowCartModal(true);

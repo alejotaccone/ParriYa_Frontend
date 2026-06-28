@@ -43,10 +43,10 @@ export default function LoginScreen() {
             }
           ]}>Email / Usuario</Text>
           <View style={[styles.inputContainer, { borderColor: colors.border }]}>
-            <TextInput style={[styles.textInput, { color: colors.text }]} placeholder="usuario@mail.com" placeholderTextColor="#8E8E93" value={username} onChangeText={setUsername} autoCapitalize="none" keyboardType="email-address" />
+            <TextInput style={[styles.textInput, { color: colors.text }]} placeholder="Ingrese aquí su email o usuario" placeholderTextColor="#8E8E93" value={username} onChangeText={setUsername} autoCapitalize="none" keyboardType="email-address" />
           </View>
         </View>
-
+ 
         <View style={styles.inputWrapper}>
           <Text style={[
             styles.inputLabel, 
@@ -56,7 +56,7 @@ export default function LoginScreen() {
             }
           ]}>Contraseña</Text>
           <View style={[styles.inputContainer, { borderColor: colors.border }]}>
-            <TextInput style={[styles.textInput, { color: colors.text }]} secureTextEntry value={password} onChangeText={setPassword} />
+            <TextInput style={[styles.textInput, { color: colors.text }]} placeholder="Ingrese aquí su contraseña" placeholderTextColor="#8E8E93" secureTextEntry value={password} onChangeText={setPassword} />
           </View>
         </View>
 

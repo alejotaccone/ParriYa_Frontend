@@ -24,15 +24,26 @@ export default function DetalleScreen() {
   useEffect(() => {
     const fetchProducto = async () => {
       try {
-        const response = await api.get(`/productos/${idProducto}`);
-        if (response.data) {
-          const p = response.data;
+        const [prodRes, catRes] = await Promise.all([
+          api.get(`/productos/${idProducto}`),
+          api.get('/categorias'),
+        ]);
+        if (prodRes.data) {
+          const p = prodRes.data;
+          const catId = String(p.categoriaId !== undefined ? p.categoriaId : p.categoria_id);
+          let catNombre = '';
+          if (catRes.data && catRes.data.length > 0) {
+            const cat = catRes.data.find((c) => String(c.id) === catId);
+            catNombre = cat ? cat.nombre : '';
+          }
           setProducto({
             id: String(p.id),
             nombre: p.nombre,
             precio: p.precio,
             image: resolveProductImg(p.nombre, p.imgUrl || p.img_url),
             descripcionLarga: p.descripcion,
+            categoria_id: catId,
+            categoriaNombre: catNombre,
           });
         }
       } catch (error) {
@@ -60,22 +71,25 @@ export default function DetalleScreen() {
     if (!showCartModal) return;
     const timer = setTimeout(() => {
       setShowCartModal(false);
-      router.replace('/(tabs)/categoria');
+      router.replace('/carrito');
     }, 1200);
     return () => clearTimeout(timer);
   }, [showCartModal, router]);
 
   const agregarAlCarrito = () => {
-    addToCart(
+    const added = addToCart(
       {
         id: producto.id,
         nombre: producto.nombre,
         descripcion: producto.descripcionLarga,
         precio: producto.precio,
         img_url: producto.image,
+        categoria_id: producto.categoria_id,
+        categoriaNombre: producto.categoriaNombre,
       },
       cantidad
     );
+    if (!added) return;
     setCartMessage(`Se ha agregado "${producto.nombre}" x${cantidad}`);
     setShowCartModal(true);
   };
