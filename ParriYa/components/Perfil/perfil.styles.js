@@ -164,4 +164,55 @@ export const styles = StyleSheet.create({
   logoutIcon: {
     marginLeft: 10,
   },
+  dropdownCol: {
+    flexDirection: "column",
+    alignItems: "flex-start",
+    backgroundColor: "#F2F2F7",
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    marginVertical: 4,
+  },
+  dropdownTitle: {
+    fontFamily: FONTS.family.bold,
+    fontSize: FONTS.xSmall,
+    color: COLORS.textMuted,
+    fontWeight: "700",
+    marginBottom: 8,
+    textTransform: "uppercase",
+  },
+  btnGroup: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+    gap: 8,
+  },
+  sizeBtn: {
+    flex: 1,
+    height: 38,
+    borderRadius: 10,
+    borderWidth: 1.5,
+    borderColor: "#D1D1D6",
+    backgroundColor: "#FFFFFF",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  sizeBtnActive: {
+    backgroundColor: COLORS.primary,
+    borderColor: COLORS.primary,
+  },
+  sizeBtnInactive: {
+    backgroundColor: "#FFFFFF",
+    borderColor: "#D1D1D6",
+  },
+  sizeBtnText: {
+    fontFamily: FONTS.family.bold,
+    fontWeight: "bold",
+  },
+  sizeBtnTextActive: {
+    color: "#FFFFFF",
+  },
+  sizeBtnTextInactive: {
+    color: "#4B2610",
+  },
 });

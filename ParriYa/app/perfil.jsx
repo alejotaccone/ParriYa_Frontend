@@ -18,7 +18,7 @@ import { useTheme } from "../components/ThemeContext";
 export default function PerfilScreen() {
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
-  const { isDarkMode, toggleTheme, colors } = useTheme();
+  const { isDarkMode, toggleTheme, textSize, changeTextSize, fontSizeMultiplier, colors } = useTheme();
   const [usuario, setUsuario] = useState({
     username: '',
     email: '',
@@ -135,7 +135,7 @@ export default function PerfilScreen() {
             <Text style={[styles.menuRowText, { color: colors.textMuted }]}>Cambiar contraseña</Text>
             <Ionicons name="chevron-forward" size={18} color={isDarkMode ? colors.text : "#8E8E93"} />
           </TouchableOpacity>
-
+ 
           <TouchableOpacity 
             style={styles.menuRow} 
             activeOpacity={0.7}
@@ -187,6 +187,40 @@ export default function PerfilScreen() {
               trackColor={{ false: "#D1D1D6", true: COLORS.primary }}
               thumbColor={isDarkMode ? COLORS.primary : "#ffffff"}
             />
+          </View>
+          <View style={[styles.dropdownCol, { backgroundColor: colors.dropdownRow }]}>
+            <Text style={[styles.dropdownTitle, { color: colors.text }]}>Tamaño de letra</Text>
+            <View style={styles.btnGroup}>
+              {/* Grande */}
+              <TouchableOpacity
+                style={[styles.sizeBtn, textSize === 'grande' ? styles.sizeBtnActive : styles.sizeBtnInactive]}
+                onPress={() => changeTextSize('grande')}
+              >
+                <Text style={[styles.sizeBtnText, textSize === 'grande' ? styles.sizeBtnTextActive : styles.sizeBtnTextInactive, { fontSize: 20 }]}>
+                  aA
+                </Text>
+              </TouchableOpacity>
+ 
+              {/* Normal */}
+              <TouchableOpacity
+                style={[styles.sizeBtn, textSize === 'normal' ? styles.sizeBtnActive : styles.sizeBtnInactive]}
+                onPress={() => changeTextSize('normal')}
+              >
+                <Text style={[styles.sizeBtnText, textSize === 'normal' ? styles.sizeBtnTextActive : styles.sizeBtnTextInactive, { fontSize: 15 }]}>
+                  aA
+                </Text>
+              </TouchableOpacity>
+ 
+              {/* Chico */}
+              <TouchableOpacity
+                style={[styles.sizeBtn, textSize === 'chico' ? styles.sizeBtnActive : styles.sizeBtnInactive]}
+                onPress={() => changeTextSize('chico')}
+              >
+                <Text style={[styles.sizeBtnText, textSize === 'chico' ? styles.sizeBtnTextActive : styles.sizeBtnTextInactive, { fontSize: 11 }]}>
+                  aA
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       )}

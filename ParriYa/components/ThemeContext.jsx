@@ -7,19 +7,24 @@ const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [textSize, setTextSize] = useState("normal"); // "chico" | "normal" | "grande"
 
   useEffect(() => {
-    async function loadTheme() {
+    async function loadSettings() {
       try {
-        const stored = await AsyncStorage.getItem("theme");
-        if (stored) {
-          setIsDarkMode(stored === "dark");
+        const storedTheme = await AsyncStorage.getItem("theme");
+        const storedTextSize = await AsyncStorage.getItem("textSize");
+        if (storedTheme) {
+          setIsDarkMode(storedTheme === "dark");
+        }
+        if (storedTextSize) {
+          setTextSize(storedTextSize);
         }
       } catch (e) {
         // ignore
       }
     }
-    loadTheme();
+    loadSettings();
   }, []);
 
   const toggleTheme = useCallback(async () => {
@@ -32,6 +37,15 @@ export const ThemeProvider = ({ children }) => {
     }
   }, [isDarkMode]);
 
+  const changeTextSize = useCallback(async (newSize) => {
+    try {
+      setTextSize(newSize);
+      await AsyncStorage.setItem("textSize", newSize);
+    } catch (e) {
+      // ignore
+    }
+  }, []);
+
   const colors = useMemo(() => ({
     background: isDarkMode ? COLORS.backgroundDark : COLORS.backgroundLight,
     card: isDarkMode ? COLORS.cardDark : COLORS.cardLight,
@@ -43,7 +57,25 @@ export const ThemeProvider = ({ children }) => {
     dropdownRow: isDarkMode ? "#444444" : "#F2F2F7",
   }), [isDarkMode]);
 
-  const providerValue = useMemo(() => ({ isDarkMode, toggleTheme, colors }), [isDarkMode, toggleTheme, colors]);
+  const fontSizeMultiplier = useMemo(() => {
+    let multiplier = 1.0;
+    if (textSize === "chico") multiplier = 0.85;
+    else if (textSize === "grande") multiplier = 1.2;
+
+    if (typeof global !== 'undefined') {
+      global.fontSizeMultiplier = multiplier;
+    }
+    return multiplier;
+  }, [textSize]);
+
+  const providerValue = useMemo(() => ({ 
+    isDarkMode, 
+    toggleTheme, 
+    textSize, 
+    changeTextSize, 
+    fontSizeMultiplier,
+    colors 
+  }), [isDarkMode, toggleTheme, textSize, changeTextSize, fontSizeMultiplier, colors]);
 
   return (
     <ThemeContext.Provider value={providerValue}>

@@ -17,8 +17,60 @@ import { CartProvider } from '../components/CartContext';
 import { SearchProvider } from '../components/SearchContext';
 import { ThemeProvider as AppThemeProvider, useTheme as useAppTheme } from '../components/ThemeContext';
 
+import * as RN from 'react-native';
+
 // Previene que el Splash Screen se oculte automáticamente
 SplashScreen.preventAutoHideAsync();
+
+try {
+  // Monkey patch global de Text
+  if (RN.Text && RN.Text.render) {
+    const originalTextRender = RN.Text.render;
+    RN.Text.render = function (props, ref) {
+      let multiplier = 1.0;
+      if (typeof global !== 'undefined' && global.fontSizeMultiplier !== undefined) {
+        multiplier = global.fontSizeMultiplier;
+      }
+
+      let newProps = props;
+      if (multiplier !== 1.0 && props.style) {
+        const flat = RN.StyleSheet.flatten(props.style);
+        if (flat && typeof flat.fontSize === 'number') {
+          newProps = {
+            ...props,
+            style: [props.style, { fontSize: flat.fontSize * multiplier }]
+          };
+        }
+      }
+      return originalTextRender.call(this, newProps, ref);
+    };
+  }
+
+  // Monkey patch global de TextInput
+  if (RN.TextInput && RN.TextInput.render) {
+    const originalTextInputRender = RN.TextInput.render;
+    RN.TextInput.render = function (props, ref) {
+      let multiplier = 1.0;
+      if (typeof global !== 'undefined' && global.fontSizeMultiplier !== undefined) {
+        multiplier = global.fontSizeMultiplier;
+      }
+
+      let newProps = props;
+      if (multiplier !== 1.0 && props.style) {
+        const flat = RN.StyleSheet.flatten(props.style);
+        if (flat && typeof flat.fontSize === 'number') {
+          newProps = {
+            ...props,
+            style: [props.style, { fontSize: flat.fontSize * multiplier }]
+          };
+        }
+      }
+      return originalTextInputRender.call(this, newProps, ref);
+    };
+  }
+} catch (error) {
+  console.warn("Error al inyectar accesibilidad de tamaño de letra global:", error);
+}
 
 export const unstable_settings = {
   anchor: 'login',
