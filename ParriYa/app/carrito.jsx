@@ -19,7 +19,7 @@ import { COLORS } from "../constants/colors";
 
 export default function CarritoScreen() {
   const router = useRouter();
-  const { cartItems, removeFromCart, updateQuantity } = useCart();
+  const { cartItems, removeFromCart, updateQuantity, clearCart } = useCart();
   const [sugerencias, setSugerencias] = useState([]);
   const { colors, isDarkMode } = useTheme();
 
@@ -42,10 +42,8 @@ export default function CarritoScreen() {
     loadSugerencias();
   }, []);
 
-  const tarifaServicio = 3000;
-
   const subtotalProductos = cartItems.reduce((sum, item) => sum + item.precio * item.cantidad, 0);
-  const totalFinal = subtotalProductos > 0 ? subtotalProductos + tarifaServicio : 0;
+  const totalFinal = subtotalProductos;
 
   const renderSugerencia = ({ item }) => (
     <TouchableOpacity
@@ -136,6 +134,15 @@ export default function CarritoScreen() {
                   }}
                 />
               ))}
+
+              {/* Botón Eliminar Todo */}
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={clearCart}
+                style={{ alignSelf: 'flex-start' }}
+              >
+                <Text style={{ color: '#E76F41', fontSize: 15, fontWeight: '600' }}>Eliminar Todo</Text>
+              </TouchableOpacity>
             </View>
 
             {/* Sección Carrusel: */}
@@ -172,15 +179,7 @@ export default function CarritoScreen() {
               </Text>
             </View>
 
-            <View style={styles.resumenRow}>
-              <Text style={[styles.resumenLabel, { color: colors.textMuted }]}>Tarifa de servicio</Text>
-              <Text style={[styles.resumenValue, { color: colors.text }]}>
-                $
-                {subtotalProductos > 0
-                  ? tarifaServicio.toLocaleString("es-AR")
-                  : "0"}
-              </Text>
-            </View>
+
 
             <View style={[styles.divider, { backgroundColor: colors.divider }]} />
 

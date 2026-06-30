@@ -304,17 +304,13 @@ function PaymentMethodSelector({ metodoPago, onSelect, colors, isDarkMode }) {
         onPress={() => onSelect('mercado_pago')}
       >
         <View style={styles.paymentLeft}>
-          <View style={[styles.cardIconWrapper, { backgroundColor: cardIconBg }]}>
-            <Ionicons name="card" size={24} color={isMp ? '#FF5A2D' : colors.textMuted} />
-          </View>
-          <View>
-            <Text style={[styles.paymentTextBold, { color: isMp ? 'white' : colors.text }]}>
-              Tarjeta Mercado Pago
-            </Text>
-            <Text style={[styles.paymentSubtext, { color: isMp ? 'white' : colors.textMuted }]}>
-              **** 0505
-            </Text>
-          </View>
+          <Image
+            source={require('../assets/images/mercadopago.png')}
+            style={{ width: 32, height: 32, resizeMode: 'contain' }}
+          />
+          <Text style={[styles.paymentTextBold, { color: isMp ? 'white' : colors.text }]}>
+            Mercado Pago
+          </Text>
         </View>
         <Ionicons
           name={isMp ? 'radio-button-on' : 'radio-button-off'}
@@ -347,9 +343,8 @@ export default function PagoScreen() {
   const [metodoPago, setMetodoPago]     = useState('mercado_pago');
   const [guardarDatos, setGuardarDatos] = useState(true);
 
-  const tarifaServicio = 3000;
   const subtotal = cartItems.reduce((sum, item) => sum + item.precio * item.cantidad, 0);
-  const total    = subtotal > 0 ? subtotal + tarifaServicio : 0;
+  const total    = subtotal;
 
   const {
     paymentStatus,
@@ -386,10 +381,7 @@ export default function PagoScreen() {
             </View>
           ))
         )}
-        <View style={[styles.resumenRow, { marginTop: 20 }]}>
-          <Text style={[styles.resumenText, { color: colors.textMuted }]}>Tarifa de servicio</Text>
-          <Text style={[styles.resumenPrice, { color: colors.text }]}>${tarifaServicio.toLocaleString('es-AR')}</Text>
-        </View>
+
 
         {/* Métodos de Pago */}
         <Text style={[styles.sectionTitle, { marginTop: 25, color: isDarkMode ? '#ffffff' : COLORS.secondary }]}>Metodos de pago</Text>

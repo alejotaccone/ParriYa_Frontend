@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "ParriYa",
-    "slug": "ParriYa",
+    "slug": "parriya",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/LogoSquare.png",
@@ -18,7 +18,7 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.santisapiaa.ParriYa",
+      "package": "com.santisapiaa.parriya",
       "usesCleartextTraffic": true
     },
     "web": {
