@@ -25,9 +25,9 @@ const ProductoCard = ({
 
   const isFavorito = item.fav;
 
-  let heartColor = isDarkMode ? "white" : "black";
+  let heartColor = isDarkMode ? COLORS.corazonNoFavoritoDark : COLORS.corazonNoFavoritoLight;
   if (isFavorito) {
-    heartColor = "red";
+    heartColor = isDarkMode ? COLORS.corazonFavoritoDark : COLORS.corazonFavoritoLight;
   }
 
   const handleToggleFavorite = (e) => {

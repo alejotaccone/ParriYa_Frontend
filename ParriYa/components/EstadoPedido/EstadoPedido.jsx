@@ -230,13 +230,26 @@ const EstadoPedido = () => {
     <View style={styles.container}>
       <Text style={[styles.sectionTitle, { color: colors.textMuted }]}>ESTADO DEL PEDIDO</Text>
 
-      <View style={styles.card}>
-        <Text style={styles.restaurantText}>Parrilla &quot;Los Pibes&quot;</Text>
+      <View style={[
+        styles.card,
+        {
+          backgroundColor: isDarkMode ? colors.card : COLORS.primary,
+          borderColor: isDarkMode ? colors.border : "transparent",
+          borderWidth: isDarkMode ? 1 : 0,
+        }
+      ]}>
+        <Text style={[styles.restaurantText, { color: isDarkMode ? colors.text : COLORS.dropdownDark }]}>
+          Parrilla &quot;Los Pibes&quot;
+        </Text>
         
         {currentStep !== 4 ? (
-          <Text style={styles.estimatedTimeText}>Horario estimado: {estimatedTime}</Text>
+          <Text style={[styles.estimatedTimeText, { color: isDarkMode ? COLORS.primary : COLORS.backgroundLight }]}>
+            Horario estimado: {estimatedTime}
+          </Text>
         ) : (
-          <Text style={styles.estimatedTimeText}>¡Entregado!</Text>
+          <Text style={[styles.estimatedTimeText, { color: isDarkMode ? COLORS.primary : COLORS.backgroundLight }]}>
+            ¡Entregado!
+          </Text>
         )}
 
         <View style={styles.progressBarContainer}>
@@ -247,14 +260,18 @@ const EstadoPedido = () => {
                 key={step}
                 style={[
                   styles.segment,
-                  isActive ? styles.activeSegment : styles.inactiveSegment,
+                  isActive 
+                    ? styles.activeSegment 
+                    : [styles.inactiveSegment, { backgroundColor: isDarkMode ? colors.border : '#FFFFFF' }],
                 ]}
               />
             );
           })}
         </View>
 
-        <Text style={styles.descriptionText}>{activeState.description}</Text>
+        <Text style={[styles.descriptionText, { color: isDarkMode ? colors.textMuted : COLORS.backgroundLight }]}>
+          {activeState.description}
+        </Text>
 
         {currentStep === 4 && (
           <View style={styles.buttonRow}>

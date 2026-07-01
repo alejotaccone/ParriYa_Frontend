@@ -34,14 +34,23 @@ const Banner = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[
+      styles.container,
+      {
+        backgroundColor: isDarkMode ? colors.card : COLORS.primaryDark,
+        borderColor: isDarkMode ? colors.border : "transparent",
+        borderWidth: isDarkMode ? 1 : 0,
+      }
+    ]}>
       {/* Etiqueta pequeña superior */}
-      <Text style={styles.titleSection}>{aviso.titulo}</Text>
+      <Text style={[styles.titleSection, { color: isDarkMode ? colors.text : COLORS.backgroundLight }]}>
+        {aviso.titulo}
+      </Text>
 
       {/* Fila principal con texto e imagen */}
       <View style={styles.contentRow}>
         <View style={styles.textContainer}>
-          <Text style={styles.promoText}>
+          <Text style={[styles.promoText, { color: isDarkMode ? colors.textMuted : COLORS.primaryLight }]}>
             {aviso.texto}
           </Text>
         </View>
@@ -98,7 +107,12 @@ const Banner = () => {
           <TouchableOpacity
             key={item.id}
             onPress={() => setAvisoActual(index)}
-            style={[styles.dot, index === avisoActual && styles.activeDot]}
+            style={[
+              styles.dot,
+              index === avisoActual 
+                ? { backgroundColor: isDarkMode ? COLORS.primary : COLORS.highlight } 
+                : { backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.15)' : 'rgba(255, 255, 255, 0.4)' }
+            ]}
           />
         ))}
       </View>

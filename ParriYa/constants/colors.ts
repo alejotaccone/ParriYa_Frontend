@@ -7,24 +7,24 @@ export const COLORS = {
   
   // Fondos base
   backgroundLight: '#FFFFFF', 
-  backgroundDark: '#303030',  
+  backgroundDark: '#120C0A',  
   backgroundGray: '#F5F5F5',  
   
   // Fondos de tarjetas (Cards)
   cardLight: '#FFFFFF',
-  cardDark: '#424242',       // Elevación visual por encima de #303030
+  cardDark: '#1C1310',       // Elevación visual por encima de #303030
 
   // Cajas secundarias / Pills / Inputs
   boxLight: '#F5F5F5',
-  boxDark: '#3D3D3D',
+  boxDark: '#261B17',
 
   // Textos
   textMain: '#333333',      
   textMuted: '#8E8E93',   
   textMainLight: '#333333',
-  textMainDark: '#FFFFFF',
+  textMainDark: '#FFF3E8',
   textMutedLight: '#8E8E93',
-  textMutedDark: '#CCCCCC',
+  textMutedDark: '#A8968E',
 
   dropdownDark: '#04332D',    // Verde oscuro (Fondo del selector de variantes)
   textSecondary: '#777777',   // Gris intermedio (Subtítulos y etiquetas de precio)
@@ -34,9 +34,9 @@ export const COLORS = {
   borderLight: '#F0F0F0',   
   borderMedium: '#E5E5EA',  
   borderLightMode: '#E5E5EA',
-  borderDarkMode: '#4C4C4C',
+  borderDarkMode: '#33211B',
   dividerLightMode: '#F0F0F0',
-  dividerDarkMode: '#4C4C4C',
+  dividerDarkMode: '#33211B',
   
   // Específicos de los métodos de pago
   efectivo: '#3D8C1A',      
@@ -47,4 +47,12 @@ export const COLORS = {
   primaryDark: '#C84B22',   // Naranja más rojizo (Fondo del Banner)
   primaryLight: '#FAD3C3',  // Naranja re clarito (Texto secundario del Banner)
   highlight: '#FFE2B7',     // Amarillito (Texto destacado y puntito activo del Banner)
+
+  // Colores de los íconos de corazón (Favoritos)
+  corazonHeaderLight: '#FF0000',
+  corazonHeaderDark: '#FFFFFF',
+  corazonFavoritoLight: '#FF0000',
+  corazonFavoritoDark: '#FFFFFF',
+  corazonNoFavoritoLight: '#000000',
+  corazonNoFavoritoDark: '#FFFFFF',
 };

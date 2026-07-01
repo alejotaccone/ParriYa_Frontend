@@ -5,6 +5,7 @@ import { useRouter } from "expo-router";
 import { useSearch } from "../SearchContext";
 import { useTheme } from "../ThemeContext";
 import { styles } from "./Header.styles";
+import { COLORS } from "../../constants/colors";
 
 const Header = () => {
   const router = useRouter();
@@ -83,7 +84,7 @@ const Header = () => {
           ]}
           onPress={() => router.push('/favoritos')}
         >
-          <Ionicons name="heart-outline" size={24} color="red" />
+          <Ionicons name="heart-outline" size={24} color={isDarkMode ? COLORS.corazonHeaderDark : COLORS.corazonHeaderLight} />
         </TouchableOpacity>
       </View>
     </View>
