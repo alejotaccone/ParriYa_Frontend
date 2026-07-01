@@ -3,6 +3,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import PropTypes from 'prop-types';
 import { COLORS } from "../constants/colors";
 
+import { logEvent } from "../services/analytics";
+
 const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
@@ -32,6 +34,7 @@ export const ThemeProvider = ({ children }) => {
       const nextValue = !isDarkMode;
       setIsDarkMode(nextValue);
       await AsyncStorage.setItem("theme", nextValue ? "dark" : "light");
+      logEvent('change_theme', { mode: nextValue ? 'dark' : 'light' });
     } catch (e) {
       // ignore
     }
@@ -41,6 +44,7 @@ export const ThemeProvider = ({ children }) => {
     try {
       setTextSize(newSize);
       await AsyncStorage.setItem("textSize", newSize);
+      logEvent('change_font_size', { size: newSize });
     } catch (e) {
       // ignore
     }
@@ -59,8 +63,8 @@ export const ThemeProvider = ({ children }) => {
 
   const fontSizeMultiplier = useMemo(() => {
     let multiplier = 1.0;
-    if (textSize === "chico") multiplier = 0.85;
-    else if (textSize === "grande") multiplier = 1.2;
+    if (textSize === "chico") multiplier = 0.96;
+    else if (textSize === "grande") multiplier = 1.04;
 
     if (typeof global !== 'undefined') {
       global.fontSizeMultiplier = multiplier;

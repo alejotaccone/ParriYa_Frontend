@@ -79,12 +79,12 @@ export default function AdminPerfilScreen() {
           <View style={styles.headerIconsRow}>
             {/* Flecha de volver al Backoffice */}
             <TouchableOpacity onPress={() => router.replace('/backoffice')}>
-              <Ionicons name="arrow-back" size={24} color="white" />
+              <Ionicons name="arrow-back" size={24 * fontSizeMultiplier} color="white" />
             </TouchableOpacity>
 
             {/* Tuerca de configuración */}
             <TouchableOpacity onPress={() => setMenuOpen(!menuOpen)}>
-              <Ionicons name="settings-sharp" size={24} color="white" />
+              <Ionicons name="settings-sharp" size={24 * fontSizeMultiplier} color="white" />
             </TouchableOpacity>
           </View>
 
@@ -153,7 +153,7 @@ export default function AdminPerfilScreen() {
             onPress={() => router.push('/cambiar_contrasena')}
           >
             <Text style={[styles.menuRowText, { color: colors.textMuted }]}>Cambiar contraseña</Text>
-            <Ionicons name="chevron-forward" size={18} color={isDarkMode ? colors.text : "#8E8E93"} />
+            <Ionicons name="chevron-forward" size={18 * fontSizeMultiplier} color={isDarkMode ? colors.text : "#8E8E93"} />
           </TouchableOpacity>
 
           {/* Botón Cerrar Sesión "Log out" */}
@@ -165,7 +165,7 @@ export default function AdminPerfilScreen() {
             <Text style={styles.logoutButtonText}>Cerrar sesión</Text>
             <Ionicons
               name="log-out"
-              size={22}
+              size={22 * fontSizeMultiplier}
               color={COLORS.primary}
               style={styles.logoutIcon}
             />

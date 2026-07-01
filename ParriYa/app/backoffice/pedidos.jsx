@@ -102,6 +102,7 @@ export default function BackofficePedidos() {
           })),
           total: o.total,
           estado: o.estado || 'Recibido',
+          horarioRetiro: o.horarioRetiro || null,
         }));
         setOrders(formatted);
       } else {
@@ -198,17 +199,30 @@ export default function BackofficePedidos() {
             >
               
               {/* Header de la tarjeta */}
-              <View style={styles.orderCardHeader}>
-                <Text style={[styles.orderIdText, { color: colors.text }]}>Nro pedido: {order.id}</Text>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+                {/* Lado Izquierdo */}
+                <Text style={[styles.orderIdText, { color: colors.text, marginTop: 2 }]}>Nro pedido: {order.id}</Text>
                 
-                {/* Badge Visual del Estado de Preparación */}
-                <View style={[styles.statusBadge, styles[badgeStyles.badge]]}>
-                  <Text style={styles[badgeStyles.text]}>
-                    {order.estado}
-                  </Text>
+                {/* Lado Derecho */}
+                <View style={{ alignItems: 'flex-end' }}>
+                  {/* Nombre y Estado en fila */}
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                    <Text style={styles.orderClientName}>{order.cliente}</Text>
+                    <View style={[styles.statusBadge, styles[badgeStyles.badge], { paddingVertical: 3, paddingHorizontal: 8 }]}>
+                      <Text style={styles[badgeStyles.text]}>{order.estado}</Text>
+                    </View>
+                  </View>
+                  
+                  {/* Horario de Retiro debajo */}
+                  {order.horarioRetiro && (
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                      <Ionicons name="time-outline" size={14} color={COLORS.primary} />
+                      <Text style={{ fontSize: 13, fontWeight: 'bold', color: COLORS.primary }}>
+                        Retiro: {order.horarioRetiro.slice(0, 5)} hs
+                      </Text>
+                    </View>
+                  )}
                 </View>
-
-                <Text style={styles.orderClientName}>{order.cliente}</Text>
               </View>
 
               {/* Subtítulo cantidad de productos */}
@@ -272,6 +286,12 @@ export default function BackofficePedidos() {
 
             {/* Subtítulo: Cliente */}
             <Text style={[styles.modalSubtitle, { color: colors.textMuted }]}>Cliente: {selectedOrder?.cliente}</Text>
+            
+            {selectedOrder?.horarioRetiro && (
+              <Text style={[styles.modalSubtitle, { color: COLORS.primary, fontWeight: 'bold', marginTop: -8, marginBottom: 8 }]}>
+                Retiro programado: {selectedOrder.horarioRetiro.slice(0, 5)} hs
+              </Text>
+            )}
 
             {/* Listado scrollable de los productos del pedido */}
             <View style={[styles.modalItemsList, { borderBottomColor: isDarkMode ? colors.border : '#F0F0F0' }]}>

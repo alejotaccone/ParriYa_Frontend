@@ -19,7 +19,8 @@
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
       "package": "com.santisapiaa.parriya",
-      "usesCleartextTraffic": true
+      "usesCleartextTraffic": true,
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "output": "static",
@@ -39,7 +40,8 @@
           }
         }
       ],
-      "expo-font"
+      "expo-font",
+      "@react-native-firebase/app"
     ],
     "experiments": {
       "typedRoutes": true,

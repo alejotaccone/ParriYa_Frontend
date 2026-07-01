@@ -9,23 +9,12 @@ import { styles } from '../components/Pago/pago.styles';
 import api, { resolveProductImg } from '../services/api';
 import { useTheme } from '../components/ThemeContext';
 import { COLORS } from '../constants/colors';
+import { logEvent } from '../services/analytics';
 
-// ─── Helpers puros ────────────────────────────────────────────────
-function buildOrderBody(cartItems, total, metodo) {
-  return {
-    horarioRetiro: '20:00:00',
-    total,
-    detalles: cartItems.map((item) => ({
-      productoId: Number.parseInt(item.id, 10),
-      cantidad: item.cantidad,
-      precioUnitario: item.precio,
-    })),
-    pagos: [{ metodo, monto: total }],
-  };
-}
+import { formatHorarioRetiro, buildOrderBody } from '../utils/orderUtils';
 
 // ─── Custom Hook ──────────────────────────────────────────────────
-function usePagoLogic({ cartItems, total, clearCart, router }) {
+function usePagoLogic({ cartItems, total, clearCart, router, retiroMode, retiroTime }) {
   const [paymentStatus, setPaymentStatus] = useState('idle');
   const [isSubmitting, setIsSubmitting]   = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -53,7 +42,16 @@ function usePagoLogic({ cartItems, total, clearCart, router }) {
 
   const processCashPayment = async () => {
     try {
-      await api.post('/pedidos', buildOrderBody(cartItems, total, 'EFECTIVO'));
+      const computedTime = formatHorarioRetiro(retiroMode, retiroTime);
+      const response = await api.post('/pedidos', buildOrderBody(cartItems, total, 'EFECTIVO', computedTime));
+      
+      logEvent('purchase', {
+        value: total,
+        currency: 'ARS',
+        transaction_id: response.data?.id?.toString() || 'unknown',
+        payment_method: 'EFECTIVO',
+      });
+
       clearCart();
       router.replace('/exito');
     } catch (error) {
@@ -92,7 +90,16 @@ function usePagoLogic({ cartItems, total, clearCart, router }) {
         Alert.alert('Error', 'No se encontró una sesión activa.');
         return;
       }
-      await api.post('/pedidos', buildOrderBody(cartItems, total, 'MERCADO_PAGO'));
+      const computedTime = formatHorarioRetiro(retiroMode, retiroTime);
+      const response = await api.post('/pedidos', buildOrderBody(cartItems, total, 'MERCADO_PAGO', computedTime));
+      
+      logEvent('purchase', {
+        value: total,
+        currency: 'ARS',
+        transaction_id: response.data?.id?.toString() || 'unknown',
+        payment_method: 'MERCADO_PAGO',
+      });
+
       clearCart();
       setShowConfirmation(false);
       setPaymentStatus('idle');
@@ -338,7 +345,7 @@ PaymentMethodSelector.propTypes = {
 // ─── Componente Principal ─────────────────────────────────────────
 export default function PagoScreen() {
   const router = useRouter();
-  const { cartItems, clearCart } = useCart();
+  const { cartItems, clearCart, retiroMode, retiroTime } = useCart();
   const { colors, isDarkMode }   = useTheme();
   const [metodoPago, setMetodoPago]     = useState('mercado_pago');
   const [guardarDatos, setGuardarDatos] = useState(true);
@@ -355,7 +362,7 @@ export default function PagoScreen() {
     handleConfirmMercadoPagoPayment,
     handleDismissModal,
     handleGoBack,
-  } = usePagoLogic({ cartItems, total, clearCart, router });
+  } = usePagoLogic({ cartItems, total, clearCart, router, retiroMode, retiroTime });
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -382,6 +389,13 @@ export default function PagoScreen() {
           ))
         )}
 
+        <View style={[styles.resumenRow, { marginTop: 15 }]}>
+          <Text style={[styles.resumenText, { color: colors.textMuted }]}>Horario de retiro</Text>
+          <Text style={[styles.resumenPrice, { color: COLORS.primary, fontWeight: 'bold' }]}>
+            {retiroMode === 'programado' && retiroTime ? retiroTime : 'Cuando esté listo (15-30 min)'}
+          </Text>
+        </View>
+
 
         {/* Métodos de Pago */}
         <Text style={[styles.sectionTitle, { marginTop: 25, color: isDarkMode ? '#ffffff' : COLORS.secondary }]}>Metodos de pago</Text>
@@ -391,12 +405,6 @@ export default function PagoScreen() {
           colors={colors}
           isDarkMode={isDarkMode}
         />
-
-        {/* Checkbox Guardar Datos */}
-        <TouchableOpacity style={styles.checkboxRow} activeOpacity={0.7} onPress={() => setGuardarDatos(!guardarDatos)}>
-          <Ionicons name={guardarDatos ? 'checkbox' : 'square-outline'} size={22} color={guardarDatos ? '#E76F41' : '#8E8E93'} />
-          <Text style={[styles.checkboxText, { color: colors.text }]}>Guardar datos para futuras compras</Text>
-        </TouchableOpacity>
 
         {/* Sugerencias */}
         <Text style={[styles.sectionTitle, { color: isDarkMode ? '#ffffff' : COLORS.secondary }]}>¿Te olvidaste algo?</Text>

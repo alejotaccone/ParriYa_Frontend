@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, Modal, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import PropTypes from 'prop-types';
 import { Ionicons } from '@expo/vector-icons';
+import { logEvent } from '../services/analytics';
 
 const CartContext = createContext(null);
 const STORAGE_KEY = 'shoppingCart';
@@ -10,10 +11,10 @@ const FAVORITES_KEY = 'favoriteProducts';
 
 // Límites máximos de unidades por categoría (por nombre, case-insensitive)
 const LIMITES_POR_CATEGORIA = {
-  carnes: 5,
-  achuras: 8,
-  guarniciones: 8,
-  bebidas: 10,
+  carnes: 8,
+  achuras: 12,
+  guarniciones: 12,
+  bebidas: 15,
 };
 
 /**
@@ -122,6 +123,14 @@ export function CartProvider({ children }) {
       }
       return [...prev, { ...product, cantidad }];
     });
+    logEvent('add_to_cart', {
+      item_id: product.id,
+      item_name: product.nombre,
+      price: product.precio,
+      quantity: cantidad,
+      value: product.precio * cantidad,
+      currency: 'ARS',
+    });
     return true;
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -156,7 +165,14 @@ export function CartProvider({ children }) {
     return true;
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const clearCart = useMemo(() => () => setCartItems([]), []);
+  const [retiroMode, setRetiroMode] = useState('inmediato'); // 'inmediato' | 'programado'
+  const [retiroTime, setRetiroTime] = useState(null); // string 'HH:mm:ss' or null
+
+  const clearCart = useMemo(() => () => {
+    setCartItems([]);
+    setRetiroMode('inmediato');
+    setRetiroTime(null);
+  }, []);
 
   const toggleFavorite = useMemo(() => (product) => {
     setFavoriteItems((prev) => {
@@ -196,13 +212,17 @@ export function CartProvider({ children }) {
     favoriteItems,
     itemCount,
     cartTotal,
+    retiroMode,
+    setRetiroMode,
+    retiroTime,
+    setRetiroTime,
     addToCart,
     removeFromCart,
     updateQuantity,
     clearCart,
     toggleFavorite,
     isFavorite,
-  }), [cartItems, favoriteItems, itemCount, cartTotal, addToCart, removeFromCart, updateQuantity, clearCart, toggleFavorite, isFavorite]);
+  }), [cartItems, favoriteItems, itemCount, cartTotal, retiroMode, retiroTime, addToCart, removeFromCart, updateQuantity, clearCart, toggleFavorite, isFavorite]);
 
   return (
     <CartContext.Provider value={providerValue}>
