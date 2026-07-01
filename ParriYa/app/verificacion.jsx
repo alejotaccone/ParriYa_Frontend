@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { styles } from '../components/Auth/auth.styles'; // Ajustá esta ruta
 import { useTheme } from '../components/ThemeContext';
@@ -8,6 +8,7 @@ import { COLORS } from '../constants/colors';
 
 export default function VerificacionScreen() {
   const router = useRouter();
+  const { email } = useLocalSearchParams();
   const inputRefs = useRef([]);
   const { colors, isDarkMode } = useTheme();
 
@@ -37,7 +38,7 @@ export default function VerificacionScreen() {
 
         <Text style={[styles.modalTitle, { color: isDarkMode ? '#ffffff' : COLORS.primary }]}>Codigo enviado!</Text>
         <Text style={[styles.modalSubtitle, { color: colors.textMuted }]}>
-          Revisa tu casilla de mail (<Text style={[styles.boldEmail, { color: colors.text }]}>enzoB@gmail.com</Text>) e ingresa el codigo de verificación:
+          Revisa tu casilla de mail (<Text style={[styles.boldEmail, { color: colors.text }]}>{email}</Text>) e ingresa el codigo de verificación:
         </Text>
 
         <View style={styles.codeRow}>
@@ -62,7 +63,7 @@ export default function VerificacionScreen() {
 
         <TouchableOpacity 
           style={styles.verifyButton}
-          onPress={() => router.push('/nueva_contrasena')}
+          onPress={() => router.push({ pathname: '/nueva_contrasena', params: { email } })}
         >
           <Text style={styles.verifyButtonText}>Verificar</Text>
         </TouchableOpacity>

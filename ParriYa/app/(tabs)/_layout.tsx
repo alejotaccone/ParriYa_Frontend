@@ -2,6 +2,7 @@ import React from 'react';
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons'; 
 import { useCart } from '../../components/CartContext';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface TabBarIconProps {
   color: string;
@@ -21,6 +22,7 @@ const PersonIcon = ({ color }: TabBarIconProps) => (
 
 export default function TabLayout() {
   const { itemCount } = useCart();
+  const insets = useSafeAreaInsets();
 
   return (
     <Tabs
@@ -30,9 +32,9 @@ export default function TabLayout() {
         tabBarStyle: {
           backgroundColor: '#4B2610', 
           borderTopWidth: 0,
-          height: 65, 
-          paddingBottom: 10,
-          paddingTop: 10,
+          height: 60 + insets.bottom, 
+          paddingBottom: insets.bottom > 0 ? insets.bottom : 8,
+          paddingTop: 8,
         },
         
         tabBarActiveTintColor: '#E76F41', 

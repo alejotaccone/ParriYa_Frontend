@@ -7,6 +7,7 @@ import { styles } from '../components/Auth/auth.styles'; // Ajustá esta ruta
 import api from '../services/api';
 import { useTheme } from '../components/ThemeContext';
 import { COLORS } from '../constants/colors';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function CambiarContrasenaScreen() {
   const router = useRouter();
@@ -15,7 +16,10 @@ export default function CambiarContrasenaScreen() {
   const [confirmarPasswordNuevo, setConfirmarPasswordNuevo] = useState('');
   const [loading, setLoading] = useState(false);
   const [rol, setRol] = useState(null);
+  const [showNuevo, setShowNuevo] = useState(false);
+  const [showConfirmar, setShowConfirmar] = useState(false);
   const { colors, isDarkMode } = useTheme();
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     async function loadRole() {
@@ -98,7 +102,8 @@ export default function CambiarContrasenaScreen() {
         { 
           backgroundColor: colors.card, 
           borderTopColor: isDarkMode ? colors.border : 'transparent', 
-          borderTopWidth: isDarkMode ? 1 : 0 
+          borderTopWidth: isDarkMode ? 1 : 0,
+          paddingBottom: 40 + insets.bottom
         }
       ]}>
         <View style={styles.inputWrapper}>
@@ -129,15 +134,22 @@ export default function CambiarContrasenaScreen() {
               color: colors.textMuted 
             }
           ]}>Nueva Contraseña</Text>
-          <View style={[styles.inputContainer, { borderColor: colors.border }]}>
+          <View style={[styles.inputContainer, { borderColor: colors.border, flexDirection: 'row', alignItems: 'center' }]}>
             <TextInput 
-              style={[styles.textInput, { color: colors.text }]} 
-              secureTextEntry 
+              style={[styles.textInput, { color: colors.text, flex: 1 }]} 
+              secureTextEntry={!showNuevo}
               placeholder="Nueva contraseña"
               placeholderTextColor="#8E8E93"
               value={passwordNuevo}
               onChangeText={setPasswordNuevo}
             />
+            <TouchableOpacity onPress={() => setShowNuevo(!showNuevo)} style={{ paddingLeft: 8 }}>
+              <Ionicons
+                name={showNuevo ? 'eye-outline' : 'eye-off-outline'}
+                size={20}
+                color={colors.textMuted || '#8E8E93'}
+              />
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -149,22 +161,29 @@ export default function CambiarContrasenaScreen() {
               color: colors.textMuted 
             }
           ]}>Confirmar Nueva Contraseña</Text>
-          <View style={[styles.inputContainer, { borderColor: colors.border }]}>
+          <View style={[styles.inputContainer, { borderColor: colors.border, flexDirection: 'row', alignItems: 'center' }]}>
             <TextInput 
-              style={[styles.textInput, { color: colors.text }]} 
-              secureTextEntry 
+              style={[styles.textInput, { color: colors.text, flex: 1 }]} 
+              secureTextEntry={!showConfirmar}
               placeholder="Repetir nueva contraseña"
               placeholderTextColor="#8E8E93"
               value={confirmarPasswordNuevo}
               onChangeText={setConfirmarPasswordNuevo}
             />
+            <TouchableOpacity onPress={() => setShowConfirmar(!showConfirmar)} style={{ paddingLeft: 8 }}>
+              <Ionicons
+                name={showConfirmar ? 'eye-outline' : 'eye-off-outline'}
+                size={20}
+                color={colors.textMuted || '#8E8E93'}
+              />
+            </TouchableOpacity>
           </View>
         </View>
 
         <View style={[styles.divider, { backgroundColor: colors.divider }]} />
 
         <TouchableOpacity 
-          style={styles.confirmButton}
+          style={[styles.confirmButton, { bottom: 20 + insets.bottom }]}
           onPress={handleConfirm}
           disabled={loading}
         >
@@ -175,4 +194,4 @@ export default function CambiarContrasenaScreen() {
       </View>
     </View>
   );
-}
+}
