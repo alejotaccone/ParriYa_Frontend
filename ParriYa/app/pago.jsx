@@ -10,6 +10,7 @@ import api, { resolveProductImg } from '../services/api';
 import { useTheme } from '../components/ThemeContext';
 import { COLORS } from '../constants/colors';
 import { logEvent } from '../services/analytics';
+import { sendLocalNotification, schedulePickupReminder, cancelCartAbandonmentReminder } from '../services/notifications';
 
 import { formatHorarioRetiro, buildOrderBody } from '../utils/orderUtils';
 
@@ -51,6 +52,14 @@ function usePagoLogic({ cartItems, total, clearCart, router, retiroMode, retiroT
         transaction_id: response.data?.id?.toString() || 'unknown',
         payment_method: 'EFECTIVO',
       });
+
+      // Notificaciones de compra exitosa
+      sendLocalNotification('🥩 ¡Pedido Realizado!', 'Tu pedido ha sido enviado a la parrilla con éxito.');
+      cancelCartAbandonmentReminder(); // Se concretó la compra, cancelamos aviso de carrito
+ 
+      if (retiroMode === 'programado' && computedTime) {
+        schedulePickupReminder(response.data?.id || 'unknown', computedTime.substring(0, 5));
+      }
 
       clearCart();
       router.replace('/exito');
@@ -100,6 +109,14 @@ function usePagoLogic({ cartItems, total, clearCart, router, retiroMode, retiroT
         payment_method: 'MERCADO_PAGO',
       });
 
+      // Notificaciones de compra exitosa
+      sendLocalNotification('🥩 ¡Pedido Realizado!', 'Tu pedido ha sido enviado a la parrilla con éxito.');
+      cancelCartAbandonmentReminder(); // Se concretó la compra, cancelamos aviso de carrito
+ 
+      if (retiroMode === 'programado' && computedTime) {
+        schedulePickupReminder(response.data?.id || 'unknown', computedTime.substring(0, 5));
+      }
+ 
       clearCart();
       setShowConfirmation(false);
       setPaymentStatus('idle');

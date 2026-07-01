@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Modal, TextInput, Alert, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
@@ -7,6 +7,7 @@ import { styles } from './EstadoPedido.styles';
 import api from '../../services/api';
 import { useTheme } from '../ThemeContext';
 import { COLORS } from '../../constants/colors';
+import { registerForPushNotificationsAsync, sendLocalNotification, cancelPickupReminder } from '../../services/notifications';
 
 const STATE_MAPPING = {
   1: {
@@ -63,6 +64,11 @@ const EstadoPedido = () => {
   const [estimatedTime, setEstimatedTime] = useState('');
   const [loading, setLoading] = useState(true);
   const { colors, isDarkMode } = useTheme();
+  const previousStepRef = useRef(null);
+
+  useEffect(() => {
+    registerForPushNotificationsAsync();
+  }, []);
 
   // Estados para reseña / feedback
   const [latestOrder, setLatestOrder] = useState(null);
@@ -114,6 +120,7 @@ const EstadoPedido = () => {
       if (!orders || orders.length === 0) {
         setCurrentStep(null);
         setLatestOrder(null);
+        previousStepRef.current = null;
         return;
       }
 
@@ -121,33 +128,49 @@ const EstadoPedido = () => {
       const orderState = latest.estado ? latest.estado.toLowerCase() : '';
       setLatestOrder(latest);
 
-      // Early return: pedido cancelado
+      let nextStep = null;
+
+      // Determinación del paso de la orden
       if (orderState === 'cancelado') {
-        setCurrentStep(null);
-        return;
-      }
-
-      // Early return: pedido entregado/finalizado
-      if (orderState === 'entregado' || orderState === 'finalizado') {
+        nextStep = null;
+      } else if (orderState === 'entregado' || orderState === 'finalizado') {
         if (latest.tieneFeedback) {
-          setCurrentStep(null);
-          return;
+          nextStep = null;
+        } else {
+          const raw       = await AsyncStorage.getItem('closedFeedbacks');
+          const closedIds = raw ? JSON.parse(raw) : [];
+          if (closedIds.includes(latest.id)) {
+            nextStep = null;
+          } else {
+            nextStep = 4;
+          }
         }
-        const raw       = await AsyncStorage.getItem('closedFeedbacks');
-        const closedIds = raw ? JSON.parse(raw) : [];
-        if (closedIds.includes(latest.id)) {
-          setCurrentStep(null);
-          return;
-        }
-        setCurrentStep(4);
-        return;
+      } else {
+        nextStep = getStepFromOrderState(orderState);
       }
 
-      // Horario estimado
-      const fullTime = latest.horarioRetiro || latest.horario_retiro;
-      setEstimatedTime(fullTime ? String(fullTime).substring(0, 5) : generateDynamicTime());
+      // Si hay un paso de orden válido, actualizamos el horario estimado
+      if (nextStep !== null) {
+        const fullTime = latest.horarioRetiro || latest.horario_retiro;
+        setEstimatedTime(fullTime ? String(fullTime).substring(0, 5) : generateDynamicTime());
+      }
 
-      setCurrentStep(getStepFromOrderState(orderState));
+      // Verificar si hay cambio de estado para disparar notificación
+      if (nextStep !== null && previousStepRef.current !== null && previousStepRef.current !== nextStep) {
+        if (nextStep === 1) {
+          sendLocalNotification('🥩 Pedido Recibido', 'Hemos recibido tu pedido. Pronto se empezará a preparar.');
+        } else if (nextStep === 2) {
+          sendLocalNotification('👨‍🍳 Pedido en Preparación', 'La parrilla ya está cocinando tu comida.');
+        } else if (nextStep === 3) {
+          sendLocalNotification('🔥 ¡Pedido Listo!', 'Tu pedido está listo. Ya podés pasar a retirarlo por el local.');
+          cancelPickupReminder(latest.id); // Cancelamos recordatorio programado ya que se completó
+        } else if (nextStep === 4) {
+          sendLocalNotification('🙌 ¡Pedido Entregado!', '¡Muchas gracias por elegirnos! ¡Que disfrutes tu comida!');
+        }
+      }
+
+      previousStepRef.current = nextStep;
+      setCurrentStep(nextStep);
     } catch (error) {
       console.error('Error al cargar el estado del pedido:', error);
       setCurrentStep(null);

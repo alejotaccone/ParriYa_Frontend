@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import PropTypes from 'prop-types';
 import { Ionicons } from '@expo/vector-icons';
 import { logEvent } from '../services/analytics';
+import { scheduleCartAbandonmentReminder, cancelCartAbandonmentReminder } from '../services/notifications';
 
 const CartContext = createContext(null);
 const STORAGE_KEY = 'shoppingCart';
@@ -91,6 +92,13 @@ export function CartProvider({ children }) {
   useEffect(() => {
     if (!loaded) return;
     AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(cartItems)).catch(() => {});
+    
+    // Reactivamente programa o cancela el recordatorio de carrito abandonado
+    if (cartItems.length > 0) {
+      scheduleCartAbandonmentReminder();
+    } else {
+      cancelCartAbandonmentReminder();
+    }
   }, [cartItems, loaded]);
 
   // Persistir favoritos

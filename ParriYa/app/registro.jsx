@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Image, Alert, Platform, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from '../components/Auth/login.styles'; // Ajustá la ruta
 import api from '../services/api';
@@ -22,6 +23,7 @@ export default function RegistroScreen() {
   const [email, setEmail] = useState('');
   const [telefono, setTelefono] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { colors, isDarkMode } = useTheme();
 
   return (
@@ -58,8 +60,22 @@ export default function RegistroScreen() {
               color: colors.textMuted 
             }
           ]}>Contraseña</Text>
-          <View style={[styles.inputContainer, { borderColor: colors.border }]}>
-            <TextInput style={[styles.textInput, { color: colors.text }]} placeholder="Ingrese aquí su contraseña" placeholderTextColor="#8E8E93" secureTextEntry value={password} onChangeText={setPassword} />
+          <View style={[styles.inputContainer, { borderColor: colors.border, flexDirection: 'row', alignItems: 'center' }]}>
+            <TextInput
+              style={[styles.textInput, { color: colors.text, flex: 1 }]}
+              placeholder="Ingrese aquí su contraseña"
+              placeholderTextColor="#8E8E93"
+              secureTextEntry={!showPassword}
+              value={password}
+              onChangeText={setPassword}
+            />
+            <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={{ paddingLeft: 8 }}>
+              <Ionicons
+                name={showPassword ? 'eye-outline' : 'eye-off-outline'}
+                size={20}
+                color={colors.textMuted || '#8E8E93'}
+              />
+            </TouchableOpacity>
           </View>
         </View>
 
